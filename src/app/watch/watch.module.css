@@ -928,7 +928,7 @@
 .popoverBackdropWrap {
   position: relative;
   width: 100%;
-  height: 155px;
+  height: 48%;
   overflow: hidden;
   background-color: #121319;
 }
@@ -1019,11 +1019,14 @@
 }
 
 .popoverBody {
-  padding: 14px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  justify-content: space-between;
+  flex: 1;
+  min-height: 0;
   background: #0f1015;
+  gap: 8px;
 }
 
 .popoverTitle {
@@ -1037,7 +1040,7 @@
   color: rgba(255, 255, 255, 0.6);
   margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

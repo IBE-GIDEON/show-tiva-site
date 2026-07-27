@@ -229,7 +229,7 @@ export default function WatchPage() {
   const [themeDark, setThemeDark] = useState(true);
 
   const [hoveredMovie, setHoveredMovie] = useState<any | null>(null);
-  const [popoverPos, setPopoverPos] = useState<{ top: number; left: number; alignRight: boolean } | null>(null);
+  const [popoverPos, setPopoverPos] = useState<{ top: number; left: number; alignRight: boolean; height: number } | null>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const getMovieDesc = (title: string) => {
@@ -320,7 +320,7 @@ export default function WatchPage() {
     if (left < 0) left = 12;
     const top = rect.top + scrollY;
 
-    setPopoverPos({ top, left, alignRight });
+    setPopoverPos({ top, left, alignRight, height: rect.height });
     setHoveredMovie(movie);
   };
 
@@ -608,6 +608,7 @@ export default function WatchPage() {
           style={{
             top: `${popoverPos.top}px`,
             left: `${popoverPos.left}px`,
+            height: `${popoverPos.height}px`,
           }}
           onMouseEnter={handlePopoverMouseEnter}
           onMouseLeave={handlePopoverMouseLeave}
