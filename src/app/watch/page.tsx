@@ -229,7 +229,7 @@ export default function WatchPage() {
   const [themeDark, setThemeDark] = useState(true);
 
   const [hoveredMovie, setHoveredMovie] = useState<any | null>(null);
-  const [popoverPos, setPopoverPos] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
+  const [popoverPos, setPopoverPos] = useState<{ top: number; left: number; alignRight: boolean; height: number } | null>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const getMovieDesc = (title: string) => {
@@ -303,16 +303,27 @@ export default function WatchPage() {
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
     const rect = e.currentTarget.getBoundingClientRect();
     
+    const popoverWidth = 330;
+    const gap = -2; // Slightly overlap to prevent any visual gap or mouse exit flickers
+    
     const scrollY = window.scrollY || document.documentElement.scrollTop;
     const scrollX = window.scrollX || document.documentElement.scrollLeft;
     
-    const left = rect.left + scrollX;
+    let left = rect.right + gap + scrollX;
+    let alignRight = true;
+    
+    if (rect.right + gap + popoverWidth > window.innerWidth) {
+      left = rect.left - popoverWidth - gap + scrollX;
+      alignRight = false;
+    }
+    
+    if (left < 0) left = 12;
     const top = rect.top + scrollY;
 
     setPopoverPos({ 
       top, 
       left, 
-      width: rect.width, 
+      alignRight, 
       height: rect.height 
     });
     setHoveredMovie(movie);
@@ -598,11 +609,11 @@ export default function WatchPage() {
       {/* Dynamic Cinematic Detail Popover Card (Portal-style floating popup next to hovered card) */}
       {hoveredMovie && popoverPos && (
         <div
-          className={styles.detailsPopover}
+          className={`${styles.detailsPopover} ${popoverPos.alignRight ? styles.popoverRight : styles.popoverLeft}`}
           style={{
             top: `${popoverPos.top}px`,
             left: `${popoverPos.left}px`,
-            width: `${popoverPos.width}px`,
+            width: '330px',
             height: `${popoverPos.height}px`,
           }}
           onMouseEnter={handlePopoverMouseEnter}
@@ -650,7 +661,7 @@ export default function WatchPage() {
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <polygon points="5 3 19 12 5 21 5 3" />
                 </svg>
-                <span>Play</span>
+                <span>Watch Now</span>
               </button>
               
               <button 

@@ -893,6 +893,7 @@
 /* --- Cinematic Detail Popover Card --- */
 .detailsPopover {
   position: absolute;
+  width: 330px;
   background: #0f1015;
   border-radius: 6px;
   border: none;
