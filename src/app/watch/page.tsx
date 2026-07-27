@@ -304,7 +304,7 @@ export default function WatchPage() {
     const rect = e.currentTarget.getBoundingClientRect();
     
     const popoverWidth = 330;
-    const gap = -2; // Slightly overlap to prevent any visual gap or mouse exit flickers
+    const gap = 12; // Restore original space between card and popover
     
     const scrollY = window.scrollY || document.documentElement.scrollTop;
     const scrollX = window.scrollX || document.documentElement.scrollLeft;
