@@ -11,8 +11,8 @@ function LandingContent() {
   const role = searchParams.get("role") || "family"; // defaults to family
   const isCreator = role === "creator";
 
-  const showLetters = ["S", "h", "o", "w"];
-  const tivaLetters = ["T", "i", "v", "a"];
+  const showLetters = ["S", "H", "O", "W"];
+  const tivaLetters = ["T", "I", "V", "A"];
   const [isMinimized, setIsMinimized] = useState(false);
   const rotatingWords = ["Shows", "Movies", "Series", "Stories", "Shorts", "Tales"];
 
