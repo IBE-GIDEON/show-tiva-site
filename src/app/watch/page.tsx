@@ -9,6 +9,7 @@ import styles from "./watch.module.css";
 const HERO_SLIDES = [
   {
     id: "spiderman",
+    duration: "Duration 2h 8m",
     title: "SPIDER-MAN",
     subtitle: "BRAND NEW DAY",
     type: "Movie",
@@ -20,6 +21,7 @@ const HERO_SLIDES = [
   },
   {
     id: "toy-story",
+    duration: "Duration 1h 40m",
     title: "TOY STORY 5",
     subtitle: "WOODYS RETURN",
     type: "Movie",
@@ -31,6 +33,7 @@ const HERO_SLIDES = [
   },
   {
     id: "wall-e",
+    duration: "Duration 1h 38m",
     title: "WALL.E",
     subtitle: "LAST ROBOT ON EARTH",
     type: "Movie",
@@ -42,6 +45,7 @@ const HERO_SLIDES = [
   },
   {
     id: "kung-fu-panda",
+    duration: "Duration 1h 34m",
     title: "KUNG FU PANDA 4",
     subtitle: "THE DRAGON WARRIOR",
     type: "Movie",
@@ -380,44 +384,101 @@ export default function WatchPage() {
 
   return (
     <div className={`${styles.watchContainer} ${themeDark ? styles.darkTheme : styles.lightTheme}`}>
-      <header className={styles.topNavbar}>
-        <div className={styles.navbarInner}>
-          {/* Brand Logo */}
-          <Link href="/" className={styles.brandLogo}>
-            <span className={styles.showText}>SHOW</span>
-            <span className={styles.tivaText}>TIVA</span>
-          </Link>
+      <header className={styles.watchHeader}>
+        {/* Brand Logo */}
+        <Link href="/" className={styles.brandLogo}>
+          <span className={styles.showText}>SHOW</span>
+          <span className={styles.tivaText}>TIVA</span>
+        </Link>
+
+        {/* Right nav utility icons */}
+        <div className={styles.navActions}>
+          <button className={styles.iconBtn} aria-label="Search">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </button>
+
+          <button className={styles.iconBtn} aria-label="Notifications">
+            <span className={styles.notificationBadge} />
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+          </button>
+
+          <button className={styles.iconBtn} aria-label="Profile">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </button>
         </div>
       </header>
 
-      {/* 100vh Fullscreen Hero Section */}
-      <section className={styles.fullscreenHero}>
-        {/* Continuous Stacked 4K Image Crossfade Engine (Prevents any black point) */}
+      {/* Split Hero (full screen): dark text left, image right */}
+      <section className={styles.heroBanner}>
         {HERO_SLIDES.map((slide, index) => {
           const isActive = index === activeSlide;
-          const isPrevious = index === prevSlide && isTransitioning;
-
-          let slideClass = styles.heroSlideHidden;
-          if (isActive) slideClass = styles.heroSlideActive;
-          else if (isPrevious) slideClass = styles.heroSlidePrevious;
-
+          const isSaved = !!bookmarked[slide.id];
           return (
             <div
               key={slide.id}
-              className={`${styles.heroSlide} ${slideClass}`}
+              className={`${styles.slideContainer} ${isActive ? styles.activeSlide : ""}`}
             >
-              <img
-                src={slide.image}
-                alt={slide.title}
-                className={styles.backdropImage}
-              />
+              <img src={slide.image} alt={slide.title} className={styles.heroImageLayer} />
+              <div className={styles.heroGradientOverlay} />
+
+              <div className={styles.heroContent}>
+                <span className={styles.durationTag}>{slide.duration}</span>
+                <h1 className={styles.heroTitle}>{slide.title}</h1>
+                <p className={styles.heroDesc}>{slide.description}</p>
+
+                <div className={styles.heroBtnGroup}>
+                  <button
+                    className={styles.watchNowBtn}
+                    onClick={() => router.push(`/watch/${slide.id}`)}
+                  >
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                    <span>Watch Now</span>
+                  </button>
+
+                  <button
+                    className={`${styles.addListBtn} ${isSaved ? styles.addListActive : ""}`}
+                    onClick={() => toggleBookmark(slide.id)}
+                  >
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      {isSaved ? (
+                        <polyline points="20 6 9 17 4 12" />
+                      ) : (
+                        <>
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </>
+                      )}
+                    </svg>
+                    <span>{isSaved ? "Added" : "Add List"}</span>
+                  </button>
+                </div>
+              </div>
             </div>
           );
         })}
 
-        {/* Dark Vignette Overlay */}
-        <div className={styles.vignetteOverlay} />
-
+        {/* Carousel pagination dashes */}
+        <div className={styles.carouselDashContainer}>
+          {HERO_SLIDES.map((_, index) => (
+            <button
+              key={`dash-${index}`}
+              onClick={() => triggerSlideChange(index)}
+              className={`${styles.dashBar} ${index === activeSlide ? styles.activeDashBar : ""}`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
       </section>
 
       {/* Main Browse Catalog Below Hero */}
