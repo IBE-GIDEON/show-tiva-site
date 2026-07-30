@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import styles from "./watch.module.css";
 
 // Ultra High Resolution 4K Hero Slides matching CINEHD reference UI
@@ -231,6 +232,7 @@ export default function WatchPage() {
   const [hoveredMovie, setHoveredMovie] = useState<any | null>(null);
   const [popoverPos, setPopoverPos] = useState<{ top: number; left: number; alignRight: boolean; height: number } | null>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const router = useRouter();
 
   const getMovieDesc = (title: string) => {
     const descs: Record<string, string> = {
@@ -468,6 +470,7 @@ export default function WatchPage() {
                       className={isLandscape ? styles.posterCardLandscape : styles.posterCard}
                       onMouseEnter={(e) => handleCardMouseEnter(movie, e)}
                       onMouseLeave={handleCardMouseLeave}
+                      onClick={() => router.push(`/watch/${movie.id}`)}
                     >
                       <div className={isLandscape ? styles.posterWrapperLandscape : styles.posterWrapper}>
                         <img
@@ -481,7 +484,10 @@ export default function WatchPage() {
                         <button
                           className={`${styles.bookmarkBtn} ${isSaved ? styles.bookmarkActive : ""}`}
                           aria-label="Save to list"
-                          onClick={() => toggleBookmark(movie.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleBookmark(movie.id);
+                          }}
                         >
                           <svg viewBox="0 0 24 24" width="15" height="15" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
@@ -657,7 +663,10 @@ export default function WatchPage() {
 
             {/* Button Actions */}
             <div className={styles.popoverActions}>
-              <button className={styles.popoverWatchBtn}>
+              <button
+                className={styles.popoverWatchBtn}
+                onClick={() => router.push(`/watch/${hoveredMovie.id}`)}
+              >
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <polygon points="5 3 19 12 5 21 5 3" />
                 </svg>
