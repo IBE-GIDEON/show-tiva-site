@@ -68,6 +68,13 @@
   letter-spacing: -0.03em;
 }
 
+/* Wordmark sized to the cap height of the 1.5rem text it replaces. */
+.brandLogoImg {
+  height: 18px;
+  width: auto;
+  display: block;
+}
+
 .showText {
   color: #ffffff;
 }

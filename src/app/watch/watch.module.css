@@ -287,6 +287,13 @@
   opacity: 0.85;
 }
 
+/* Wordmark sized to the cap height of the 1.7rem text it replaces. */
+.brandLogoImg {
+  height: 20px;
+  width: auto;
+  display: block;
+}
+
 .showText {
   color: #ffffff;
   font-weight: 800;
@@ -1026,6 +1033,13 @@
   font-weight: 800;
   letter-spacing: -0.03em;
   margin-bottom: 20px;
+}
+
+/* Wordmark sized to the cap height of the 1.8rem text it replaces. */
+.footerLogoImg {
+  height: 21px;
+  width: auto;
+  display: block;
 }
 
 .footerTagline {
