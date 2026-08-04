@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "updatedAt": null,
+  "landing": {
+    "introMinimizeDelayMs": 2200,
+    "stripeStaggerSeconds": 0.3,
+    "roles": {
+      "family": {
+        "heroSub": "100% WHOLESOME SHOWS",
+        "heroTitle": {
+          "mode": "rotating",
+          "prefix": "Trusted",
+          "staticWord": "Family",
+          "rotatingWords": ["Shows", "Movies", "Series", "Stories", "Shorts", "Tales"]
+        },
+        "heroDesc": "We feed families clean, safe, and trusted video shows. Zero explicit content, pure storytelling, and complete peace of mind for our audience.",
+        "bannerHeadline": "Trusted Entertainment Studio",
+        "bannerDesc": "Every single animation is fully vetted, creating a wholesome environment for your family.",
+        "videos": [
+          "/bg_video_1.mp4",
+          "/bg_video_2.mp4",
+          "/bg_video_3.mp4",
+          "/bg_video_4.mp4",
+          "/bg_video_5.mp4"
+        ]
+      },
+      "creator": {
+        "heroSub": "ELITE CREATOR STUDIO ACCESS",
+        "heroTitle": {
+          "mode": "plain",
+          "text": "Co-Create the Future of Family Shows"
+        },
+        "heroDesc": "Collaborate with our studio to produce trusted shows. Access is exclusive: you must be invited and pass our vetting checks to earn a spot.",
+        "bannerHeadline": "The Ultimate Creator Hub",
+        "bannerDesc": "Upload stories, collaborate with creators, and showcase films to the world.",
+        "videos": [
+          "/creator_video_1.mp4",
+          "/creator_video_2.mp4",
+          "/creator_video_3.mp4",
+          "/creator_video_4.mp4",
+          "/creator_video_5.mp4"
+        ]
+      }
+    }
+  }
+}

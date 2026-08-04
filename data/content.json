@@ -1,0 +1,1696 @@
+{
+  "version": 1,
+  "updatedAt": null,
+  "defaultCast": [
+    {
+      "name": "Ava Bennett",
+      "role": "Lead Voice",
+      "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop"
+    },
+    {
+      "name": "Marcus Reid",
+      "role": "Companion",
+      "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop"
+    },
+    {
+      "name": "Sofia Nguyen",
+      "role": "The Elder",
+      "image": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&auto=format&fit=crop"
+    },
+    {
+      "name": "James Okoro",
+      "role": "The Chief",
+      "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop"
+    },
+    {
+      "name": "Elena Rossi",
+      "role": "Supporting",
+      "image": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"
+    },
+    {
+      "name": "David Kim",
+      "role": "Voice",
+      "image": null
+    },
+    {
+      "name": "Priya Sharma",
+      "role": "Villager",
+      "image": null
+    },
+    {
+      "name": "Noah Clarke",
+      "role": "Narrator",
+      "image": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200&auto=format&fit=crop"
+    }
+  ],
+  "heroSlideIds": [
+    "spiderman",
+    "toy-story",
+    "wall-e",
+    "kung-fu-panda"
+  ],
+  "sections": [
+    {
+      "id": "trending-now",
+      "title": "Trending Now",
+      "titleColor": "normal",
+      "aspect": "portrait",
+      "accent": "#ff5964",
+      "movieIds": [
+        "t1",
+        "t2",
+        "t3",
+        "t4",
+        "t5",
+        "t6",
+        "t7",
+        "t8",
+        "t9",
+        "t10"
+      ]
+    },
+    {
+      "id": "movies",
+      "title": "Movies",
+      "titleColor": "yellow",
+      "aspect": "portrait",
+      "accent": "#4c8dff",
+      "movieIds": [
+        "m1",
+        "m2",
+        "m3",
+        "m4",
+        "m5",
+        "m6",
+        "m7",
+        "m8",
+        "m9",
+        "m10"
+      ]
+    },
+    {
+      "id": "cartoons-animation",
+      "title": "Cartoons & Animation",
+      "titleColor": "normal",
+      "aspect": "portrait",
+      "accent": "#b06bff",
+      "movieIds": [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5",
+        "c6",
+        "c7",
+        "c8",
+        "c9",
+        "c10"
+      ]
+    },
+    {
+      "id": "wholesome-series",
+      "title": "Wholesome Series",
+      "titleColor": "yellow",
+      "aspect": "landscape",
+      "accent": "#22c1a4",
+      "movieIds": [
+        "s1",
+        "s2",
+        "s3",
+        "s4",
+        "s5",
+        "s6",
+        "s7",
+        "s8",
+        "s9",
+        "s10"
+      ]
+    },
+    {
+      "id": "new-release",
+      "title": "New Releases",
+      "titleColor": "normal",
+      "aspect": "landscape",
+      "accent": "#f5a524",
+      "movieIds": [
+        "nr1",
+        "nr2",
+        "nr3",
+        "nr4",
+        "nr5",
+        "nr6",
+        "nr7",
+        "nr8",
+        "nr9",
+        "nr10",
+        "nr11",
+        "nr12"
+      ]
+    },
+    {
+      "id": "magical-fantasy",
+      "title": "Magical Worlds & Fantasy",
+      "titleColor": "yellow",
+      "aspect": "portrait",
+      "accent": "#ff6b9d",
+      "movieIds": [
+        "mf1",
+        "mf2",
+        "mf3",
+        "mf4",
+        "mf5",
+        "mf6",
+        "mf7",
+        "mf8",
+        "mf9",
+        "mf10",
+        "mf11",
+        "mf12"
+      ]
+    },
+    {
+      "id": "action-adventure",
+      "title": "Action & Adventure",
+      "titleColor": "normal",
+      "aspect": "landscape",
+      "accent": "#5ec26a",
+      "movieIds": [
+        "aa1",
+        "aa2",
+        "aa3",
+        "aa4",
+        "aa5",
+        "aa6",
+        "aa7",
+        "aa8",
+        "aa9",
+        "aa10",
+        "aa11",
+        "aa12"
+      ]
+    }
+  ],
+  "movies": {
+    "spiderman": {
+      "id": "spiderman",
+      "title": "SPIDER-MAN",
+      "subtitle": "BRAND NEW DAY",
+      "type": "Movie",
+      "duration": "2h 8m",
+      "rating": "9.8",
+      "year": "2026",
+      "description": "Fighting crime full-time as Spider-Man in a world that doesn't remember him—and the pressure of seeing his old friends move on without him—sparks a change in Peter Parker he may not have the power to control. But that...",
+      "image": "https://images.unsplash.com/photo-1635805737707-575885ab0820?q=90&w=1920&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1635805737707-575885ab0820?q=90&w=1920&auto=format&fit=crop",
+      "genres": [
+        "Adventure",
+        "Family"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "toy-story": {
+      "id": "toy-story",
+      "title": "TOY STORY 5",
+      "subtitle": "WOODYS RETURN",
+      "type": "Movie",
+      "duration": "1h 40m",
+      "rating": "9.4",
+      "year": "2026",
+      "description": "Buzz, Woody, and the gang face a brand-new threat when tech toys take over playtime. Together, they embark on a heart-warming adventure to prove that real friendship never gets obsolete.",
+      "image": "https://images.unsplash.com/photo-1593085512500-5d55148d6f0d?q=90&w=1920&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1593085512500-5d55148d6f0d?q=90&w=1920&auto=format&fit=crop",
+      "genres": [
+        "Family",
+        "Fantasy",
+        "Comedy"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "wall-e": {
+      "id": "wall-e",
+      "title": "WALL.E",
+      "subtitle": "LAST ROBOT ON EARTH",
+      "type": "Movie",
+      "duration": "1h 38m",
+      "rating": "9.1",
+      "year": "2008",
+      "description": "In the year 2805, Earth is an uninhabitable wasteland abandoned by humanity due to overconsumption and garbage. WALL-E spends his days compacting trash and collecting trinkets until EVE arrives.",
+      "image": "https://images.unsplash.com/photo-1531346878377-a5be20888e57?q=90&w=1920&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1531346878377-a5be20888e57?q=90&w=1920&auto=format&fit=crop",
+      "genres": [
+        "Sci-Fi",
+        "Drama"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "kung-fu-panda": {
+      "id": "kung-fu-panda",
+      "title": "KUNG FU PANDA 4",
+      "subtitle": "THE DRAGON WARRIOR",
+      "type": "Movie",
+      "duration": "1h 34m",
+      "rating": "8.9",
+      "year": "2024",
+      "description": "Po is tapped to become the Spiritual Leader of the Valley of Peace, but needs to find and train a new Dragon Warrior before he can assume his new lofty position.",
+      "image": "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?q=90&w=1920&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?q=90&w=1920&auto=format&fit=crop",
+      "genres": [
+        "Comedy",
+        "Action",
+        "Musical"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "t1": {
+      "id": "t1",
+      "title": "Soul",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 34m",
+      "rating": "9.2",
+      "year": "2020",
+      "description": "A New York jazz pianist finds himself in a cosmic realm between life and death, discovering the true meaning of having a soul.",
+      "image": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Drama",
+        "Musical",
+        "Action"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "t2": {
+      "id": "t2",
+      "title": "Vivo",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 35m",
+      "rating": "8.6",
+      "year": "2024",
+      "description": "A music-loving kinkajou embarks on a thrilling musical adventure from Havana to Miami to deliver a sacred love song.",
+      "image": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Musical",
+        "Mystery",
+        "Animation"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "t3": {
+      "id": "t3",
+      "title": "Home",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 36m",
+      "rating": "8.1",
+      "year": "2025",
+      "description": "An adorable misfit alien named Oh accidentally alerts his enemies to his location on Earth, teaming up with an adventurous girl.",
+      "image": "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Action",
+        "Comedy",
+        "Fantasy"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "t4": {
+      "id": "t4",
+      "title": "Luca",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 37m",
+      "rating": "8.5",
+      "year": "2024",
+      "description": "On the Italian Riviera, an unlikely friendship grows between a young human boy and a sea monster disguised as a human.",
+      "image": "https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Sci-Fi",
+        "Drama"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "t5": {
+      "id": "t5",
+      "title": "Small Foot",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 38m",
+      "rating": "7.9",
+      "year": "2020",
+      "description": "A bright young Yeti finds something he thought didn't exist—a human—sparking wild rumors and adventure in his snowy village.",
+      "image": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Mystery",
+        "Sci-Fi",
+        "Drama"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "t6": {
+      "id": "t6",
+      "title": "The Good Dinosaur",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 39m",
+      "rating": "7.1",
+      "year": "2023",
+      "description": "In a world where dinosaurs never went extinct, an Arpatosaurus named Arlo makes an unlikely human friend named Spot.",
+      "image": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Family",
+        "Fantasy",
+        "Comedy"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "t7": {
+      "id": "t7",
+      "title": "Encanto",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 40m",
+      "rating": "8.2",
+      "year": "2022",
+      "description": "In a magical house in Colombia, Mirabel, the only member of her family without magical powers, must save their fading magic.",
+      "image": "https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Fantasy",
+        "Animation",
+        "Mystery"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "t8": {
+      "id": "t8",
+      "title": "Raya & Last Dragon",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 41m",
+      "rating": "7.5",
+      "year": "2021",
+      "description": "In Kumandra, a lone warrior princess must track down the legendary last dragon to restore peace and stop ancient monsters.",
+      "image": "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Comedy",
+        "Action",
+        "Musical"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "t9": {
+      "id": "t9",
+      "title": "Onward",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 42m",
+      "rating": "7.3",
+      "year": "2020",
+      "description": "Two elf brothers embark on an extraordinary quest to discover if there is still a little magic left in the modern world.",
+      "image": "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Adventure",
+        "Family"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "t10": {
+      "id": "t10",
+      "title": "Frozen II",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 31m",
+      "rating": "8.0",
+      "year": "2019",
+      "description": "Elsa travels to an ancient, autumn-bound forest to find the origin of her powers and save her kingdom of Arendelle.",
+      "image": "https://images.unsplash.com/photo-1491002052546-bf38f186af56?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1491002052546-bf38f186af56?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Adventure",
+        "Family"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "m1": {
+      "id": "m1",
+      "title": "The Good Dinosaur",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 27m",
+      "rating": "7.1",
+      "year": "2023",
+      "description": "In a world where dinosaurs never went extinct, an Arpatosaurus named Arlo makes an unlikely human friend named Spot.",
+      "image": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Sci-Fi",
+        "Drama"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "m2": {
+      "id": "m2",
+      "title": "David",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 28m",
+      "rating": "8.8",
+      "year": "2026",
+      "description": "An epic animated historical journey detailing the courage, trials, and triumphs of the legendary shepherd boy who became king.",
+      "image": "https://images.unsplash.com/photo-1461360370896-922624d12aa1?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1461360370896-922624d12aa1?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Mystery",
+        "Sci-Fi",
+        "Drama"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "m3": {
+      "id": "m3",
+      "title": "Wall-E",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 29m",
+      "rating": "9.1",
+      "year": "2008",
+      "description": "A lonely trash-compacting robot on a deserted future Earth embarks on a space journey that will decide the fate of mankind.",
+      "image": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Family",
+        "Fantasy",
+        "Comedy"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "m4": {
+      "id": "m4",
+      "title": "Soul",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 30m",
+      "rating": "9.2",
+      "year": "2020",
+      "description": "A New York jazz pianist finds himself in a cosmic realm between life and death, discovering the true meaning of having a soul.",
+      "image": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Fantasy",
+        "Animation",
+        "Mystery"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "m5": {
+      "id": "m5",
+      "title": "Vivo",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 31m",
+      "rating": "8.6",
+      "year": "2024",
+      "description": "A music-loving kinkajou embarks on a thrilling musical adventure from Havana to Miami to deliver a sacred love song.",
+      "image": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Comedy",
+        "Action",
+        "Musical"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "m6": {
+      "id": "m6",
+      "title": "Zootopia",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 32m",
+      "rating": "8.0",
+      "year": "2016",
+      "description": "In a city of anthropomorphic predators and prey, a rookie bunny cop and a cynical con artist fox team up to solve a conspiracy.",
+      "image": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Adventure",
+        "Family"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "m7": {
+      "id": "m7",
+      "title": "Moana",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 33m",
+      "rating": "7.6",
+      "year": "2016",
+      "description": "An adventurous teenager sails out on a daring mission to save her people, meeting the mighty demigod Maui along the way.",
+      "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Animation",
+        "Adventure",
+        "Family"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "m8": {
+      "id": "m8",
+      "title": "Big Hero 6",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 34m",
+      "rating": "7.8",
+      "year": "2014",
+      "description": "A robotics prodigy and his inflatable healthcare robot Baymax form a band of high-tech heroes to combat a masked villain.",
+      "image": "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Drama",
+        "Musical",
+        "Action"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "m9": {
+      "id": "m9",
+      "title": "Wreck-It Ralph",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 35m",
+      "rating": "7.7",
+      "year": "2012",
+      "description": "An arcade game villain rebels against his role and travels through other games to prove he has what it takes to be a hero.",
+      "image": "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Musical",
+        "Mystery",
+        "Animation"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "m10": {
+      "id": "m10",
+      "title": "Tangled",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 24m",
+      "rating": "7.7",
+      "year": "2010",
+      "description": "The magically long-haired Rapunzel escapes her tower with the help of a charming thief to see the floating lanterns.",
+      "image": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Musical",
+        "Mystery",
+        "Animation"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "c1": {
+      "id": "c1",
+      "title": "Inside Out 2",
+      "subtitle": null,
+      "type": null,
+      "duration": "2h 8m",
+      "rating": "8.1",
+      "year": "2024",
+      "description": "Joy, Sadness, Anger, Fear and Disgust face new challenges inside teenage Riley's mind when Anxiety and new emotions arrive.",
+      "image": "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Sci-Fi",
+        "Drama"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "c2": {
+      "id": "c2",
+      "title": "Moana 2",
+      "subtitle": null,
+      "type": null,
+      "duration": "2h 9m",
+      "rating": "7.8",
+      "year": "2024",
+      "description": "Moana receives an unexpected call from her wayfinding ancestors, embarking on an epic voyage to the far seas of Oceania.",
+      "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Mystery",
+        "Sci-Fi",
+        "Drama"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "c3": {
+      "id": "c3",
+      "title": "Across Spider-Verse",
+      "subtitle": null,
+      "type": null,
+      "duration": "2h 10m",
+      "rating": "8.7",
+      "year": "2023",
+      "description": "Miles Morales catapults across the Multiverse, encountering a team of Spider-People charged with protecting its existence.",
+      "image": "https://images.unsplash.com/photo-1635805737707-575885ab0820?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1635805737707-575885ab0820?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Family",
+        "Fantasy",
+        "Comedy"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "c4": {
+      "id": "c4",
+      "title": "Elemental",
+      "subtitle": null,
+      "type": null,
+      "duration": "2h 11m",
+      "rating": "7.0",
+      "year": "2023",
+      "description": "In a city where fire, water, land, and air residents live together, a fiery young woman and a go-with-the-flow guy discover a connection.",
+      "image": "https://images.unsplash.com/photo-1509281373149-e957c6296406?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1509281373149-e957c6296406?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Fantasy",
+        "Animation",
+        "Mystery"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "c5": {
+      "id": "c5",
+      "title": "Turning Red",
+      "subtitle": null,
+      "type": null,
+      "duration": "2h 12m",
+      "rating": "7.0",
+      "year": "2022",
+      "description": "A confident, dorky thirteen-year-old girl named Mei Lee faces the ultimate challenge of turning into a giant red panda when excited.",
+      "image": "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Comedy",
+        "Action",
+        "Musical"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "c6": {
+      "id": "c6",
+      "title": "Puss in Boots",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 22m",
+      "rating": "7.9",
+      "year": "2022",
+      "description": "The daring outlaw Puss in Boots discovers his passion for adventure has taken its toll, setting out on a quest to restore his nine lives.",
+      "image": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Adventure",
+        "Family"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "c7": {
+      "id": "c7",
+      "title": "Sing 2",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 23m",
+      "rating": "7.4",
+      "year": "2021",
+      "description": "Buster Moon and his all-star cast of performers prepare to launch their most dazzling stage extravaganza yet in the entertainment capital.",
+      "image": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Animation",
+        "Adventure",
+        "Family"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "c8": {
+      "id": "c8",
+      "title": "The Bad Guys",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 24m",
+      "rating": "6.8",
+      "year": "2022",
+      "description": "A crew of clever animal outlaws attempt their most challenging con yet: becoming model citizens to avoid prison.",
+      "image": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Drama",
+        "Musical",
+        "Action"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "c9": {
+      "id": "c9",
+      "title": "Minions: Rise of Gru",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 25m",
+      "rating": "6.5",
+      "year": "2022",
+      "description": "The untold story of a twelve-year-old's dream to become the world's greatest supervillain, aided by his mischievous Minions.",
+      "image": "https://images.unsplash.com/photo-1558877385-81a1c7e67d72?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1558877385-81a1c7e67d72?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Musical",
+        "Mystery",
+        "Animation"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "c10": {
+      "id": "c10",
+      "title": "DC Super Pets",
+      "subtitle": null,
+      "type": null,
+      "duration": "2h 5m",
+      "rating": "7.2",
+      "year": "2022",
+      "description": "Krypto the Super-Dog must convince a ragtag pack of shelter animals to master their own powers to help rescue the Justice League.",
+      "image": "https://images.unsplash.com/photo-1548247416-ec66f4900b2e?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1548247416-ec66f4900b2e?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Musical",
+        "Mystery",
+        "Animation"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "s1": {
+      "id": "s1",
+      "title": "Bluey Adventures",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 33m",
+      "rating": "9.5",
+      "year": "2024",
+      "description": "Follow the lovable and inexhaustible six-year-old Bluey dog, who turns everyday family life into extraordinary adventures.",
+      "image": "https://images.unsplash.com/photo-1537151608828-ea2b117b6b8a?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1537151608828-ea2b117b6b8a?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Animation",
+        "Adventure",
+        "Family"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "s2": {
+      "id": "s2",
+      "title": "Airbender Chronicles",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 34m",
+      "rating": "9.2",
+      "year": "2024",
+      "description": "A young boy chosen as the Avatar must master the four elements to save a war-torn world and restore global harmony.",
+      "image": "https://images.unsplash.com/photo-1542332213-9b5a5a3af302?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1542332213-9b5a5a3af302?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Drama",
+        "Musical",
+        "Action"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "s3": {
+      "id": "s3",
+      "title": "Hilda Tales",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 35m",
+      "rating": "8.6",
+      "year": "2023",
+      "description": "A fearless, blue-haired girl travels from her wilderness home to the bustling city of Trolberg, encountering magical creatures.",
+      "image": "https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Musical",
+        "Mystery",
+        "Animation"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "s4": {
+      "id": "s4",
+      "title": "Gravity Falls",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 36m",
+      "rating": "8.9",
+      "year": "2022",
+      "description": "Twin siblings Dipper and Mabel spend the summer with their eccentric great-uncle in a mysterious town full of paranormal secrets.",
+      "image": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Action",
+        "Comedy",
+        "Fantasy"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "s5": {
+      "id": "s5",
+      "title": "DuckTales",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 37m",
+      "rating": "8.2",
+      "year": "2023",
+      "description": "The globetrotting adventures of billionaire Scrooge McDuck and his mischief-making grandnephews Huey, Dewey, and Louie.",
+      "image": "https://images.unsplash.com/photo-1473830394358-91588751b241?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1473830394358-91588751b241?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Sci-Fi",
+        "Drama"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "s6": {
+      "id": "s6",
+      "title": "Kipo & Wonderbeasts",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 38m",
+      "rating": "8.3",
+      "year": "2021",
+      "description": "A sheltered girl escapes an underground city and navigates a vibrant, post-apocalyptic surface world populated by mutant animals.",
+      "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Mystery",
+        "Sci-Fi",
+        "Drama"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "s7": {
+      "id": "s7",
+      "title": "She-Ra Legends",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 39m",
+      "rating": "8.4",
+      "year": "2020",
+      "description": "An orphan girl discovers a magic sword that transforms her into the legendary warrior princess She-Ra, leading a rebellion.",
+      "image": "https://images.unsplash.com/photo-1569003339405-ea396a5a8a90?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1569003339405-ea396a5a8a90?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Family",
+        "Fantasy",
+        "Comedy"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "s8": {
+      "id": "s8",
+      "title": "Amphibia",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 40m",
+      "rating": "8.1",
+      "year": "2022",
+      "description": "An ordinary teenager is magically transported to a wild marshland world populated by talking frog-people, learning true friendship.",
+      "image": "https://images.unsplash.com/photo-1500485035595-cbe6f645feb1?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1500485035595-cbe6f645feb1?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Fantasy",
+        "Animation",
+        "Mystery"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "s9": {
+      "id": "s9",
+      "title": "The Owl House",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 41m",
+      "rating": "9.0",
+      "year": "2023",
+      "description": "A self-assured human teenager accidentally stumbles upon a portal to a magical new world, training as a witch's apprentice.",
+      "image": "https://images.unsplash.com/photo-1519074002996-a69e7ac46a42?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1519074002996-a69e7ac46a42?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Comedy",
+        "Action",
+        "Musical"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "s10": {
+      "id": "s10",
+      "title": "Green Eggs & Ham",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 30m",
+      "rating": "8.2",
+      "year": "2022",
+      "description": "An unlikely duo embarks on a cross-country road trip to save an endangered animal, learning to try new things along the way.",
+      "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Comedy",
+        "Action",
+        "Musical"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "nr1": {
+      "id": "nr1",
+      "title": "The Good Dinosaur",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 40m",
+      "rating": "6.6",
+      "year": "2024",
+      "description": "In a world where dinosaurs never went extinct, an Arpatosaurus named Arlo makes an unlikely human friend named Spot.",
+      "image": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Adventure",
+        "Family"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "nr2": {
+      "id": "nr2",
+      "title": "David",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 41m",
+      "rating": "6.6",
+      "year": "2026",
+      "description": "An epic animated historical journey detailing the courage, trials, and triumphs of the legendary shepherd boy who became king.",
+      "image": "https://images.unsplash.com/photo-1461360370896-922624d12aa1?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1461360370896-922624d12aa1?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Animation",
+        "Adventure",
+        "Family"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "nr3": {
+      "id": "nr3",
+      "title": "Wall-E",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 42m",
+      "rating": "6.6",
+      "year": "2023",
+      "description": "A lonely trash-compacting robot on a deserted future Earth embarks on a space journey that will decide the fate of mankind.",
+      "image": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Drama",
+        "Musical",
+        "Action"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "nr4": {
+      "id": "nr4",
+      "title": "Soul",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 43m",
+      "rating": "6.6",
+      "year": "2018",
+      "description": "A New York jazz pianist finds himself in a cosmic realm between life and death, discovering the true meaning of having a soul.",
+      "image": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Musical",
+        "Mystery",
+        "Animation"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "nr5": {
+      "id": "nr5",
+      "title": "Vivo",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 44m",
+      "rating": "6.6",
+      "year": "2024",
+      "description": "A music-loving kinkajou embarks on a thrilling musical adventure from Havana to Miami to deliver a sacred love song.",
+      "image": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Action",
+        "Comedy",
+        "Fantasy"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "nr6": {
+      "id": "nr6",
+      "title": "Luca",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 45m",
+      "rating": "7.5",
+      "year": "2024",
+      "description": "On the Italian Riviera, an unlikely friendship grows between a young human boy and a sea monster disguised as a human.",
+      "image": "https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Sci-Fi",
+        "Drama"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "nr7": {
+      "id": "nr7",
+      "title": "Small Foot",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 46m",
+      "rating": "6.6",
+      "year": "2020",
+      "description": "A bright young Yeti finds something he thought didn't exist—a human—sparking wild rumors and adventure in his snowy village.",
+      "image": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Mystery",
+        "Sci-Fi",
+        "Drama"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "nr8": {
+      "id": "nr8",
+      "title": "Home",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 47m",
+      "rating": "6.6",
+      "year": "2025",
+      "description": "An adorable misfit alien named Oh accidentally alerts his enemies to his location on Earth, teaming up with an adventurous girl.",
+      "image": "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Family",
+        "Fantasy",
+        "Comedy"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "nr9": {
+      "id": "nr9",
+      "title": "Encanto",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 48m",
+      "rating": "8.2",
+      "year": "2022",
+      "description": "In a magical house in Colombia, Mirabel, the only member of her family without magical powers, must save their fading magic.",
+      "image": "https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Fantasy",
+        "Animation",
+        "Mystery"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "nr10": {
+      "id": "nr10",
+      "title": "Frozen II",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 37m",
+      "rating": "8.0",
+      "year": "2019",
+      "description": "Elsa travels to an ancient, autumn-bound forest to find the origin of her powers and save her kingdom of Arendelle.",
+      "image": "https://images.unsplash.com/photo-1491002052546-bf38f186af56?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1491002052546-bf38f186af56?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Fantasy",
+        "Animation",
+        "Mystery"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "nr11": {
+      "id": "nr11",
+      "title": "Onward",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 38m",
+      "rating": "7.3",
+      "year": "2020",
+      "description": "Two elf brothers embark on an extraordinary quest to discover if there is still a little magic left in the modern world.",
+      "image": "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Comedy",
+        "Action",
+        "Musical"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "nr12": {
+      "id": "nr12",
+      "title": "Zootopia",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 39m",
+      "rating": "8.0",
+      "year": "2016",
+      "description": "In a city of anthropomorphic predators and prey, a rookie bunny cop and a cynical con artist fox team up to solve a conspiracy.",
+      "image": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Adventure",
+        "Family"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "mf1": {
+      "id": "mf1",
+      "title": "Chronicles of Magic",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 27m",
+      "rating": "8.7",
+      "year": "2025",
+      "description": "A mesmerizing fantasy series detailing the hidden academies, secret spellbound keys, and ancient wizardry of the far realm.",
+      "image": "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Family",
+        "Fantasy",
+        "Comedy"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "mf2": {
+      "id": "mf2",
+      "title": "The Wizard Library",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 28m",
+      "rating": "8.3",
+      "year": "2024",
+      "description": "A quiet archivist discovers a forbidden portal inside the grand library, unleashing forgotten magic into the empire.",
+      "image": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Fantasy",
+        "Animation",
+        "Mystery"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "mf3": {
+      "id": "mf3",
+      "title": "Elf Woods",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 29m",
+      "rating": "8.9",
+      "year": "2023",
+      "description": "Journey deep into the enchanted forest where elven factions guard the sacred silver trees from an encroaching dark spell.",
+      "image": "https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Comedy",
+        "Action",
+        "Musical"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "mf4": {
+      "id": "mf4",
+      "title": "Castle in the Air",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 30m",
+      "rating": "9.0",
+      "year": "2026",
+      "description": "Floating high above the clouds, a majestic kingdom powered by wind and ancient machinery faces a sudden rebellion.",
+      "image": "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Adventure",
+        "Family"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "mf5": {
+      "id": "mf5",
+      "title": "Unicorn Kingdom",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 31m",
+      "rating": "7.9",
+      "year": "2022",
+      "description": "A young explorer ventures into the mystical valley of the horned beasts to retrieve the star stone and restore their light.",
+      "image": "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Animation",
+        "Adventure",
+        "Family"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "mf6": {
+      "id": "mf6",
+      "title": "Spirited Meadow",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 32m",
+      "rating": "8.6",
+      "year": "2021",
+      "description": "A soft-hued pastoral fantasy following woodland spirits as they prepare the forest floor for the coming winter solstice.",
+      "image": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Drama",
+        "Musical",
+        "Action"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "mf7": {
+      "id": "mf7",
+      "title": "The Floating Island",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 33m",
+      "rating": "8.5",
+      "year": "2024",
+      "description": "An adventurer lands on a massive flying island, discovering gravity-defying waterfalls and mythical flying creatures.",
+      "image": "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Musical",
+        "Mystery",
+        "Animation"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "mf8": {
+      "id": "mf8",
+      "title": "Lost Temple",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 34m",
+      "rating": "8.1",
+      "year": "2023",
+      "description": "A daring archaeologist deciphers ancient stone carvings to uncover a forgotten sanctuary containing infinite power.",
+      "image": "https://images.unsplash.com/photo-1542397284385-601017642475?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1542397284385-601017642475?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Action",
+        "Comedy",
+        "Fantasy"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "mf9": {
+      "id": "mf9",
+      "title": "Guardian of Forest",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 35m",
+      "rating": "8.7",
+      "year": "2024",
+      "description": "A giant, peaceful stone golem awakes from a centuries-long slumber to protect the valley from a sudden threat.",
+      "image": "https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Sci-Fi",
+        "Drama"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "mf10": {
+      "id": "mf10",
+      "title": "Aurora Borealis",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 24m",
+      "rating": "9.2",
+      "year": "2023",
+      "description": "A mystical tale of a young starcatcher who travels to the frozen edge of the world to collect the dancing green lights.",
+      "image": "https://images.unsplash.com/photo-1482862549707-f63cb32c5fd9?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1482862549707-f63cb32c5fd9?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Sci-Fi",
+        "Drama"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "mf11": {
+      "id": "mf11",
+      "title": "Ancient Runes",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 25m",
+      "rating": "7.9",
+      "year": "2022",
+      "description": "A teenage scholar accidentally activates a runic circle, opening a doorway to prehistoric realms.",
+      "image": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Mystery",
+        "Sci-Fi",
+        "Drama"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "mf12": {
+      "id": "mf12",
+      "title": "Celestial Skies",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 26m",
+      "rating": "9.1",
+      "year": "2026",
+      "description": "An ethereal voyage through the constellations where starships are guided by living celestial whales and starlight.",
+      "image": "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Family",
+        "Fantasy",
+        "Comedy"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "aa1": {
+      "id": "aa1",
+      "title": "Speed Racer",
+      "subtitle": null,
+      "type": null,
+      "duration": "2h 1m",
+      "rating": "8.4",
+      "year": "2024",
+      "description": "A high-octane racing prodigy competes in lethal futuristic tournaments to uncover the truth behind his brother's disappearance.",
+      "image": "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Adventure",
+        "Family"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "aa2": {
+      "id": "aa2",
+      "title": "Mountain Rescue",
+      "subtitle": null,
+      "type": null,
+      "duration": "2h 2m",
+      "rating": "8.1",
+      "year": "2023",
+      "description": "An elite team of climbing rangers brave extreme blizzards and treacherous avalanches to save stranded explorers.",
+      "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Animation",
+        "Adventure",
+        "Family"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "aa3": {
+      "id": "aa3",
+      "title": "Island Explorer",
+      "subtitle": null,
+      "type": null,
+      "duration": "2h 3m",
+      "rating": "8.5",
+      "year": "2025",
+      "description": "A shipwrecked voyager charts a mysterious tropical island filled with hidden grottos, active volcanoes, and ancient relics.",
+      "image": "https://images.unsplash.com/photo-1505142468610-359e7d316be0?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1505142468610-359e7d316be0?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Drama",
+        "Musical",
+        "Action"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "aa4": {
+      "id": "aa4",
+      "title": "Cosmic Odyssey",
+      "subtitle": null,
+      "type": null,
+      "duration": "2h 4m",
+      "rating": "9.3",
+      "year": "2026",
+      "description": "A pioneer astronaut crew travels beyond the edge of the known universe, encountering anomalies and strange landscapes.",
+      "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Musical",
+        "Mystery",
+        "Animation"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "aa5": {
+      "id": "aa5",
+      "title": "Viking Legends",
+      "subtitle": null,
+      "type": null,
+      "duration": "2h 5m",
+      "rating": "7.8",
+      "year": "2022",
+      "description": "Follow a young Norse chieftain as he sails across uncharted northern seas to discover new lands and forge peace.",
+      "image": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Action",
+        "Comedy",
+        "Fantasy"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "aa6": {
+      "id": "aa6",
+      "title": "Treasure Quest",
+      "subtitle": null,
+      "type": null,
+      "duration": "2h 6m",
+      "rating": "8.2",
+      "year": "2021",
+      "description": "An intrepid group of treasure hunters deciphers a centuries-old map to locate the golden city hidden inside the jungle.",
+      "image": "https://images.unsplash.com/photo-1473830394358-91588751b241?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1473830394358-91588751b241?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Sci-Fi",
+        "Drama"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "aa7": {
+      "id": "aa7",
+      "title": "Desert Rider",
+      "subtitle": null,
+      "type": null,
+      "duration": "2h 7m",
+      "rating": "8.0",
+      "year": "2023",
+      "description": "A lone motorcycle racer travels across endless post-apocalyptic sand dunes, dodging raiders and sandstorms.",
+      "image": "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Mystery",
+        "Sci-Fi",
+        "Drama"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "aa8": {
+      "id": "aa8",
+      "title": "Deep Sea Hunt",
+      "subtitle": null,
+      "type": null,
+      "duration": "2h 8m",
+      "rating": "7.9",
+      "year": "2024",
+      "description": "A marine biologist piloting a deep-sea submersible discovers a glowing bioluminescent trench filled with leviathans.",
+      "image": "https://images.unsplash.com/photo-1582967788606-a171c1080cb0?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1582967788606-a171c1080cb0?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Family",
+        "Fantasy",
+        "Comedy"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "aa9": {
+      "id": "aa9",
+      "title": "Cyber Chaser",
+      "subtitle": null,
+      "type": null,
+      "duration": "2h 9m",
+      "rating": "8.6",
+      "year": "2025",
+      "description": "In a neon-drenched cyberpunk metropolis, a rogue hacker flees from corporate agents who seek a AI chip.",
+      "image": "https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Fantasy",
+        "Animation",
+        "Mystery"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "aa10": {
+      "id": "aa10",
+      "title": "Sky Cruiser",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 58m",
+      "rating": "9.0",
+      "year": "2026",
+      "description": "A sky-pirate captain navigates his airship through storms to steal a floating island's power core.",
+      "image": "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Fantasy",
+        "Animation",
+        "Mystery"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "aa11": {
+      "id": "aa11",
+      "title": "Storm Tracker",
+      "subtitle": null,
+      "type": null,
+      "duration": "1h 59m",
+      "rating": "7.7",
+      "year": "2022",
+      "description": "A team of daring meteorologists chases giant category-five superstorms to gather data and save coastal towns.",
+      "image": "https://images.unsplash.com/photo-1527489377706-5bf97e608852?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1527489377706-5bf97e608852?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Comedy",
+        "Action",
+        "Musical"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    },
+    "aa12": {
+      "id": "aa12",
+      "title": "Wilderness Path",
+      "subtitle": null,
+      "type": null,
+      "duration": "2h 0m",
+      "rating": "8.3",
+      "year": "2023",
+      "description": "A quiet, beautiful journey following a young survivalist who hikes across the rugged ranges.",
+      "image": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=600&auto=format&fit=crop",
+      "backdrop": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=600&auto=format&fit=crop",
+      "genres": [
+        "Adventure",
+        "Family"
+      ],
+      "cast": [],
+      "trailerUrl": null
+    }
+  }
+}

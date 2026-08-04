@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Runtime artifacts of the JSON content store
+data/*.json.tmp
+data/*.json.bak
