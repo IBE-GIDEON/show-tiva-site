@@ -24,26 +24,25 @@ export function CardStack({
   scaleFactor = 0.06,
   flipIntervalMs = 5000,
 }: CardStackProps) {
-  const [cards, setCards] = useState(items);
+  // The shuffle is stored as a rotation offset rather than a copied array, so a
+  // new `items` prop needs no state sync — copying it into state meant an
+  // effect had to mirror every prop change back into that copy, which is the
+  // cascading-render pattern React warns about.
+  const [rotation, setRotation] = useState(0);
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
-    setCards(items);
-  }, [items]);
+    if (shouldReduceMotion || items.length === 0) return;
 
-  useEffect(() => {
-    if (shouldReduceMotion) return;
-
-    const interval = setInterval(() => {
-      setCards((prev) => {
-        const next = [...prev];
-        next.unshift(next.pop()!);
-        return next;
-      });
-    }, flipIntervalMs);
-
+    const interval = setInterval(() => setRotation((prev) => prev + 1), flipIntervalMs);
     return () => clearInterval(interval);
-  }, [flipIntervalMs, items, shouldReduceMotion]);
+  }, [flipIntervalMs, items.length, shouldReduceMotion]);
+
+  // Each tick moves the last card to the front, so card i is item i - rotation.
+  // Taken modulo the current length, this stays correct even if `items` resizes.
+  const cards = items.map(
+    (_, index) => items[(index - (rotation % items.length) + items.length) % items.length],
+  );
 
   return (
     <div className={styles.stackRoot}>

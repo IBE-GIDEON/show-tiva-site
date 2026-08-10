@@ -20,22 +20,38 @@ import path from "node:path";
 const DATA_DIR = path.join(process.cwd(), "data");
 
 export class StoreError extends Error {
-  constructor(file: string, message: string) {
-    super(`${file}: ${message}`);
+  constructor(
+    readonly file: string,
+    readonly detail: string,
+  ) {
+    super(`${file}: ${detail}`);
     this.name = "StoreError";
   }
 }
 
 /**
- * True when a StoreError came from schema validation rather than from failing
- * to read the file. Validation failures during a write are caused by the
- * request payload, so callers should answer 400 rather than 500.
+ * The stored file could not be read, parsed, or satisfied its own schema.
+ *
+ * That is the server's problem, never the caller's, so it must answer 500 even
+ * when the failure came from the validator. Fault used to be inferred by
+ * regex-matching the message, which misread a hand-corrupted store as a bad
+ * request: a GET carrying no body at all could answer 400, and the repair
+ * PATCH was rejected as if its own payload were malformed.
+ */
+export class StoreUnreadableError extends StoreError {
+  constructor(file: string, detail: string) {
+    super(file, detail);
+    this.name = "StoreUnreadableError";
+  }
+}
+
+/**
+ * True when a StoreError came from validating a caller's payload rather than
+ * from the stored file being unusable. Those failures are caused by the
+ * request, so callers should answer 400 rather than 500.
  */
 export function isValidationError(cause: unknown): cause is StoreError {
-  return (
-    cause instanceof StoreError &&
-    !/could not read|invalid JSON/.test(cause.message)
-  );
+  return cause instanceof StoreError && !(cause instanceof StoreUnreadableError);
 }
 
 function paths(file: string) {
@@ -56,17 +72,24 @@ export async function readJson<T>(file: string, validate: (value: unknown) => T)
   try {
     raw = await readFile(main, "utf8");
   } catch (cause) {
-    throw new StoreError(file, `could not read ${main}. ${(cause as Error).message}`);
+    throw new StoreUnreadableError(file, `could not read ${main}. ${(cause as Error).message}`);
   }
 
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
   } catch (cause) {
-    throw new StoreError(file, `invalid JSON. ${(cause as Error).message}`);
+    throw new StoreUnreadableError(file, `invalid JSON. ${(cause as Error).message}`);
   }
 
-  return validate(parsed);
+  // A schema failure here describes what is ON DISK, so it is a server fault
+  // even though the same validator answers 400 when it rejects a payload.
+  try {
+    return validate(parsed);
+  } catch (cause) {
+    const detail = cause instanceof StoreError ? cause.detail : (cause as Error).message;
+    throw new StoreUnreadableError(file, `stored data is invalid. ${detail}`);
+  }
 }
 
 /** `rename` can transiently fail on Windows while a watcher holds the file. */

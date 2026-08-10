@@ -61,6 +61,59 @@ function assertRoleContent(value: unknown, at: string): LandingRoleContent {
   return value as LandingRoleContent;
 }
 
+/** Every key on an object must be a non-empty string. */
+function assertStringMap(value: unknown, at: string, keys: readonly string[]): void {
+  if (typeof value !== "object" || value === null) throw new SiteError(`${at} must be an object`);
+  const o = value as Record<string, unknown>;
+  for (const key of keys) assertString(o[key], `${at}.${key}`);
+}
+
+const WATCH_KEYS = [
+  "search", "notifications", "profile", "heroDurationPrefix", "heroWatchNow",
+  "heroAddList", "heroAdded", "heroSlideDot", "viewAll", "scrollLeft",
+  "scrollRight", "saveToList",
+] as const;
+
+const DETAIL_KEYS = [
+  "goBack", "search", "profile", "download", "typeFallback", "qualityBadge",
+  "play", "watchlist", "inWatchlist", "castHeading", "trailerHeading",
+  "trailerTitleSuffix", "trailerStudio", "trailerPlay", "relatedHeading",
+  "saveToList",
+] as const;
+
+const POPOVER_KEYS = ["typeBadge", "languageBadge", "watchNow", "addToWatchlist"] as const;
+const NOT_FOUND_KEYS = ["title", "backLabel"] as const;
+const BRAND_KEYS = ["wordmark", "wordmarkAlt", "homeHref"] as const;
+
+function assertFooter(value: unknown, at: string): void {
+  if (typeof value !== "object" || value === null) throw new SiteError(`${at} must be an object`);
+  const f = value as Record<string, unknown>;
+
+  for (const key of ["tagline", "backgroundImage", "backgroundAlt", "copyright"]) {
+    assertString(f[key], `${at}.${key}`);
+  }
+
+  if (!Array.isArray(f.columns)) throw new SiteError(`${at}.columns must be an array`);
+  f.columns.forEach((column, i) => {
+    const col = column as Record<string, unknown>;
+    assertString(col?.title, `${at}.columns[${i}].title`);
+    if (!Array.isArray(col.links)) throw new SiteError(`${at}.columns[${i}].links must be an array`);
+    col.links.forEach((link, j) => {
+      const l = link as Record<string, unknown>;
+      assertString(l?.label, `${at}.columns[${i}].links[${j}].label`);
+      assertString(l?.href, `${at}.columns[${i}].links[${j}].href`);
+    });
+  });
+
+  if (!Array.isArray(f.socials)) throw new SiteError(`${at}.socials must be an array`);
+  f.socials.forEach((social, i) => {
+    const s = social as Record<string, unknown>;
+    assertString(s?.platform, `${at}.socials[${i}].platform`);
+    assertString(s?.label, `${at}.socials[${i}].label`);
+    assertString(s?.href, `${at}.socials[${i}].href`);
+  });
+}
+
 /** Narrow parsed JSON to `Site`, failing loudly with the offending path. */
 function assertSite(value: unknown): Site {
   if (typeof value !== "object" || value === null) {
@@ -87,6 +140,13 @@ function assertSite(value: unknown): Site {
     assertRoleContent(roles[role], `landing.roles.${role}`);
   }
 
+  assertStringMap(site.brand, "brand", BRAND_KEYS);
+  assertFooter(site.footer, "footer");
+  assertStringMap(site.watch, "watch", WATCH_KEYS);
+  assertStringMap(site.detail, "detail", DETAIL_KEYS);
+  assertStringMap(site.popover, "popover", POPOVER_KEYS);
+  assertStringMap(site.notFound, "notFound", NOT_FOUND_KEYS);
+
   return value as Site;
 }
 
@@ -98,6 +158,22 @@ export const getSite = cache(async (): Promise<Site> => {
 /** Coerce an arbitrary `?role=` value to a known role, defaulting to family. */
 export function resolveRole(value: string | string[] | undefined): LandingRole {
   return value === "creator" ? "creator" : "family";
+}
+
+/**
+ * The chrome shared by the watch and detail pages: brand, footer and every
+ * UI label. One read serves a whole page render.
+ */
+export async function getChrome() {
+  const site = await getSite();
+  return {
+    brand: site.brand,
+    footer: site.footer,
+    watch: site.watch,
+    detail: site.detail,
+    popover: site.popover,
+    notFound: site.notFound,
+  };
 }
 
 /** Landing copy for one role, plus the shared animation timings. */

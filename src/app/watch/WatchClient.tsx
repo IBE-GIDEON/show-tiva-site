@@ -5,19 +5,30 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import type { Movie, Section } from "@/lib/content-types";
+import type { Brand, FooterContent, PopoverLabels, WatchLabels } from "@/lib/site-types";
+import SiteFooter from "./SiteFooter";
 import styles from "./watch.module.css";
 
 interface WatchClientProps {
   heroSlides: Movie[];
   sections: Section[];
+  brand: Brand;
+  footer: FooterContent;
+  labels: WatchLabels;
+  popoverLabels: PopoverLabels;
 }
 
-export default function WatchClient({ heroSlides, sections }: WatchClientProps) {
+export default function WatchClient({
+  heroSlides,
+  sections,
+  brand,
+  footer,
+  labels,
+  popoverLabels,
+}: WatchClientProps) {
   const [activeSlide, setActiveSlide] = useState(0);
-  const [prevSlide, setPrevSlide] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const [bookmarked, setBookmarked] = useState<{ [key: string]: boolean }>({});
-  const [themeDark, setThemeDark] = useState(true);
+  const [themeDark] = useState(true);
 
   const [hoveredMovie, setHoveredMovie] = useState<Movie | null>(null);
   const [popoverPos, setPopoverPos] = useState<{ top: number; left: number; alignRight: boolean; height: number } | null>(null);
@@ -72,23 +83,23 @@ export default function WatchClient({ heroSlides, sections }: WatchClientProps) 
 
   const triggerSlideChange = (newIndex: number) => {
     if (newIndex === activeSlide) return;
-    setPrevSlide(activeSlide);
     setActiveSlide(newIndex);
-    setIsTransitioning(true);
-
-    setTimeout(() => {
-      setIsTransitioning(false);
-    }, 1200); // matches CSS transition duration
   };
 
-  // Auto-advance hero slides every 7 seconds
+  // Auto-advance hero slides every 7 seconds.
+  //
+  // Skipped when there are no slides: heroSlideIds may resolve to nothing (the
+  // store only requires it to be an array, and deleting the last hero title
+  // empties it), and `% 0` is NaN — which would stick in activeSlide and leave
+  // every slide inactive with no way back.
   useEffect(() => {
+    if (heroSlides.length < 2) return;
+
     const timer = setInterval(() => {
-      triggerSlideChange((activeSlide + 1) % heroSlides.length);
+      setActiveSlide((current) => (current + 1) % heroSlides.length);
     }, 7000);
     return () => clearInterval(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSlide, heroSlides.length]);
+  }, [heroSlides.length]);
 
   const toggleBookmark = (movieId: string) => {
     setBookmarked((prev) => ({ ...prev, [movieId]: !prev[movieId] }));
@@ -104,20 +115,20 @@ export default function WatchClient({ heroSlides, sections }: WatchClientProps) 
     <div className={`${styles.watchContainer} ${themeDark ? styles.darkTheme : styles.lightTheme}`}>
       <header className={styles.watchHeader}>
         {/* Brand Logo */}
-        <Link href="/" className={styles.brandLogo}>
-          <img src="/logo-wordmark.png" alt="SHOWTIVA" className={styles.brandLogoImg} />
+        <Link href={brand.homeHref} className={styles.brandLogo}>
+          <img src={brand.wordmark} alt={brand.wordmarkAlt} className={styles.brandLogoImg} />
         </Link>
 
         {/* Right nav utility icons */}
         <div className={styles.navActions}>
-          <button className={styles.iconBtn} aria-label="Search">
+          <button className={styles.iconBtn} aria-label={labels.search}>
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
           </button>
 
-          <button className={styles.iconBtn} aria-label="Notifications">
+          <button className={styles.iconBtn} aria-label={labels.notifications}>
             <span className={styles.notificationBadge} />
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -125,7 +136,7 @@ export default function WatchClient({ heroSlides, sections }: WatchClientProps) 
             </svg>
           </button>
 
-          <button className={styles.iconBtn} aria-label="Profile">
+          <button className={styles.iconBtn} aria-label={labels.profile}>
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
               <circle cx="12" cy="7" r="4" />
@@ -148,7 +159,7 @@ export default function WatchClient({ heroSlides, sections }: WatchClientProps) 
               <div className={styles.heroGradientOverlay} />
 
               <div className={styles.heroContent}>
-                <span className={styles.durationTag}>Duration {slide.duration}</span>
+                <span className={styles.durationTag}>{labels.heroDurationPrefix} {slide.duration}</span>
                 <h1 className={styles.heroTitle}>{slide.title}</h1>
                 <p className={styles.heroDesc}>{slide.description}</p>
 
@@ -160,7 +171,7 @@ export default function WatchClient({ heroSlides, sections }: WatchClientProps) 
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                       <path d="M8 5v14l11-7z" />
                     </svg>
-                    <span>Watch Now</span>
+                    <span>{labels.heroWatchNow}</span>
                   </button>
 
                   <button
@@ -177,7 +188,7 @@ export default function WatchClient({ heroSlides, sections }: WatchClientProps) 
                         </>
                       )}
                     </svg>
-                    <span>{isSaved ? "Added" : "Add List"}</span>
+                    <span>{isSaved ? labels.heroAdded : labels.heroAddList}</span>
                   </button>
                 </div>
               </div>
@@ -192,7 +203,7 @@ export default function WatchClient({ heroSlides, sections }: WatchClientProps) 
               key={`dash-${index}`}
               onClick={() => triggerSlideChange(index)}
               className={`${styles.dashBar} ${index === activeSlide ? styles.activeDashBar : ""}`}
-              aria-label={`Go to slide ${index + 1}`}
+              aria-label={`${labels.heroSlideDot} ${index + 1}`}
             />
           ))}
         </div>
@@ -212,13 +223,13 @@ export default function WatchClient({ heroSlides, sections }: WatchClientProps) 
                     {section.title}
                   </h2>
                   <span className={styles.headerDivider} />
-                  <button className={styles.viewAllLink}>View All</button>
+                  <button className={styles.viewAllLink}>{labels.viewAll}</button>
                 </div>
 
                 <div className={styles.carouselArrows}>
                   <button
                     className={styles.arrowBtn}
-                    aria-label="Scroll left"
+                    aria-label={labels.scrollLeft}
                     onClick={(e) => scrollRow(e, -1)}
                   >
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -227,7 +238,7 @@ export default function WatchClient({ heroSlides, sections }: WatchClientProps) 
                   </button>
                   <button
                     className={styles.arrowBtn}
-                    aria-label="Scroll right"
+                    aria-label={labels.scrollRight}
                     onClick={(e) => scrollRow(e, 1)}
                   >
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -261,7 +272,7 @@ export default function WatchClient({ heroSlides, sections }: WatchClientProps) 
                         {/* Bookmark / Save (top-left) */}
                         <button
                           className={`${styles.bookmarkBtn} ${isSaved ? styles.bookmarkActive : ""}`}
-                          aria-label="Save to list"
+                          aria-label={labels.saveToList}
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleBookmark(movie.id);
@@ -304,90 +315,7 @@ export default function WatchClient({ heroSlides, sections }: WatchClientProps) 
         })}
       </main>
 
-      {/* Premium Cinematic Footer with Blurred Movie Backdrop */}
-      <footer className={styles.watchFooter}>
-        <div className={styles.footerBgWrap}>
-          <img 
-            src="https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=1200&auto=format&fit=crop" 
-            alt="Footer Background" 
-            className={styles.footerBgImage} 
-          />
-          <div className={styles.footerVignette} />
-        </div>
-
-        <div className={styles.footerContent}>
-          <div className={styles.footerTop}>
-            {/* Branding Column */}
-            <div className={styles.footerBrandCol}>
-              <div className={styles.footerLogo}>
-                <img src="/logo-wordmark.png" alt="SHOWTIVA" className={styles.footerLogoImg} />
-              </div>
-              <p className={styles.footerTagline}>
-                Experience premium stories, hand-drawn 2D animation, and magical worlds curated by creators worldwide.
-              </p>
-            </div>
-
-            {/* Quick Link Columns */}
-            <div className={styles.footerLinksGrid}>
-              <div className={styles.footerLinksCol}>
-                <h5 className={styles.footerColTitle}>Explore</h5>
-                <ul className={styles.footerLinksList}>
-                  <li><a href="#trending-now">Trending Now</a></li>
-                  <li><a href="#movies">Popular Movies</a></li>
-                  <li><a href="#wholesome-series">Wholesome Series</a></li>
-                  <li><a href="#new-release">New Releases</a></li>
-                </ul>
-              </div>
-
-              <div className={styles.footerLinksCol}>
-                <h5 className={styles.footerColTitle}>Company</h5>
-                <ul className={styles.footerLinksList}>
-                  <li><a href="#">About Us</a></li>
-                  <li><a href="#">Careers</a></li>
-                  <li><a href="#">Press Kit</a></li>
-                  <li><a href="#">Contact</a></li>
-                </ul>
-              </div>
-
-              <div className={styles.footerLinksCol}>
-                <h5 className={styles.footerColTitle}>Legal</h5>
-                <ul className={styles.footerLinksList}>
-                  <li><a href="#">Terms of Use</a></li>
-                  <li><a href="#">Privacy Policy</a></li>
-                  <li><a href="#">Cookie Preferences</a></li>
-                  <li><a href="#">Ad Choices</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.footerBottom}>
-            <p className={styles.footerCopyright}>
-              &copy; {new Date().getFullYear()} SHOWTIVA. All rights reserved. Crafted for film lovers.
-            </p>
-            <div className={styles.footerSocials}>
-              <a href="#" className={styles.socialIconLink} aria-label="Twitter">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
-                </svg>
-              </a>
-              <a href="#" className={styles.socialIconLink} aria-label="Instagram">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                </svg>
-              </a>
-              <a href="#" className={styles.socialIconLink} aria-label="YouTube">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" />
-                  <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" />
-                </svg>
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter brand={brand} footer={footer} />
 
       {/* Dynamic Cinematic Detail Popover Card (Portal-style floating popup next to hovered card) */}
       {hoveredMovie && popoverPos && (
@@ -415,10 +343,10 @@ export default function WatchClient({ heroSlides, sections }: WatchClientProps) 
             <div className={styles.popoverBackdropText}>
               <h3 className={styles.popoverLogoTitle}>{hoveredMovie.title}</h3>
               <div className={styles.popoverMetaRowInline}>
-                <span className={styles.popoverTypeBadge}>Tv</span>
+                <span className={styles.popoverTypeBadge}>{popoverLabels.typeBadge}</span>
                 <span className={styles.popoverRatingInline}>★ {hoveredMovie.rating}</span>
                 <span className={styles.popoverYearInline}>📅 {hoveredMovie.year}</span>
-                <span className={styles.popoverLangInline}>EN</span>
+                <span className={styles.popoverLangInline}>{popoverLabels.languageBadge}</span>
               </div>
             </div>
 
@@ -447,13 +375,13 @@ export default function WatchClient({ heroSlides, sections }: WatchClientProps) 
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <polygon points="5 3 19 12 5 21 5 3" />
                 </svg>
-                <span>Watch Now</span>
+                <span>{popoverLabels.watchNow}</span>
               </button>
               
               <button 
                 className={`${styles.popoverPlusBtn} ${bookmarked[hoveredMovie.id] ? styles.popoverPlusActive : ""}`}
                 onClick={() => toggleBookmark(hoveredMovie.id)}
-                aria-label="Add to Watchlist"
+                aria-label={popoverLabels.addToWatchlist}
               >
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   {bookmarked[hoveredMovie.id] ? (

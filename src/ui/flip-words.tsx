@@ -12,6 +12,8 @@ export const FlipWords = ({ words, duration = 3000, className }: FlipWordsProps)
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
 
   useEffect(() => {
+    if (words.length === 0) return;
+
     const interval = setInterval(() => {
       setCurrentWordIndex((prev) => (prev + 1) % words.length);
     }, duration);
@@ -19,7 +21,11 @@ export const FlipWords = ({ words, duration = 3000, className }: FlipWordsProps)
     return () => clearInterval(interval);
   }, [words, duration]);
 
-  const currentWord = words[currentWordIndex];
+  // The index is state, so a shorter `words` prop can leave it out of range —
+  // an edit to the landing copy re-renders this component in place without
+  // resetting it. Clamping here keeps that from throwing on .split() below.
+  const currentWord = words[currentWordIndex] ?? words[0];
+  if (!currentWord) return null;
 
   return (
     <span

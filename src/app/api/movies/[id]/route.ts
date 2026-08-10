@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 
-import { getMovieById, getRelated, mutateContent } from "@/lib/content";
+import { getMovieById, getRelated, lookupMovie, mutateContent } from "@/lib/content";
 import type { Movie } from "@/lib/content-types";
 import { writesBlocked } from "../../_lib/guard";
 import { ApiError, fail, ok, serverError } from "../../_lib/respond";
@@ -76,7 +76,7 @@ export async function PUT(request: Request, context: Context) {
     // field cannot be lost. Every field is type-checked before it hits disk.
     let updated: Movie | undefined;
     const saved = await mutateContent((current) => {
-      const existing = current.movies[id];
+      const existing = lookupMovie(current.movies, id);
       if (!existing) throw new ApiError(404, `No movie with id "${id}"`);
 
       updated = { ...existing };
@@ -88,7 +88,7 @@ export async function PUT(request: Request, context: Context) {
     });
     revalidateFor(id);
 
-    return ok({ movie: saved.movies[id] ?? updated });
+    return ok({ movie: lookupMovie(saved.movies, id) ?? updated });
   } catch (cause) {
     return serverError(cause);
   }

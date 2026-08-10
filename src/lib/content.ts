@@ -23,6 +23,26 @@ class ContentError extends StoreError {
   }
 }
 
+/** Validate a cast array in place, naming the offending path on failure. */
+function assertCast(value: unknown, at: string): void {
+  if (!Array.isArray(value)) throw new ContentError(`${at} must be an array`);
+
+  for (const [i, member] of value.entries()) {
+    if (typeof member !== "object" || member === null) {
+      throw new ContentError(`${at}[${i}] must be an object`);
+    }
+    const person = member as Record<string, unknown>;
+    for (const field of ["name", "role"]) {
+      if (typeof person[field] !== "string" || !person[field]) {
+        throw new ContentError(`${at}[${i}].${field} must be a non-empty string`);
+      }
+    }
+    if (person.image !== null && typeof person.image !== "string") {
+      throw new ContentError(`${at}[${i}].image must be a string or null`);
+    }
+  }
+}
+
 /**
  * Narrow the parsed JSON to `Content`, failing loudly with the offending
  * path. JSON.parse returns `any`, so without this the first sign of a bad
@@ -36,7 +56,7 @@ function assertContent(value: unknown): Content {
 
   if (!Array.isArray(c.heroSlideIds)) throw new ContentError("heroSlideIds must be an array");
   if (!Array.isArray(c.sections)) throw new ContentError("sections must be an array");
-  if (!Array.isArray(c.defaultCast)) throw new ContentError("defaultCast must be an array");
+  assertCast(c.defaultCast, "defaultCast");
   if (typeof c.movies !== "object" || c.movies === null) {
     throw new ContentError("movies must be an object keyed by id");
   }
@@ -77,23 +97,7 @@ function assertContent(value: unknown): Content {
       throw new ContentError(`movies.${id}.genres must be an array of strings`);
     }
 
-    if (!Array.isArray(m.cast)) {
-      throw new ContentError(`movies.${id}.cast must be an array`);
-    }
-    for (const [i, member] of m.cast.entries()) {
-      if (typeof member !== "object" || member === null) {
-        throw new ContentError(`movies.${id}.cast[${i}] must be an object`);
-      }
-      const person = member as Record<string, unknown>;
-      for (const field of ["name", "role"]) {
-        if (typeof person[field] !== "string" || !person[field]) {
-          throw new ContentError(`movies.${id}.cast[${i}].${field} must be a non-empty string`);
-        }
-      }
-      if (person.image !== null && typeof person.image !== "string") {
-        throw new ContentError(`movies.${id}.cast[${i}].image must be a string or null`);
-      }
-    }
+    assertCast(m.cast, `movies.${id}.cast`);
   }
 
   for (const [i, section] of (c.sections as unknown[]).entries()) {
@@ -122,6 +126,19 @@ function assertContent(value: unknown): Content {
 export const getContent = cache(async (): Promise<Content> => {
   return readJson(FILE, assertContent);
 });
+
+/**
+ * Look up a movie by id, own properties only.
+ *
+ * `movies` comes from JSON.parse, so it inherits Object.prototype: a bare
+ * `movies[id]` lookup resolves ids like "constructor", "toString" and
+ * "__proto__" to inherited members. Those are truthy, so they slipped past
+ * every `if (!movie)` guard — /watch/constructor answered 500 instead of 404,
+ * and the API returned 200 with the movie field missing.
+ */
+export function lookupMovie(movies: Content["movies"], id: string): Movie | undefined {
+  return Object.hasOwn(movies, id) ? movies[id] : undefined;
+}
 
 /** Validate, back up, then atomically replace the catalog store. */
 export async function writeContent(next: Content): Promise<Content> {
@@ -158,7 +175,7 @@ export async function getDefaultCast(): Promise<CastMember[]> {
 export async function getHeroSlides(): Promise<Movie[]> {
   const content = await getContent();
   return content.heroSlideIds
-    .map((id) => content.movies[id])
+    .map((id) => lookupMovie(content.movies, id))
     .filter((movie): movie is Movie => Boolean(movie));
 }
 
@@ -168,7 +185,7 @@ export async function getSections(): Promise<Section[]> {
   return content.sections.map(({ movieIds, ...section }) => ({
     ...section,
     movies: movieIds
-      .map((id) => content.movies[id])
+      .map((id) => lookupMovie(content.movies, id))
       .filter((movie): movie is Movie => Boolean(movie)),
   }));
 }
@@ -179,7 +196,7 @@ export async function getSections(): Promise<Section[]> {
  */
 export async function getMovieById(id: string): Promise<Movie | undefined> {
   const content = await getContent();
-  return content.movies[id];
+  return lookupMovie(content.movies, id);
 }
 
 /**
@@ -195,7 +212,7 @@ export async function getRelated(id: string, count = 12): Promise<Movie[]> {
     for (const movieId of section.movieIds) {
       if (seen.has(movieId)) continue;
       seen.add(movieId);
-      const movie = content.movies[movieId];
+      const movie = lookupMovie(content.movies, movieId);
       if (movie) related.push(movie);
       if (related.length >= count) return related;
     }

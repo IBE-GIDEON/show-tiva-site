@@ -1,6 +1,11 @@
 {
   "version": 1,
   "updatedAt": null,
+  "brand": {
+    "wordmark": "/logo-wordmark.png",
+    "wordmarkAlt": "SHOWTIVA",
+    "homeHref": "/"
+  },
   "landing": {
     "introMinimizeDelayMs": 2200,
     "stripeStaggerSeconds": 0.3,
@@ -11,7 +16,14 @@
           "mode": "rotating",
           "prefix": "Trusted",
           "staticWord": "Family",
-          "rotatingWords": ["Shows", "Movies", "Series", "Stories", "Shorts", "Tales"]
+          "rotatingWords": [
+            "Shows",
+            "Movies",
+            "Series",
+            "Stories",
+            "Shorts",
+            "Tales"
+          ]
         },
         "heroDesc": "We feed families clean, safe, and trusted video shows. Zero explicit content, pure storytelling, and complete peace of mind for our audience.",
         "bannerHeadline": "Trusted Entertainment Studio",
@@ -42,5 +54,135 @@
         ]
       }
     }
+  },
+  "footer": {
+    "tagline": "Experience premium stories, hand-drawn 2D animation, and magical worlds curated by creators worldwide.",
+    "backgroundImage": "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=1200&auto=format&fit=crop",
+    "backgroundAlt": "Footer Background",
+    "copyright": "SHOWTIVA. All rights reserved. Crafted for film lovers.",
+    "columns": [
+      {
+        "title": "Explore",
+        "links": [
+          {
+            "label": "Trending Now",
+            "href": "/watch#trending-now"
+          },
+          {
+            "label": "Popular Movies",
+            "href": "/watch#movies"
+          },
+          {
+            "label": "Wholesome Series",
+            "href": "/watch#wholesome-series"
+          },
+          {
+            "label": "New Releases",
+            "href": "/watch#new-release"
+          }
+        ]
+      },
+      {
+        "title": "Company",
+        "links": [
+          {
+            "label": "About Us",
+            "href": "#"
+          },
+          {
+            "label": "Careers",
+            "href": "#"
+          },
+          {
+            "label": "Press Kit",
+            "href": "#"
+          },
+          {
+            "label": "Contact",
+            "href": "#"
+          }
+        ]
+      },
+      {
+        "title": "Legal",
+        "links": [
+          {
+            "label": "Terms of Use",
+            "href": "#"
+          },
+          {
+            "label": "Privacy Policy",
+            "href": "#"
+          },
+          {
+            "label": "Cookie Preferences",
+            "href": "#"
+          },
+          {
+            "label": "Ad Choices",
+            "href": "#"
+          }
+        ]
+      }
+    ],
+    "socials": [
+      {
+        "platform": "twitter",
+        "label": "Twitter",
+        "href": "#"
+      },
+      {
+        "platform": "instagram",
+        "label": "Instagram",
+        "href": "#"
+      },
+      {
+        "platform": "youtube",
+        "label": "YouTube",
+        "href": "#"
+      }
+    ]
+  },
+  "watch": {
+    "search": "Search",
+    "notifications": "Notifications",
+    "profile": "Profile",
+    "heroDurationPrefix": "Duration",
+    "heroWatchNow": "Watch Now",
+    "heroAddList": "Add List",
+    "heroAdded": "Added",
+    "heroSlideDot": "Go to slide",
+    "viewAll": "View All",
+    "scrollLeft": "Scroll left",
+    "scrollRight": "Scroll right",
+    "saveToList": "Save to list"
+  },
+  "detail": {
+    "goBack": "Go back",
+    "search": "Search",
+    "profile": "Profile",
+    "download": "Download",
+    "typeFallback": "Movie",
+    "qualityBadge": "4K",
+    "play": "Play",
+    "watchlist": "Watchlist",
+    "inWatchlist": "In Watchlist",
+    "castHeading": "Cast",
+    "trailerHeading": "Trailer",
+    "trailerTitleSuffix": "Official Trailer",
+    "trailerStudio": "SHOWTIVA Originals",
+    "trailerPlay": "Play trailer",
+    "relatedHeading": "You may also like",
+    "saveToList": "Save to list"
+  },
+  "popover": {
+    "typeBadge": "Tv",
+    "languageBadge": "EN",
+    "watchNow": "Watch Now",
+    "addToWatchlist": "Add to Watchlist"
+  },
+  "notFound": {
+    "title": "Title not found",
+    "backLabel": "Back to browse"
   }
 }

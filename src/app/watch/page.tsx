@@ -1,4 +1,5 @@
 import { getHeroSlides, getSections } from "@/lib/content";
+import { getChrome } from "@/lib/site";
 
 import WatchClient from "./WatchClient";
 
@@ -9,11 +10,24 @@ import WatchClient from "./WatchClient";
 export const dynamic = "force-dynamic";
 
 export default async function WatchPage() {
-  const [heroSlides, sections] = await Promise.all([getHeroSlides(), getSections()]);
+  const [heroSlides, sections, chrome] = await Promise.all([
+    getHeroSlides(),
+    getSections(),
+    getChrome(),
+  ]);
 
   // Rendered without a wrapper element on purpose: the hover popover is
   // absolutely positioned using document coordinates, and it resolves against
   // `.watchContainer` inside WatchClient. Any extra element here would offset
   // the popover.
-  return <WatchClient heroSlides={heroSlides} sections={sections} />;
+  return (
+    <WatchClient
+      heroSlides={heroSlides}
+      sections={sections}
+      brand={chrome.brand}
+      footer={chrome.footer}
+      labels={chrome.watch}
+      popoverLabels={chrome.popover}
+    />
+  );
 }

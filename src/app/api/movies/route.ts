@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
 import type { NextRequest } from "next/server";
 
-import { getContent, mutateContent } from "@/lib/content";
+import { getContent, lookupMovie, mutateContent } from "@/lib/content";
 import type { Movie } from "@/lib/content-types";
 import { writesBlocked } from "../_lib/guard";
 import { ApiError, fail, ok, serverError } from "../_lib/respond";
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
       if (!section) return fail(404, `No section with id "${sectionId}"`);
 
       const movies = section.movieIds
-        .map((id) => content.movies[id])
+        .map((id) => lookupMovie(content.movies, id))
         .filter((movie) => Boolean(movie));
 
       return ok({ section: section.id, count: movies.length, movies });
@@ -66,7 +66,11 @@ export async function POST(request: NextRequest) {
 
     const content = await getContent();
     const id = fields.id as string;
-    if (content.movies[id]) return fail(409, `A movie with id "${id}" already exists`);
+    // Own properties only, so a legitimate id like "constructor" is not
+    // rejected as a duplicate of an inherited Object.prototype member.
+    if (Object.hasOwn(content.movies, id)) {
+      return fail(409, `A movie with id "${id}" already exists`);
+    }
 
     if (sectionId !== undefined && typeof sectionId !== "string") {
       return fail(400, '"sectionId" must be a string');
@@ -94,7 +98,9 @@ export async function POST(request: NextRequest) {
     // Re-check inside the lock: another request could have claimed this id
     // between the check above and the write.
     await mutateContent((current) => {
-      if (current.movies[id]) throw new ApiError(409, `A movie with id "${id}" already exists`);
+      if (Object.hasOwn(current.movies, id)) {
+        throw new ApiError(409, `A movie with id "${id}" already exists`);
+      }
 
       return {
         ...current,
