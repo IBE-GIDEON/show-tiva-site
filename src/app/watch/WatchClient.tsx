@@ -114,36 +114,41 @@ export default function WatchClient({
   return (
     <div className={`${styles.watchContainer} ${themeDark ? styles.darkTheme : styles.lightTheme}`}>
       <header className={styles.watchHeader}>
-        {/* Brand Logo */}
-        <Link href={brand.homeHref} className={styles.brandLogo}>
-          {/* Decorative: the wordmark beside it carries the accessible name. */}
-          <img src={brand.mark} alt="" className={styles.brandMarkImg} />
-          <img src={brand.wordmark} alt={brand.wordmarkAlt} className={styles.brandLogoImg} />
-        </Link>
+        {/* Constrained to the same 1480px/48px box as .watchMain, so the logo
+            starts on the poster rows' left edge. The bar itself stays
+            full-bleed so its gradient still spans the viewport. */}
+        <div className={styles.watchHeaderInner}>
+          {/* Brand Logo */}
+          <Link href={brand.homeHref} className={styles.brandLogo}>
+            {/* Decorative: the wordmark beside it carries the accessible name. */}
+            <img src={brand.mark} alt="" className={styles.brandMarkImg} />
+            <img src={brand.wordmark} alt={brand.wordmarkAlt} className={styles.brandLogoImg} />
+          </Link>
 
-        {/* Right nav utility icons */}
-        <div className={styles.navActions}>
-          <button className={styles.iconBtn} aria-label={labels.search}>
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </button>
+          {/* Right nav utility icons */}
+          <div className={styles.navActions}>
+            <button className={styles.iconBtn} aria-label={labels.search}>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </button>
 
-          <button className={styles.iconBtn} aria-label={labels.notifications}>
-            <span className={styles.notificationBadge} />
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-            </svg>
-          </button>
+            <button className={styles.iconBtn} aria-label={labels.notifications}>
+              <span className={styles.notificationBadge} />
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+            </button>
 
-          <button className={styles.iconBtn} aria-label={labels.profile}>
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-          </button>
+            <button className={styles.iconBtn} aria-label={labels.profile}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </button>
+          </div>
         </div>
       </header>
 

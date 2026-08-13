@@ -11,17 +11,27 @@
 /* =====================================================
    Split Hero (full screen): dark text left, image right
    ===================================================== */
+/* Full-bleed bar so the gradient spans the viewport; the contents inside are
+   constrained by .watchHeaderInner. */
 .watchHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 22px 5vw;
+  padding: 22px 0;
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   z-index: 100;
   background: linear-gradient(to bottom, rgba(7, 8, 12, 0.85) 0%, rgba(7, 8, 12, 0) 100%);
+}
+
+/* Mirrors .watchMain's box exactly, so the logo's left edge lands on the
+   poster rows' left edge. Keep these two in sync. */
+.watchHeaderInner {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 0 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .navActions {
@@ -66,7 +76,7 @@
 .heroBanner {
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: 75vh;
   overflow: hidden;
   background-color: #07080c;
   display: flex;
@@ -90,15 +100,16 @@
   pointer-events: auto;
 }
 
+/* Full-bleed across the hero rather than a right-hand panel. `object-position:
+   top` keeps the crop anchored to the top of the artwork, so faces and titles
+   near the top survive the 75vh crop instead of being centred out of frame. */
 .heroImageLayer {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 58%;
+  inset: 0;
+  width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: top;
   z-index: 1;
 }
 
@@ -106,10 +117,13 @@
   position: absolute;
   inset: 0;
   z-index: 2;
+  /* Tuned for a full-bleed image: a readability scrim over the copy on the
+     left that thins out rather than going opaque, plus a bottom fade so the
+     hero melts into the catalog instead of ending on a hard edge. */
   background:
-    linear-gradient(to right, #07080c 0%, #07080c 40%, rgba(7, 8, 12, 0.82) 54%, rgba(7, 8, 12, 0.32) 72%, transparent 96%),
-    linear-gradient(to top, #07080c 0%, transparent 26%),
-    linear-gradient(to bottom, rgba(7, 8, 12, 0.55) 0%, transparent 16%);
+    linear-gradient(to right, #07080c 0%, rgba(7, 8, 12, 0.9) 24%, rgba(7, 8, 12, 0.58) 48%, rgba(7, 8, 12, 0.22) 72%, rgba(7, 8, 12, 0.05) 100%),
+    linear-gradient(to top, #07080c 0%, rgba(7, 8, 12, 0.5) 14%, transparent 34%),
+    linear-gradient(to bottom, rgba(7, 8, 12, 0.7) 0%, transparent 18%);
   pointer-events: none;
 }
 
