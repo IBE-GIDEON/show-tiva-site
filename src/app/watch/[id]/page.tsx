@@ -41,8 +41,6 @@ export default async function MovieDetailPage({ params }: PageProps) {
   // can round-trip safely.
   const cast = movie.cast.length > 0 ? movie.cast : defaultCast;
 
-  // No wrapper element: the hover popover positions against `.detailPage`
-  // inside DetailClient.
   return (
     <DetailClient
       movie={movie}
@@ -51,7 +49,6 @@ export default async function MovieDetailPage({ params }: PageProps) {
       brand={chrome.brand}
       footer={chrome.footer}
       labels={chrome.detail}
-      popoverLabels={chrome.popover}
     />
   );
 }

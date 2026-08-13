@@ -81,9 +81,35 @@ export default function WatchClient({
     setPopoverPos(null);
   };
 
+  /**
+   * Move the outgoing slide off to the left while the incoming one settles in
+   * from the right. Which slide is leaving can't be derived from activeSlide
+   * alone, so it gets its own state, cleared once the exit has finished.
+   *
+   * Must match the transform duration in .slideContainer, otherwise the class
+   * is dropped mid-flight and the slide snaps back across the screen.
+   */
+  const SLIDE_EXIT_MS = 1600;
+
+  const [leavingSlide, setLeavingSlide] = useState<number | null>(null);
+  // Mirrors activeSlide so the interval can read the current index without
+  // being re-created every time it changes (which would restart the timer).
+  const activeSlideRef = useRef(0);
+  const leaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const triggerSlideChange = (newIndex: number) => {
-    if (newIndex === activeSlide) return;
+    const current = activeSlideRef.current;
+    if (newIndex === current) return;
+
+    activeSlideRef.current = newIndex;
+    setLeavingSlide(current);
     setActiveSlide(newIndex);
+
+    // Once the exit finishes the slide returns to its waiting position on the
+    // right. That reset is itself animated, but runs at opacity 0 so it is
+    // never seen.
+    if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
+    leaveTimerRef.current = setTimeout(() => setLeavingSlide(null), SLIDE_EXIT_MS);
   };
 
   // Auto-advance hero slides every 7 seconds.
@@ -96,10 +122,17 @@ export default function WatchClient({
     if (heroSlides.length < 2) return;
 
     const timer = setInterval(() => {
-      setActiveSlide((current) => (current + 1) % heroSlides.length);
+      triggerSlideChange((activeSlideRef.current + 1) % heroSlides.length);
     }, 7000);
     return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [heroSlides.length]);
+
+  // The exit timer outlives the slide change, so it has to be cancelled if the
+  // page unmounts mid-transition.
+  useEffect(() => () => {
+    if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
+  }, []);
 
   const toggleBookmark = (movieId: string) => {
     setBookmarked((prev) => ({ ...prev, [movieId]: !prev[movieId] }));
@@ -152,15 +185,18 @@ export default function WatchClient({
         </div>
       </header>
 
-      {/* Split Hero (full screen): dark text left, image right */}
+      {/* Full-bleed hero: copy on the left over a top-anchored still */}
       <section className={styles.heroBanner}>
         {heroSlides.map((slide, index) => {
           const isActive = index === activeSlide;
+          const isLeaving = index === leavingSlide;
           const isSaved = !!bookmarked[slide.id];
           return (
             <div
               key={slide.id}
-              className={`${styles.slideContainer} ${isActive ? styles.activeSlide : ""}`}
+              className={`${styles.slideContainer} ${isActive ? styles.activeSlide : ""} ${
+                isLeaving ? styles.leavingSlide : ""
+              }`}
             >
               <img src={slide.image} alt={slide.title} className={styles.heroImageLayer} />
               <div className={styles.heroGradientOverlay} />
