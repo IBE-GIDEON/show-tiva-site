@@ -61,6 +61,7 @@
 .brandLogo {
   display: flex;
   align-items: center;
+  gap: 9px;
   text-decoration: none;
   font-family: var(--font-heading), 'Outfit', sans-serif;
   font-size: 1.5rem;
@@ -71,6 +72,14 @@
 /* Wordmark sized to the cap height of the 1.5rem text it replaces. */
 .brandLogoImg {
   height: 18px;
+  width: auto;
+  display: block;
+}
+
+/* Mark runs slightly taller than the wordmark's cap height so the lockup
+   reads as one unit rather than two same-size blocks. */
+.brandMarkImg {
+  height: 23px;
   width: auto;
   display: block;
 }

@@ -92,6 +92,8 @@ export default function DetailClient({
             </svg>
           </button>
           <Link href={brand.homeHref} className={styles.brandLogo}>
+            {/* Decorative: the wordmark beside it carries the accessible name. */}
+            <img src={brand.mark} alt="" className={styles.brandMarkImg} />
             <img src={brand.wordmark} alt={brand.wordmarkAlt} className={styles.brandLogoImg} />
           </Link>
         </div>

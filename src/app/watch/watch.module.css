@@ -273,7 +273,7 @@
 .brandLogo {
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 10px;
   text-decoration: none;
   font-family: var(--font-heading), 'Outfit', sans-serif;
   font-size: 1.7rem;
@@ -290,6 +290,14 @@
 /* Wordmark sized to the cap height of the 1.7rem text it replaces. */
 .brandLogoImg {
   height: 20px;
+  width: auto;
+  display: block;
+}
+
+/* Mark runs slightly taller than the wordmark's cap height so the lockup
+   reads as one unit rather than two same-size blocks. */
+.brandMarkImg {
+  height: 26px;
   width: auto;
   display: block;
 }
@@ -1027,7 +1035,7 @@
 .footerLogo {
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 11px;
   font-family: var(--font-heading), 'Outfit', sans-serif;
   font-size: 1.8rem;
   font-weight: 800;
@@ -1038,6 +1046,14 @@
 /* Wordmark sized to the cap height of the 1.8rem text it replaces. */
 .footerLogoImg {
   height: 21px;
+  width: auto;
+  display: block;
+}
+
+/* Mark runs slightly taller than the wordmark's cap height so the lockup
+   reads as one unit rather than two same-size blocks. */
+.footerMarkImg {
+  height: 27px;
   width: auto;
   display: block;
 }

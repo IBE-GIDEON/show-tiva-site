@@ -116,6 +116,8 @@ export default function WatchClient({
       <header className={styles.watchHeader}>
         {/* Brand Logo */}
         <Link href={brand.homeHref} className={styles.brandLogo}>
+          {/* Decorative: the wordmark beside it carries the accessible name. */}
+          <img src={brand.mark} alt="" className={styles.brandMarkImg} />
           <img src={brand.wordmark} alt={brand.wordmarkAlt} className={styles.brandLogoImg} />
         </Link>
 

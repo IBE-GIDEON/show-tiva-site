@@ -55,6 +55,8 @@ export default function SiteFooter({ brand, footer }: SiteFooterProps) {
           {/* Branding Column */}
           <div className={styles.footerBrandCol}>
             <div className={styles.footerLogo}>
+              {/* Decorative: the wordmark beside it carries the accessible name. */}
+              <img src={brand.mark} alt="" className={styles.footerMarkImg} />
               <img src={brand.wordmark} alt={brand.wordmarkAlt} className={styles.footerLogoImg} />
             </div>
             <p className={styles.footerTagline}>{footer.tagline}</p>

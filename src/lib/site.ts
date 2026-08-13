@@ -83,7 +83,7 @@ const DETAIL_KEYS = [
 
 const POPOVER_KEYS = ["typeBadge", "languageBadge", "watchNow", "addToWatchlist"] as const;
 const NOT_FOUND_KEYS = ["title", "backLabel"] as const;
-const BRAND_KEYS = ["wordmark", "wordmarkAlt", "homeHref"] as const;
+const BRAND_KEYS = ["mark", "wordmark", "wordmarkAlt", "homeHref"] as const;
 
 function assertFooter(value: unknown, at: string): void {
   if (typeof value !== "object" || value === null) throw new SiteError(`${at} must be an object`);

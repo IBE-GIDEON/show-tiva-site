@@ -45,6 +45,13 @@ export interface LandingContent {
 
 /** Brand assets shared by the header, footer and landing logo. */
 export interface Brand {
+  /**
+   * Logo mark image path, served from public/. Sits before the wordmark to
+   * form the lockup. Rendered with an empty alt: the wordmark beside it
+   * already carries the accessible name, so labelling both would make screen
+   * readers announce the brand twice.
+   */
+  mark: string;
   /** Wordmark image path, served from public/. */
   wordmark: string;
   wordmarkAlt: string;
