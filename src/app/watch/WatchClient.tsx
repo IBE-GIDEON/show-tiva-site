@@ -266,7 +266,9 @@ export default function WatchClient({
                     {section.title}
                   </h2>
                   <span className={styles.headerDivider} />
-                  <button className={styles.viewAllLink}>{labels.viewAll}</button>
+                  <Link href={`/browse/${section.id}`} className={styles.viewAllLink}>
+                    {labels.viewAll}
+                  </Link>
                 </div>
 
                 <div className={styles.carouselArrows}>

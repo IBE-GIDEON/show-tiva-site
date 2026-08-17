@@ -138,7 +138,9 @@ export default function DetailClient({
               aria-pressed={saved}
               onClick={() => setSaved((value) => !value)}
             >
-              {saved ? labels.inWatchlist : labels.watchlist}
+              {/* Wrapped so the button's counter-skew rule can reach the label —
+                  a bare text node would stay sheared with the button. */}
+              <span>{saved ? labels.inWatchlist : labels.watchlist}</span>
             </button>
           </div>
         </section>

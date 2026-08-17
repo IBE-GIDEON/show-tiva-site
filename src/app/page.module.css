@@ -210,7 +210,7 @@
 }
 
 .showText .letter {
-  color: #ffffff;
+  color: #ffffe1;
   text-shadow: 0 0 45px rgba(255, 255, 255, 0.2);
 }
 
@@ -220,7 +220,7 @@
 }
 
 .logoContainer.minimized .showText .letter {
-  color: #ffffff;
+  color: #ffffe1;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
@@ -272,7 +272,7 @@
   font-weight: 800;
   line-height: 1.2;
   letter-spacing: -0.01em;
-  color: #ffffff;
+  color: #ffffe1;
   margin: 0;
   white-space: nowrap;
 }
@@ -298,7 +298,7 @@
   border-radius: 30px;
   border: none;
   background: transparent;
-  color: #ffffff;
+  color: #ffffe1;
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
@@ -464,7 +464,7 @@
   font-weight: 900;
   line-height: 1.1;
   letter-spacing: -0.03em;
-  color: #ffffff;
+  color: #ffffe1;
   margin: 0 0 16px 0;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
 }
@@ -525,7 +525,7 @@
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(0, 0, 0, 0.6);
-  color: #ffffff;
+  color: #ffffe1;
   font-size: 0.95rem;
   outline: none;
   transition: border-color 0.3s ease, background-color 0.3s ease;
@@ -537,7 +537,7 @@
 }
 
 .emailInput::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 225, 0.4);
 }
 
 .emailButton {
@@ -549,7 +549,7 @@
   border-radius: 16px;
   border: 1px solid rgba(255, 30, 47, 0.35);
   background-color: #ff1e2f;
-  color: #ffffff;
+  color: #ffffe1;
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
@@ -720,7 +720,7 @@
   font-weight: 800;
   line-height: 1.12;
   letter-spacing: -0.02em;
-  color: #ffffff;
+  color: #ffffe1;
   margin: 0;
   max-width: 18ch;
 }
@@ -941,7 +941,7 @@
   width: 76px;
   height: 76px;
   border-radius: 50%;
-  background: rgba(10, 10, 15, 0.9);
+  background: rgba(0, 0, 0, 0.9);
   border: 2px solid #34c759;
   box-shadow: 0 0 20px rgba(52, 199, 89, 0.3);
   display: flex;
@@ -955,7 +955,7 @@
   font-family: 'Outfit', system-ui, sans-serif;
   font-size: 0.78rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #ffffe1;
   letter-spacing: -0.02em;
 }
 
@@ -990,7 +990,7 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: rgba(10, 10, 15, 0.85);
+  background: rgba(0, 0, 0, 0.85);
   border: 2px solid #34c759;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5), 0 0 10px rgba(52, 199, 89, 0.2);
   display: flex;
@@ -1111,7 +1111,7 @@
    ========================================================================== */
 
 .widgetCard {
-  background: rgba(10, 10, 14, 0.95);
+  background: rgba(0, 0, 0, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1183,7 +1183,7 @@
   font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 225, 0.5);
   letter-spacing: -0.01em;
 }
 
@@ -1204,7 +1204,7 @@
   font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
   font-size: 2.2rem;
   font-weight: 700;
-  color: #ffffff;
+  color: #ffffe1;
   letter-spacing: -0.02em;
 }
 
@@ -1375,7 +1375,7 @@
   font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
   font-size: 1rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #ffffe1;
   padding-bottom: 4px;
   border-bottom: 1px solid rgba(255, 30, 47, 0.5);
   width: fit-content;
@@ -1433,7 +1433,7 @@
   font-size: clamp(1.1rem, 1.7vw, 1.4rem);
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: #ffffff;
+  color: #ffffe1;
   margin: 0;
 }
 
@@ -1482,7 +1482,7 @@
   border-radius: 16px;
   border: 1px solid rgba(255, 30, 47, 0.35);
   background: rgba(255, 30, 47, 0.08);
-  color: #ffffff;
+  color: #ffffe1;
   font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
   font-size: 0.98rem;
   font-weight: 600;
@@ -1513,7 +1513,7 @@
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: -0.01em;
-  color: #ffffff;
+  color: #ffffe1;
 }
 
 .footerBrand span {
@@ -1639,7 +1639,7 @@
   font-size: clamp(1.8rem, 3.5vw, 3rem);
   font-weight: 800;
   line-height: 1.2;
-  color: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 225, 0.04);
   text-transform: uppercase;
   letter-spacing: -0.01em;
   pointer-events: none;
@@ -1687,7 +1687,7 @@
   font-family: 'Space Grotesk', system-ui, sans-serif;
   font-size: 1rem;
   font-weight: 700;
-  color: #ffffff;
+  color: #ffffe1;
   margin-top: 14px;
   margin-bottom: 0;
   text-align: center;
