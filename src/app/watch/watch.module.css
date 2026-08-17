@@ -1265,18 +1265,20 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  animation: popoverFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: popoverFadeIn 0.2s ease forwards;
   pointer-events: auto;
 }
 
+/* Pure fade — no scale or translate. The old entry moved the top edge down
+   ~10px (translateY plus a centre-origin scale), so the hovered card's top
+   corner peeked above the pop-out as a step. A plain opacity fade keeps the
+   pop-out's top pinned to the card's top at every frame. */
 @keyframes popoverFadeIn {
   from {
     opacity: 0;
-    transform: scale(0.96) translateY(5px);
   }
   to {
     opacity: 1;
-    transform: scale(1) translateY(0);
   }
 }
 

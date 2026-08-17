@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { getMovieById, getRelated } from "@/lib/content";
+import { getAllMovies, getMovieById, getRelated } from "@/lib/content";
 import { getChrome } from "@/lib/site";
 
 import DetailClient from "./DetailClient";
@@ -32,12 +32,18 @@ export default async function MovieDetailPage({ params }: PageProps) {
 
   // No cast here any more: the detail page does not show one, so it does not
   // read defaultCast either. The stored cast and /api/cast are untouched.
-  const [related, chrome] = await Promise.all([getRelated(movie.id, 12), getChrome()]);
+  // allMovies feeds the global search overlay in the header.
+  const [related, allMovies, chrome] = await Promise.all([
+    getRelated(movie.id, 12),
+    getAllMovies(),
+    getChrome(),
+  ]);
 
   return (
     <DetailClient
       movie={movie}
       related={related}
+      allMovies={allMovies}
       brand={chrome.brand}
       footer={chrome.footer}
       labels={chrome.detail}

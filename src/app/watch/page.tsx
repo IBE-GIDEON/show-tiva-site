@@ -1,4 +1,4 @@
-import { getHeroSlides, getSections } from "@/lib/content";
+import { getAllMovies, getHeroSlides, getSections } from "@/lib/content";
 import { getChrome } from "@/lib/site";
 
 import WatchClient from "./WatchClient";
@@ -10,9 +10,10 @@ import WatchClient from "./WatchClient";
 export const dynamic = "force-dynamic";
 
 export default async function WatchPage() {
-  const [heroSlides, sections, chrome] = await Promise.all([
+  const [heroSlides, sections, allMovies, chrome] = await Promise.all([
     getHeroSlides(),
     getSections(),
+    getAllMovies(),
     getChrome(),
   ]);
 
@@ -24,6 +25,7 @@ export default async function WatchPage() {
     <WatchClient
       heroSlides={heroSlides}
       sections={sections}
+      allMovies={allMovies}
       brand={chrome.brand}
       footer={chrome.footer}
       labels={chrome.watch}

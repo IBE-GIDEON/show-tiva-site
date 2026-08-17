@@ -13,6 +13,8 @@ import { useRouter } from "next/navigation";
 
 import type { Movie } from "@/lib/content-types";
 import type { Brand, DetailLabels, FooterContent, PopoverLabels } from "@/lib/site-types";
+import SearchOverlay from "../SearchOverlay";
+import SiteFooter from "../SiteFooter";
 import styles from "./detail.module.css";
 // The related grid reuses the catalog's card and hover-popover styling verbatim,
 // so a card looks and behaves identically on both pages.
@@ -21,6 +23,8 @@ import watchStyles from "../watch.module.css";
 interface DetailClientProps {
   movie: Movie;
   related: Movie[];
+  /** Whole catalog, for the global search overlay. */
+  allMovies: Movie[];
   brand: Brand;
   footer: FooterContent;
   labels: DetailLabels;
@@ -30,6 +34,7 @@ interface DetailClientProps {
 export default function DetailClient({
   movie,
   related,
+  allMovies,
   brand,
   footer,
   labels,
@@ -37,6 +42,7 @@ export default function DetailClient({
 }: DetailClientProps) {
   const router = useRouter();
   const [saved, setSaved] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   // Play expands the still into a full-height theatre and brings it to the top
   // of the viewport, so the screen is what you are looking at rather than
@@ -151,6 +157,18 @@ export default function DetailClient({
           <img className={styles.lockupMark} src={brand.mark} alt="" />
           <img className={styles.lockupWord} src={brand.wordmark} alt={brand.wordmarkAlt} />
         </Link>
+
+        <button
+          type="button"
+          className={styles.searchBtn}
+          aria-label={labels.search}
+          onClick={() => setSearchOpen(true)}
+        >
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </button>
       </header>
 
       <main className={styles.main}>
@@ -357,11 +375,15 @@ export default function DetailClient({
         </div>
       </main>
 
-      <footer className={`${styles.shell} ${styles.footer}`}>
-        <p className={styles.footerNote}>
-          © {new Date().getFullYear()} {footer.copyright}
-        </p>
-      </footer>
+      {/* The site footer, shared with the catalog and the browse page. */}
+      <SiteFooter brand={brand} footer={footer} />
+
+      <SearchOverlay
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        movies={allMovies}
+        placeholder={`${labels.search} titles…`}
+      />
 
       {/* Floating detail popover, same as the catalog's. Positioned in document
           coordinates, so it is a direct child of .page — which is the

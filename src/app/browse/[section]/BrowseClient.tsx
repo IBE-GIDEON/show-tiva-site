@@ -9,12 +9,18 @@
 // from the props below.
 
 import Link from "next/link";
-import { Fragment, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useMemo, useRef, useState } from "react";
 
 import type { BrowseData } from "../_lib/browse-data";
 import type { Movie } from "@/lib/content-types";
 
+import SearchOverlay from "../../watch/SearchOverlay";
+import SiteFooter from "../../watch/SiteFooter";
 import styles from "./browse.module.css";
+// The grid reuses the catalog's card and hover-popover styling verbatim, so a
+// card looks and behaves the same here as on /watch.
+import watchStyles from "../../watch/watch.module.css";
 
 /** Cards per page. A 10–12 title category lands on a single page; widening the
  *  scope to the full catalog is what makes the pager earn its keep. */
@@ -38,25 +44,6 @@ const RATING_TIERS: { value: string; label: string }[] = [
 ];
 
 type Scope = "section" | "all";
-
-/**
- * Splits a hex accent into "r, g, b" so the stylesheet can build tints with
- * rgba() — cheaper and better supported than color-mix, and it keeps every
- * accent-derived surface tied to the one value the category owns.
- */
-function accentChannels(hex: string): string {
-  const raw = hex.trim().replace("#", "");
-  const full =
-    raw.length === 3
-      ? raw
-          .split("")
-          .map((c) => c + c)
-          .join("")
-      : raw;
-  const n = Number.parseInt(full, 16);
-  if (full.length !== 6 || Number.isNaN(n)) return "252, 51, 67";
-  return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
-}
 
 function ratingOf(movie: Movie): number {
   const n = Number.parseFloat(movie.rating);
@@ -90,12 +77,6 @@ const IconClose = (
   </svg>
 );
 
-const IconStar = (
-  <svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor" aria-hidden="true">
-    <path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.4l6.5-.9z" />
-  </svg>
-);
-
 const IconArrowLeft = (
   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <line x1="19" y1="12" x2="5" y2="12" />
@@ -103,58 +84,8 @@ const IconArrowLeft = (
   </svg>
 );
 
-const SOCIAL_ICONS: Record<string, React.ReactNode> = {
-  twitter: (
-    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
-  ),
-  instagram: (
-    <>
-      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-    </>
-  ),
-  youtube: (
-    <>
-      <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" />
-      <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" />
-    </>
-  ),
-};
-
-/** Icons are never rendered from stored strings — an unknown platform falls
- *  back to a generic link glyph, matching SiteFooter's policy. */
-const GENERIC_SOCIAL = (
-  <>
-    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-  </>
-);
-
 /* --------------------------------------------------------------- poster -- */
 
-/**
- * Artwork is remote (Unsplash), so each frame holds a skeleton until the image
- * decodes. Cards are keyed by movie id, so paging remounts these and the
- * skeleton state resets with the new artwork.
- */
-function Poster({ src, alt }: { src: string; alt: string }) {
-  const [loaded, setLoaded] = useState(false);
-  return (
-    <>
-      {!loaded && <span className={styles.posterSkeleton} aria-hidden="true" />}
-      <img
-        src={src}
-        alt={alt}
-        loading="lazy"
-        decoding="async"
-        className={`${styles.posterImg} ${loaded ? styles.posterImgReady : ""}`}
-        onLoad={() => setLoaded(true)}
-        onError={() => setLoaded(true)}
-      />
-    </>
-  );
-}
 
 /* ------------------------------------------------------------- variant --- */
 
@@ -167,6 +98,57 @@ export default function Variant({ section, sections, allMovies, facets, chrome }
   const [sort, setSort] = useState<SortKey>("rating");
   const [page, setPage] = useState(1);
   const [saved, setSaved] = useState<Set<string>>(() => new Set<string>());
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  // --- hover popover, identical to the catalog's ---
+  const router = useRouter();
+  const [hoveredMovie, setHoveredMovie] = useState<Movie | null>(null);
+  const [popoverPos, setPopoverPos] = useState<{
+    top: number;
+    left: number;
+    alignRight: boolean;
+    height: number;
+  } | null>(null);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleCardMouseEnter = (movie: Movie, e: React.MouseEvent) => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    const popoverWidth = 330;
+    const gap = 12;
+    const scrollY = window.scrollY || document.documentElement.scrollTop;
+    const scrollX = window.scrollX || document.documentElement.scrollLeft;
+
+    // Flip to the card's left when there is no room on the right.
+    let left = rect.right + gap + scrollX;
+    let alignRight = true;
+    if (rect.right + gap + popoverWidth > window.innerWidth) {
+      left = rect.left - popoverWidth - gap + scrollX;
+      alignRight = false;
+    }
+    if (left < 0) left = 12;
+
+    setPopoverPos({ top: rect.top + scrollY, left, alignRight, height: rect.height });
+    setHoveredMovie(movie);
+  };
+
+  // Grace period so crossing the gap into the popover does not dismiss it.
+  const handleCardMouseLeave = () => {
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredMovie(null);
+      setPopoverPos(null);
+    }, 200);
+  };
+
+  const handlePopoverMouseEnter = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+  };
+
+  const handlePopoverMouseLeave = () => {
+    setHoveredMovie(null);
+    setPopoverPos(null);
+  };
 
   // Switching category only changes ?section=, so Next keeps this component
   // mounted and the old filters would carry over — landing the user in an
@@ -185,24 +167,8 @@ export default function Variant({ section, sections, allMovies, facets, chrome }
     setPage(1);
   }
 
-  const accentRgb = useMemo(() => accentChannels(section.accent), [section.accent]);
-  const landscape = section.aspect === "landscape";
   const pool = scope === "all" ? allMovies : section.movies;
   const trimmed = query.trim();
-
-  /** Summary of the category itself — independent of the live filters, so the
-   *  banner keeps reading as a description of where you are. */
-  const summary = useMemo(() => {
-    const movies = section.movies;
-    if (movies.length === 0) return { avg: "—", from: "", to: "" };
-    const avg = movies.reduce((sum, m) => sum + ratingOf(m), 0) / movies.length;
-    const years = movies.map(yearOf).filter((y) => y > 0);
-    return {
-      avg: avg.toFixed(1),
-      from: years.length ? String(Math.min(...years)) : "",
-      to: years.length ? String(Math.max(...years)) : "",
-    };
-  }, [section.movies]);
 
   const filtered = useMemo(() => {
     const q = trimmed.toLowerCase();
@@ -302,16 +268,11 @@ export default function Variant({ section, sections, allMovies, facets, chrome }
     });
   }
 
-  const shellStyle = {
-    "--accent": section.accent,
-    "--accent-rgb": accentRgb,
-  } as React.CSSProperties;
-
   const shownFrom = filtered.length === 0 ? 0 : start + 1;
   const shownTo = start + visible.length;
 
   return (
-    <div className={styles.page} style={shellStyle}>
+    <div className={styles.page}>
       {/* ------------------------------------------------------ top bar -- */}
       <header className={styles.topbar}>
         <div className={styles.topbarInner}>
@@ -322,11 +283,14 @@ export default function Variant({ section, sections, allMovies, facets, chrome }
           </Link>
 
           <div className={styles.topbarMeta}>
-            <span className={styles.topbarTag}>Browse</span>
-            <span className={styles.topbarReadout}>
-              <span className={styles.topbarReadoutLabel}>Watchlist</span>
-              <span className={styles.topbarReadoutNum}>{String(saved.size).padStart(2, "0")}</span>
-            </span>
+            <button
+              type="button"
+              className={styles.topbarSearch}
+              aria-label={chrome.watch.search}
+              onClick={() => setSearchOpen(true)}
+            >
+              {IconSearch}
+            </button>
             <Link href="/watch" className={styles.backLink}>
               <span className={styles.backIcon}>{IconArrowLeft}</span>
               {chrome.detail.goBack}
@@ -337,40 +301,13 @@ export default function Variant({ section, sections, allMovies, facets, chrome }
 
       <main className={styles.main}>
         {/* ------------------------------------------------ category banner -- */}
+        {/* Just the category title now — the breadcrumb, decorative slash, tint
+            wash and stats line were all removed for a simpler header. */}
         <section className={styles.banner} aria-labelledby="v1-category-title">
-          <span className={styles.bannerRule} aria-hidden="true" />
-          <div className={styles.bannerBody}>
-            <nav className={styles.bannerCrumb} aria-label="Breadcrumb">
-              <Link href="/watch" className={styles.bannerCrumbLink}>
-                Catalog
-              </Link>
-              <span className={styles.bannerCrumbSep} aria-hidden="true">
-                /
-              </span>
-              <span className={styles.bannerCrumbNow}>{section.title}</span>
-            </nav>
 
-            <h1 id="v1-category-title" className={styles.bannerTitle}>
-              {section.title}
-            </h1>
-
-            <p className={styles.bannerMeta}>
-              <span className={styles.bannerMetaItem}>{section.movies.length} titles</span>
-              {summary.from && (
-                <>
-                  <span className={styles.bannerDot} aria-hidden="true" />
-                  <span className={styles.bannerMetaItem}>
-                    {summary.from}
-                    {summary.to !== summary.from ? `–${summary.to}` : ""}
-                  </span>
-                </>
-              )}
-              <span className={styles.bannerDot} aria-hidden="true" />
-              <span className={styles.bannerMetaItem}>Avg rating {summary.avg}</span>
-              <span className={styles.bannerDot} aria-hidden="true" />
-              <span className={styles.bannerMetaItem}>{allMovies.length} in the catalog</span>
-            </p>
-          </div>
+          <h1 id="v1-category-title" className={styles.bannerTitle}>
+            {section.title}
+          </h1>
         </section>
 
         {/* ------------------------------------------------------- rail -- */}
@@ -386,7 +323,6 @@ export default function Variant({ section, sections, allMovies, facets, chrome }
                     className={`${styles.railItem} ${current ? styles.railItemActive : ""}`}
                     aria-current={current ? "page" : undefined}
                   >
-                    <span className={styles.railDot} style={{ background: s.accent }} aria-hidden="true" />
                     {s.title}
                     <span className={styles.railCount}>{s.movies.length}</span>
                   </Link>
@@ -593,65 +529,63 @@ export default function Variant({ section, sections, allMovies, facets, chrome }
           )}
         </section>
 
-        {/* ------------------------------------------------------- grid -- */}
+        {/* ------------------------------------------------------- grid --
+            One box size everywhere: landscape categories no longer get a wider
+            track, so a card is identical here and on the catalog. */}
         {visible.length > 0 ? (
-          <ul className={`${styles.grid} ${landscape ? styles.gridWide : ""}`}>
+          <ul className={styles.grid}>
             {visible.map((movie) => {
               const isSaved = saved.has(movie.id);
-              // Built by filtering, so a missing field never leaves a dangling
-              // separator dot. `type` is nullable in the store.
-              const meta = [movie.year, movie.duration, movie.type || chrome.detail.typeFallback].filter(Boolean);
               return (
                 <li key={movie.id} className={styles.card}>
-                  <div className={styles.frame}>
-                    <Link href={`/watch/${movie.id}`} className={styles.posterLink}>
-                      <Poster src={movie.image} alt={movie.title} />
-                      <span className={styles.posterScrim} aria-hidden="true" />
-                    </Link>
+                  <div
+                    className={watchStyles.posterCard}
+                    onMouseEnter={(e) => handleCardMouseEnter(movie, e)}
+                    onMouseLeave={handleCardMouseLeave}
+                    onClick={() => router.push(`/watch/${movie.id}`)}
+                  >
+                    <div className={watchStyles.posterWrapper}>
+                      <img
+                        src={movie.image}
+                        alt={movie.title}
+                        loading="lazy"
+                        className={watchStyles.posterImg}
+                      />
 
-                    <span className={styles.ratingBadge}>
-                      <span className={styles.ratingStar}>{IconStar}</span>
-                      <span className={styles.ratingValue}>{movie.rating || "—"}</span>
-                    </span>
-
-                    <button
-                      type="button"
-                      className={`${styles.bookmarkBtn} ${isSaved ? styles.bookmarkOn : ""}`}
-                      aria-pressed={isSaved}
-                      aria-label={`${chrome.watch.saveToList}: ${movie.title}`}
-                      onClick={() => toggleSaved(movie.id)}
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        width="14"
-                        height="14"
-                        fill={isSaved ? "currentColor" : "none"}
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
+                      <button
+                        className={`${watchStyles.bookmarkBtn} ${isSaved ? watchStyles.bookmarkActive : ""}`}
+                        aria-label={`${chrome.watch.saveToList}: ${movie.title}`}
+                        aria-pressed={isSaved}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleSaved(movie.id);
+                        }}
                       >
-                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                      </svg>
-                    </button>
-                  </div>
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                        </svg>
+                      </button>
 
-                  <div className={styles.cardBody}>
-                    <Link href={`/watch/${movie.id}`} className={styles.cardTitle}>
-                      {movie.title}
-                    </Link>
-                    <p className={styles.cardMeta}>
-                      {meta.map((bit, i) => (
-                        <Fragment key={`${i}-${bit}`}>
-                          {i > 0 && <span className={styles.cardDot} aria-hidden="true" />}
-                          <span>{bit}</span>
-                        </Fragment>
-                      ))}
-                    </p>
-                    {movie.genres.length > 0 && (
-                      <p className={styles.cardGenres}>{movie.genres.slice(0, 2).join(" · ")}</p>
-                    )}
+                      <div className={watchStyles.ratingBadge}>
+                        <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                        </svg>
+                        <span>{movie.rating || "—"}</span>
+                      </div>
+
+                      <div className={watchStyles.posterOverlay}>
+                        <div className={watchStyles.playBtnCircle}>
+                          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                      </div>
+
+                      <div className={watchStyles.posterHoverInfo}>
+                        <h4 className={watchStyles.posterTitle}>{movie.title}</h4>
+                        <span className={watchStyles.metaYear}>{movie.year}</span>
+                      </div>
+                    </div>
                   </div>
                 </li>
               );
@@ -767,62 +701,92 @@ export default function Variant({ section, sections, allMovies, facets, chrome }
         )}
       </main>
 
-      {/* -------------------------------------------------------- footer -- */}
-      <footer className={styles.footer}>
-        <div className={styles.footerInner}>
-          <div className={styles.footerTop}>
-            <div className={styles.footerBrand}>
-              <div className={styles.footerLogo}>
-                <img src={chrome.brand.mark} alt="" className={styles.footerMark} />
-                <img src={chrome.brand.wordmark} alt={chrome.brand.wordmarkAlt} className={styles.footerWordmark} />
+      {/* The site footer, shared with the catalog and the detail page. */}
+      <SiteFooter brand={chrome.brand} footer={chrome.footer} />
+
+      <SearchOverlay
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        movies={allMovies}
+        placeholder={`${chrome.watch.search} titles…`}
+      />
+
+      {/* Floating detail popover, same as the catalog's. Positioned in document
+          coordinates, so it is a direct child of .page — the positioned
+          ancestor it resolves against. */}
+      {hoveredMovie && popoverPos && (
+        <div
+          className={`${watchStyles.detailsPopover} ${popoverPos.alignRight ? watchStyles.popoverRight : watchStyles.popoverLeft}`}
+          style={{
+            top: `${popoverPos.top}px`,
+            left: `${popoverPos.left}px`,
+            width: "330px",
+            height: `${popoverPos.height}px`,
+          }}
+          onMouseEnter={handlePopoverMouseEnter}
+          onMouseLeave={handlePopoverMouseLeave}
+        >
+          <div className={watchStyles.popoverBackdropWrap}>
+            <img
+              src={hoveredMovie.image}
+              alt={hoveredMovie.title}
+              className={watchStyles.popoverBackdrop}
+            />
+            <div className={watchStyles.popoverBackdropVignette} />
+
+            <div className={watchStyles.popoverBackdropText}>
+              <h3 className={watchStyles.popoverLogoTitle}>{hoveredMovie.title}</h3>
+              <div className={watchStyles.popoverMetaRowInline}>
+                <span className={watchStyles.popoverTypeBadge}>{chrome.popover.typeBadge}</span>
+                <span className={watchStyles.popoverRatingInline}>★ {hoveredMovie.rating}</span>
+                <span className={watchStyles.popoverYearInline}>📅 {hoveredMovie.year}</span>
+                <span className={watchStyles.popoverLangInline}>{chrome.popover.languageBadge}</span>
               </div>
-              <p className={styles.footerTagline}>{chrome.footer.tagline}</p>
             </div>
 
-            <div className={styles.footerCols}>
-              {chrome.footer.columns.map((column) => (
-                <div key={column.title} className={styles.footerCol}>
-                  <h2 className={styles.footerColTitle}>{column.title}</h2>
-                  <ul className={styles.footerList}>
-                    {column.links.map((link) => (
-                      <li key={`${link.label}-${link.href}`}>
-                        <a href={link.href} className={styles.footerLink}>
-                          {link.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+            <div className={watchStyles.popoverTopRightBadge}>
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>
+              <span>{hoveredMovie.rating}</span>
             </div>
           </div>
 
-          <div className={styles.footerBottom}>
-            <p className={styles.footerCopy}>
-              &copy; {new Date().getFullYear()} {chrome.footer.copyright}
-            </p>
-            <div className={styles.footerSocials}>
-              {chrome.footer.socials.map((social) => (
-                <a key={social.platform} href={social.href} className={styles.footerSocial} aria-label={social.label}>
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="16"
-                    height="16"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    {SOCIAL_ICONS[social.platform] ?? GENERIC_SOCIAL}
-                  </svg>
-                </a>
-              ))}
+          <div className={watchStyles.popoverBody}>
+            <h4 className={watchStyles.popoverTitle}>{hoveredMovie.title}</h4>
+            <p className={watchStyles.popoverDescription}>{hoveredMovie.description}</p>
+
+            <div className={watchStyles.popoverActions}>
+              <button
+                className={watchStyles.popoverWatchBtn}
+                onClick={() => router.push(`/watch/${hoveredMovie.id}`)}
+              >
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                <span>{chrome.popover.watchNow}</span>
+              </button>
+
+              <button
+                className={`${watchStyles.popoverPlusBtn} ${saved.has(hoveredMovie.id) ? watchStyles.popoverPlusActive : ""}`}
+                onClick={() => toggleSaved(hoveredMovie.id)}
+                aria-label={chrome.popover.addToWatchlist}
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  {saved.has(hoveredMovie.id) ? (
+                    <polyline points="20 6 9 17 4 12" />
+                  ) : (
+                    <>
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </>
+                  )}
+                </svg>
+              </button>
             </div>
           </div>
         </div>
-      </footer>
+      )}
     </div>
   );
 }

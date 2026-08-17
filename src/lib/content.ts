@@ -171,6 +171,12 @@ export async function getDefaultCast(): Promise<CastMember[]> {
   return (await getContent()).defaultCast;
 }
 
+/** The whole catalog as a flat list, for the global search overlay. */
+export async function getAllMovies(): Promise<Movie[]> {
+  const content = await getContent();
+  return Object.values(content.movies);
+}
+
 /** Ordered hero carousel slides. */
 export async function getHeroSlides(): Promise<Movie[]> {
   const content = await getContent();

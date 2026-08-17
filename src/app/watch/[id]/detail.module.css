@@ -96,6 +96,25 @@
   transform: translateX(-4px);
 }
 
+/* Plain icon button, borderless — matches the Premium Minimal chrome and the
+   borderless direction used elsewhere. Opens the global search overlay. */
+.searchBtn {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--grey);
+  transition: color 0.3s ease;
+}
+
+.searchBtn:hover {
+  color: var(--ink);
+}
+
 .lockup {
   display: inline-flex;
   flex: none;
@@ -561,29 +580,24 @@
 
 /* --------------------------------------------------------------- related */
 
-/* 12 related titles divide evenly by 2, 3, 4 and 6, so every row stays full. */
+/* Fixed 190px tracks rather than a fr-based column count: `1fr` stretched each
+   card to fill the row, so a related card came out larger than the same card
+   on the catalog. 190px and the 10px column gap are the catalog's own
+   .posterCard / .posterRow values, so a box is identical on every page. */
 .relatedGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: clamp(1.75rem, 2.8vw, 2.5rem) clamp(1rem, 1.8vw, 1.5rem);
+  grid-template-columns: repeat(auto-fill, 190px);
+  justify-content: start;
+  gap: clamp(1.5rem, 2.4vw, 2rem) 10px;
   list-style: none;
 }
 
-@media (min-width: 560px) {
+/* Below the gutter a fixed track leaves a lone column with a hole beside it,
+   so on phones the cards fill the row instead — two up. */
+@media (max-width: 559px) {
   .relatedGrid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 860px) {
-  .relatedGrid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (min-width: 1120px) {
-  .relatedGrid {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1.5rem 10px;
   }
 }
 
@@ -600,20 +614,8 @@
   color: var(--ink);
 }
 
-/* ---------------------------------------------------------------- footer */
-
-.footer {
-  margin-top: var(--step);
-  padding-bottom: clamp(2.5rem, 5vw, 4rem);
-}
-
-.footerNote {
-  padding-top: clamp(1.25rem, 2.4vw, 1.75rem);
-  border-top: 1px solid var(--line);
-  color: var(--grey);
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-}
+/* No footer rules here on purpose: the page renders the shared SiteFooter,
+   which brings its own styling from watch.module.css. */
 
 /* ----------------------------------------------------------- breakpoints */
 

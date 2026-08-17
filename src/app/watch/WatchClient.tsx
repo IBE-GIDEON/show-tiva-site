@@ -6,12 +6,15 @@ import { useRouter } from "next/navigation";
 
 import type { Movie, Section } from "@/lib/content-types";
 import type { Brand, FooterContent, PopoverLabels, WatchLabels } from "@/lib/site-types";
+import SearchOverlay from "./SearchOverlay";
 import SiteFooter from "./SiteFooter";
 import styles from "./watch.module.css";
 
 interface WatchClientProps {
   heroSlides: Movie[];
   sections: Section[];
+  /** Whole catalog, for the global search overlay. */
+  allMovies: Movie[];
   brand: Brand;
   footer: FooterContent;
   labels: WatchLabels;
@@ -21,6 +24,7 @@ interface WatchClientProps {
 export default function WatchClient({
   heroSlides,
   sections,
+  allMovies,
   brand,
   footer,
   labels,
@@ -29,6 +33,7 @@ export default function WatchClient({
   const [activeSlide, setActiveSlide] = useState(0);
   const [bookmarked, setBookmarked] = useState<{ [key: string]: boolean }>({});
   const [themeDark] = useState(true);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const [hoveredMovie, setHoveredMovie] = useState<Movie | null>(null);
   const [popoverPos, setPopoverPos] = useState<{ top: number; left: number; alignRight: boolean; height: number } | null>(null);
@@ -160,7 +165,7 @@ export default function WatchClient({
 
           {/* Right nav utility icons */}
           <div className={styles.navActions}>
-            <button className={styles.iconBtn} aria-label={labels.search}>
+            <button className={styles.iconBtn} aria-label={labels.search} onClick={() => setSearchOpen(true)}>
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -365,6 +370,13 @@ export default function WatchClient({
       </main>
 
       <SiteFooter brand={brand} footer={footer} />
+
+      <SearchOverlay
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        movies={allMovies}
+        placeholder={`${labels.search} titles…`}
+      />
 
       {/* Dynamic Cinematic Detail Popover Card (Portal-style floating popup next to hovered card) */}
       {hoveredMovie && popoverPos && (

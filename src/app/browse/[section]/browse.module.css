@@ -2,8 +2,17 @@
    v1 — "Control Room"
    A dense dark instrument panel: hairline-divided filter cells,
    a live result readout, dismissible chips, a tight poster grid.
-   Every accent-tinted surface derives from --accent / --accent-rgb,
-   which the component sets per category.
+
+   Deliberately near-monochrome. The category accent (--accent /
+   --accent-rgb, set per category by the component) is spent in three
+   places only — the breadcrumb's current category, the active rail
+   item's count, and the tip of the banner slash — so a row still reads
+   as colour-tagged without the page turning into a light show. Every
+   other surface is ivory at low alpha.
+
+   Cards are NOT styled here: the grid renders the catalog's own
+   .posterCard from watch.module.css, so a card behaves identically on
+   /watch and here. This file only supplies the grid cell.
    ============================================================= */
 
 .page {
@@ -24,6 +33,9 @@
   --maxw: 1480px;
   --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 
+  /* The hover popover is positioned in DOCUMENT coordinates, so it needs a
+     positioned ancestor at the document origin. */
+  position: relative;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -89,62 +101,43 @@
 .topbarMeta {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
   min-width: 0;
 }
 
-/* Micro-label set: mono, caps, wide tracking — the console's voice. */
-.topbarTag {
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-  padding-right: 18px;
-  border-right: 1px solid var(--line);
-}
-
-.topbarReadout {
+/* Borderless icon button — opens the global search overlay. */
+.topbarSearch {
   display: inline-flex;
-  align-items: baseline;
-  gap: 7px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--ink-2);
+  transition: color 0.2s ease;
 }
 
-.topbarReadoutLabel {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-}
-
-.topbarReadoutNum {
-  font-family: var(--font-heading), 'Outfit', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
+.topbarSearch:hover {
   color: var(--ink);
 }
 
+/* Borderless — just a text link with its icon. */
 .backLink {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   height: 34px;
-  padding: 0 14px;
-  border: 1px solid var(--line);
   color: var(--ink-2);
   font-size: 0.76rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   white-space: nowrap;
-  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .backLink:hover {
   color: var(--ink);
-  border-color: var(--line-strong);
-  background: rgba(255, 255, 225, 0.04);
 }
 
 .backIcon {
@@ -168,110 +161,25 @@
 
 /* ------------------------------------------------------------- banner -- */
 
+/* Simple header: just the category title on a hairline divider. No breadcrumb,
+   slash, tint wash or stats line. */
 .banner {
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: 26px;
-  padding: 42px 0 30px;
+  padding: 40px 0 26px;
   border-bottom: 1px solid var(--line);
 }
 
-/* Category tint: strongest at the rule, gone by two-thirds across. */
-.banner::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    100deg,
-    rgba(var(--accent-rgb), 0.14) 0%,
-    rgba(var(--accent-rgb), 0.04) 34%,
-    transparent 66%
-  );
-  pointer-events: none;
-}
-
-/* The accent slash. Run is exactly height / 3 — tan(18.43deg) = 1/3 — so its
-   edges are parallel to the logo's diagonals rather than eyeballed. */
-.bannerRule {
-  --rule-h: 118px;
-  --rule-run: calc(var(--rule-h) / 3);
-
-  position: relative;
-  flex: 0 0 auto;
-  width: calc(var(--rule-run) + 10px);
-  height: var(--rule-h);
-  margin-top: 5px;
-  background: linear-gradient(180deg, var(--accent) 0%, rgba(var(--accent-rgb), 0.22) 100%);
-  clip-path: polygon(var(--rule-run) 0, 100% 0, 10px 100%, 0 100%);
-}
-
-.bannerBody {
-  position: relative;
-  min-width: 0;
-}
-
-.bannerCrumb {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.bannerCrumbLink {
-  color: var(--ink-3);
-  transition: color 0.2s ease;
-}
-
-.bannerCrumbLink:hover {
-  color: var(--ink);
-}
-
-.bannerCrumbSep {
-  color: rgba(255, 255, 225, 0.5);
-}
-
-.bannerCrumbNow {
-  color: var(--accent);
-}
-
 .bannerTitle {
-  margin: 14px 0 0;
+  margin: 0;
   font-family: var(--font-heading), 'Outfit', sans-serif;
-  font-size: clamp(2.1rem, 5vw, 3.3rem);
-  font-weight: 800;
-  line-height: 0.98;
-  letter-spacing: -0.025em;
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
   text-transform: uppercase;
   color: var(--ink);
   /* A long single-word category can be wider than a 320px column; break it
      rather than push the page into horizontal scroll. */
   overflow-wrap: break-word;
-}
-
-.bannerMeta {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 16px;
-  font-size: 0.78rem;
-  color: var(--ink-2);
-  font-variant-numeric: tabular-nums;
-}
-
-.bannerMetaItem {
-  white-space: nowrap;
-}
-
-.bannerDot {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: rgba(255, 255, 225, 0.4);
 }
 
 /* --------------------------------------------------------------- rail -- */
@@ -322,15 +230,8 @@
 .railItemActive {
   color: var(--ink);
   font-weight: 600;
-  border-color: rgba(var(--accent-rgb), 0.55);
-  background: rgba(var(--accent-rgb), 0.12);
-}
-
-.railDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex: 0 0 auto;
+  border-color: var(--line-strong);
+  background: rgba(255, 255, 225, 0.06);
 }
 
 .railCount {
@@ -341,7 +242,7 @@
 }
 
 .railItemActive .railCount {
-  color: var(--accent);
+  color: var(--ink);
 }
 
 /* ------------------------------------------------------------ console -- */
@@ -371,7 +272,7 @@
 
 .field:focus-within {
   background: var(--panel-2);
-  box-shadow: inset 0 -2px 0 var(--accent);
+  box-shadow: inset 0 -2px 0 var(--ink-2);
 }
 
 .fieldWide {
@@ -487,7 +388,7 @@
 }
 
 .field:focus-within .selectChevron {
-  color: var(--accent);
+  color: var(--ink);
 }
 
 /* ------------------------------------------------------- status strip -- */
@@ -526,7 +427,7 @@
 }
 
 .readoutScope {
-  color: var(--accent);
+  color: var(--ink);
   font-weight: 600;
 }
 
@@ -580,7 +481,7 @@
 
 .scopeOn,
 .scopeOn:hover {
-  background: var(--accent);
+  background: var(--ink);
   color: #000000;
 }
 
@@ -646,8 +547,8 @@
   gap: 7px;
   height: 27px;
   padding: 0 9px;
-  border: 1px solid rgba(var(--accent-rgb), 0.3);
-  background: rgba(var(--accent-rgb), 0.1);
+  border: 1px solid var(--line-strong);
+  background: rgba(255, 255, 225, 0.05);
   color: var(--ink);
   font-family: inherit;
   font-size: 0.74rem;
@@ -657,8 +558,8 @@
 }
 
 .chip:hover {
-  border-color: rgba(var(--accent-rgb), 0.7);
-  background: rgba(var(--accent-rgb), 0.16);
+  border-color: rgba(255, 255, 225, 0.34);
+  background: rgba(255, 255, 225, 0.1);
 }
 
 .chipKey {
@@ -689,16 +590,18 @@
 
 /* --------------------------------------------------------------- grid -- */
 
+/* Fixed 190px tracks, not minmax(...,1fr): a fr track stretches the card to
+   fill the row, which made these boxes noticeably larger than the catalog's.
+   190px and the 10px column gap are the catalog's own .posterCard / .posterRow
+   values, so a box is the same size on every page. Left-aligned so the first
+   column lands on the page gutter with the header and banner. */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 26px 16px;
+  grid-template-columns: repeat(auto-fill, 190px);
+  justify-content: start;
+  gap: 26px 10px;
   margin-top: 30px;
   list-style: none;
-}
-
-.gridWide {
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
 .card {
@@ -713,225 +616,13 @@
   transform: translateY(-4px);
 }
 
-.frame {
-  position: relative;
-  aspect-ratio: 2 / 3;
-  overflow: hidden;
-  border-radius: 3px;
-  background: #131313;
-  transition: box-shadow 0.28s ease;
-}
-
-.gridWide .frame {
-  aspect-ratio: 16 / 9;
-}
-
-.card:hover .frame {
-  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.5);
-}
-
-/* A single accent rule sweeps in under the artwork on hover — the only
-   decoration the card gains, in place of a glow or a coloured border. */
-.frame::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 2px;
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
-  z-index: 3;
-}
-
-.card:hover .frame::after,
-.card:focus-within .frame::after {
-  transform: scaleX(1);
-}
-
-.posterLink {
-  position: absolute;
-  inset: 0;
-  display: block;
-}
-
-.posterSkeleton {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(100deg, #131313 28%, #1f1f1f 50%, #131313 72%);
-  background-size: 220% 100%;
-  animation: v1Shimmer 1.4s linear infinite;
-}
-
-@keyframes v1Shimmer {
-  from {
-    background-position: 120% 0;
-  }
-  to {
-    background-position: -20% 0;
-  }
-}
-
-.posterImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  opacity: 0;
-  transform: scale(1.03);
-  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.posterImgReady {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.card:hover .posterImgReady {
-  transform: scale(1.05);
-}
-
-.posterScrim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 42%),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 28%);
-  pointer-events: none;
-}
-
-.ratingBadge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  height: 22px;
-  padding: 0 7px;
-  border-radius: 2px;
-  background: rgba(0, 0, 0, 0.74);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  pointer-events: none;
-}
-
-.ratingStar {
-  display: inline-flex;
-  color: var(--accent);
-}
-
-.ratingValue {
-  font-family: var(--font-heading), 'Outfit', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink);
-}
-
-.bookmarkBtn {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  z-index: 2;
-  width: 28px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 225, 0.16);
-  border-radius: 2px;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  color: var(--ink-2);
-  cursor: pointer;
-  opacity: 0;
-  transform: translateY(-4px);
-  transition: opacity 0.24s ease, transform 0.24s ease, color 0.2s ease,
-    border-color 0.2s ease, background 0.2s ease;
-}
-
-.card:hover .bookmarkBtn,
-.card:focus-within .bookmarkBtn {
-  opacity: 1;
-  transform: none;
-}
-
-.bookmarkBtn:hover {
-  color: var(--ink);
-  border-color: var(--line-strong);
-}
-
-/* Saved is a persistent state, so it stays visible without hover. */
-.bookmarkOn,
-.card:hover .bookmarkOn {
-  opacity: 1;
-  transform: none;
-  color: var(--accent);
-  border-color: rgba(var(--accent-rgb), 0.6);
-  background: rgba(var(--accent-rgb), 0.18);
-}
-
-.cardBody {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  min-width: 0;
-}
-
-.cardTitle {
-  font-family: var(--font-heading), 'Outfit', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.005em;
-  color: var(--ink);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition: color 0.2s ease;
-}
-
-.cardTitle:hover {
-  color: var(--accent);
-}
-
-.cardMeta {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.7rem;
-  color: var(--ink-3);
-  font-variant-numeric: tabular-nums;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.cardDot {
-  width: 2px;
-  height: 2px;
-  border-radius: 50%;
-  background: currentColor;
-  flex: 0 0 auto;
-}
-
-.cardGenres {
-  font-size: 0.68rem;
-  color: rgba(255, 255, 225, 0.5);
-  letter-spacing: 0.01em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 /* -------------------------------------------------------- empty state -- */
 
 .empty {
   margin-top: 30px;
   padding: 70px 32px;
   border: 1px dashed var(--line);
-  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.04), transparent 60%);
+  background: linear-gradient(180deg, rgba(255, 255, 225, 0.02), transparent 60%);
   text-align: center;
 }
 
@@ -944,7 +635,7 @@
   width: calc(var(--rule-run) + 7px);
   height: var(--rule-h);
   margin: 0 auto 22px;
-  background: rgba(var(--accent-rgb), 0.55);
+  background: rgba(255, 255, 225, 0.34);
   clip-path: polygon(var(--rule-run) 0, 100% 0, 7px 100%, 0 100%);
 }
 
@@ -1023,7 +714,7 @@
 
 .emptyGhost:hover {
   color: var(--ink);
-  border-color: rgba(var(--accent-rgb), 0.6);
+  border-color: rgba(255, 255, 225, 0.34);
 }
 
 /* --------------------------------------------------------- pagination -- */
@@ -1086,8 +777,8 @@
 
 .pagerNumOn,
 .pagerNumOn:hover {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--ink);
+  border-color: var(--ink);
   color: #000000;
   font-weight: 800;
 }
@@ -1108,7 +799,7 @@
   background: none;
   padding: 0;
   font: inherit;
-  color: var(--accent);
+  color: var(--ink);
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -1117,128 +808,6 @@
 
 .pagerSoloBtn:hover {
   color: var(--ink);
-}
-
-/* ------------------------------------------------------------- footer -- */
-
-.footer {
-  border-top: 1px solid var(--line);
-  background: #000000;
-}
-
-.footerInner {
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 48px var(--gutter) 26px;
-}
-
-.footerTop {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 44px;
-}
-
-.footerBrand {
-  max-width: 340px;
-}
-
-.footerLogo {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-
-.footerMark {
-  height: 26px;
-  width: auto;
-  display: block;
-}
-
-.footerWordmark {
-  height: 17px;
-  width: auto;
-  display: block;
-}
-
-.footerTagline {
-  margin-top: 14px;
-  font-size: 0.8rem;
-  line-height: 1.7;
-  color: var(--ink-3);
-}
-
-.footerCols {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 54px;
-}
-
-.footerCol {
-  min-width: 128px;
-}
-
-.footerColTitle {
-  margin-bottom: 13px;
-  font-family: var(--font-heading), 'Outfit', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink);
-}
-
-.footerList {
-  display: grid;
-  gap: 9px;
-  list-style: none;
-}
-
-.footerLink {
-  font-size: 0.8rem;
-  color: var(--ink-3);
-  transition: color 0.2s ease;
-}
-
-.footerLink:hover {
-  color: var(--ink);
-}
-
-.footerBottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 40px;
-  padding-top: 18px;
-  border-top: 1px solid var(--line);
-}
-
-.footerCopy {
-  font-size: 0.74rem;
-  color: var(--ink-3);
-}
-
-.footerSocials {
-  display: flex;
-  gap: 9px;
-}
-
-.footerSocial {
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 2px;
-  color: var(--ink-3);
-  transition: color 0.2s ease, border-color 0.2s ease;
-}
-
-.footerSocial:hover {
-  color: var(--ink);
-  border-color: var(--line-strong);
 }
 
 /* --------------------------------------------------------- responsive -- */
@@ -1303,13 +872,11 @@
     --rule-h: 68px;
   }
 
+  /* Below the gutter a fixed 190px track would leave a lone column with a big
+     hole beside it, so here the cards do fill the row — two up on a phone. */
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(144px, 1fr));
     gap: 22px 12px;
-  }
-
-  .gridWide {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
 
   .empty {
