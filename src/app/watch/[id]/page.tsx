@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { getDefaultCast, getMovieById, getRelated } from "@/lib/content";
+import { getMovieById, getRelated } from "@/lib/content";
 import { getChrome } from "@/lib/site";
 
 import DetailClient from "./DetailClient";
@@ -30,25 +30,18 @@ export default async function MovieDetailPage({ params }: PageProps) {
   // Renders watch/[id]/not-found.tsx and returns a real 404 status.
   if (!movie) notFound();
 
-  const [related, defaultCast, chrome] = await Promise.all([
-    getRelated(movie.id, 12),
-    getDefaultCast(),
-    getChrome(),
-  ]);
-
-  // The cast fallback is applied here at render time rather than inside the
-  // data layer, so the API keeps returning the stored value and an edit form
-  // can round-trip safely.
-  const cast = movie.cast.length > 0 ? movie.cast : defaultCast;
+  // No cast here any more: the detail page does not show one, so it does not
+  // read defaultCast either. The stored cast and /api/cast are untouched.
+  const [related, chrome] = await Promise.all([getRelated(movie.id, 12), getChrome()]);
 
   return (
     <DetailClient
       movie={movie}
       related={related}
-      cast={cast}
       brand={chrome.brand}
       footer={chrome.footer}
       labels={chrome.detail}
+      popoverLabels={chrome.popover}
     />
   );
 }

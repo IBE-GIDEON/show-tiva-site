@@ -20,6 +20,10 @@
   --gutter: clamp(1.25rem, 5vw, 4rem);
   --step: clamp(3.5rem, 7.5vw, 6.5rem);
 
+  /* The hover popover is absolutely positioned in DOCUMENT coordinates, so it
+     needs a positioned ancestor sitting at the document origin. .page starts at
+     0,0 and carries no padding, so it is the right anchor. */
+  position: relative;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -51,8 +55,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  padding-top: clamp(1.5rem, 2.6vw, 2.25rem);
-  padding-bottom: clamp(2.5rem, 6vw, 5rem);
+  padding-top: clamp(1.25rem, 2vw, 1.75rem);
+  /* Tightened with the masthead: this gap was pushing the still down the page. */
+  padding-bottom: clamp(1.25rem, 2.4vw, 2rem);
 }
 
 /* A <button> rather than a link, because it calls router.back() — so it has to
@@ -117,8 +122,12 @@
 
 /* -------------------------------------------------------------- masthead */
 
+/* The info block is deliberately compact: it and the still below it split the
+   opening screen roughly 30/70, so the artwork stays the dominant element.
+   Everything here is tuned against that budget — at the old sizes this block
+   alone ran past 70vh and pushed the still off screen. */
 .masthead {
-  padding-bottom: var(--step);
+  padding-bottom: clamp(0.9rem, 1.6vw, 1.35rem);
 }
 
 .genres {
@@ -139,25 +148,25 @@
 }
 
 .title {
-  margin-top: clamp(1.1rem, 2.2vw, 1.75rem);
+  margin-top: clamp(0.55rem, 1vw, 0.85rem);
   font-family: var(--font-heading);
-  font-size: clamp(2.6rem, 8.8vw, 6.5rem);
+  font-size: clamp(2.2rem, 4.2vw, 3.4rem);
   font-weight: 300;
-  line-height: 0.94;
+  line-height: 1.02;
   letter-spacing: -0.03em;
   text-wrap: balance;
   /* `balance` still will not break a single long word; on a 320px screen the
-     display size is 42px, which is wide enough to run off the edge. */
+     display size is 34px, which is wide enough to run off the edge. */
   overflow-wrap: break-word;
 }
 
 .subtitle {
-  margin-top: clamp(0.9rem, 1.7vw, 1.4rem);
+  margin-top: clamp(0.5rem, 0.85vw, 0.7rem);
   color: var(--grey);
   font-family: var(--font-heading);
-  font-size: clamp(0.85rem, 1.9vw, 1.2rem);
+  font-size: clamp(0.78rem, 1.15vw, 0.98rem);
   font-weight: 400;
-  letter-spacing: 0.32em;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
 }
 
@@ -165,11 +174,11 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.6rem 0;
-  margin-top: clamp(1.75rem, 3.2vw, 2.75rem);
+  gap: 0.5rem 0;
+  margin-top: clamp(0.8rem, 1.35vw, 1.1rem);
   list-style: none;
   color: var(--grey);
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   letter-spacing: 0.06em;
   font-variant-numeric: tabular-nums;
 }
@@ -184,19 +193,29 @@
   color: var(--accent);
 }
 
+/* Wider measure and a 3-line cap: at 60ch the description ran to five or six
+   lines and was the single biggest contributor to the block's height. The full
+   text stays in the DOM, so screen readers and SEO are unaffected. */
 .synopsis {
-  max-width: 60ch;
-  margin-top: clamp(1.6rem, 2.8vw, 2.25rem);
+  max-width: 78ch;
+  margin-top: clamp(0.8rem, 1.35vw, 1.1rem);
   color: var(--grey);
-  font-size: clamp(1rem, 1.25vw, 1.1rem);
-  line-height: 1.75;
+  font-size: clamp(0.97rem, 1.1vw, 1.06rem);
+  line-height: 1.72;
+  /* Three lines: enough to actually read the premise, while keeping the block
+     inside its share of the opening screen. Full text stays in the DOM. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-top: clamp(2.25rem, 3.8vw, 3.25rem);
+  margin-top: clamp(1rem, 1.7vw, 1.45rem);
 }
 
 /* The pair reads as one unit split by a single diagonal: outer edges vertical,
@@ -298,17 +317,39 @@
 
 .plate {
   width: 100%;
+  min-width: 0;
 }
 
+/* Full-bleed and deliberately huge — this is the page's centrepiece. The 70vh
+   floor holds it near two-thirds of the opening screen even on short, wide
+   windows where 21:9 alone would compute much shorter. */
 .plateFrame {
   position: relative;
   width: 100%;
-  /* The cap keeps the still from swallowing an ultrawide screen; the image
-     crops rather than the frame letterboxing. */
-  max-height: 76vh;
   aspect-ratio: 21 / 9;
+  /* Lands the info/still split near 35/65 at a typical desktop window. */
+  min-height: 68vh;
+  max-height: 88vh;
   overflow: hidden;
   background: #101010;
+  transition: height 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Playing: the frame drops its poster proportions and becomes a theatre. */
+.plateFramePlaying {
+  aspect-ratio: auto;
+  height: 92vh;
+  min-height: 0;
+  max-height: none;
+  background: #000000;
+}
+
+@media (max-width: 899px) {
+  .plateFrame {
+    aspect-ratio: 16 / 10;
+    min-height: 0;
+    max-height: none;
+  }
 }
 
 .plateImg {
@@ -365,6 +406,77 @@
   margin-left: 0.2em;
 }
 
+/* ---------------------------------------------------------------- player */
+
+.player {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* contain, not cover: a film frame must never be cropped. */
+  object-fit: contain;
+  background: #000000;
+}
+
+.playerExit {
+  position: absolute;
+  top: clamp(0.75rem, 1.6vw, 1.25rem);
+  right: clamp(0.75rem, 1.6vw, 1.25rem);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  height: 2.5rem;
+  padding: 0 1rem 0 0.85rem;
+  border: none;
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.playerExit:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.playerExitGlyph {
+  width: 11px;
+  height: 11px;
+  flex: none;
+}
+
+/* A quiet note rather than a blocking overlay: the screen still shows the key
+   art, so covering it would defeat the point. */
+.playerNote {
+  position: absolute;
+  z-index: 2;
+  bottom: clamp(0.9rem, 2vw, 1.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(100% - 2rem);
+  padding: 0.55rem 1rem;
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--grey);
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+/* The fade-to-page gradient belongs to the poster state, not the theatre. */
+.plateFramePlaying::after {
+  display: none;
+}
+
+/* The plate is full-bleed, so its caption has to re-apply the page shell to
+   line up with the rest of the content. */
 .plateCaption {
   width: 100%;
   max-width: var(--shell-max);
@@ -377,9 +489,9 @@
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 0.75rem 2rem;
-  margin-top: clamp(1.5rem, 3vw, 2.5rem);
-  padding-top: clamp(0.9rem, 1.8vw, 1.25rem);
+  gap: 0.5rem 1.5rem;
+  margin-top: clamp(0.9rem, 1.4vw, 1.2rem);
+  padding-top: clamp(0.7rem, 1.1vw, 0.95rem);
   border-top: 1px solid var(--line);
 }
 
@@ -447,87 +559,6 @@
   line-height: 1.7;
 }
 
-/* ------------------------------------------------------------------ cast */
-
-/* Explicit column counts rather than auto-fill: the cell size stays deliberate
-   at every width, and the row breaks land where they were drawn. */
-.castGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(1.5rem, 2.6vw, 2.25rem) clamp(1rem, 2vw, 1.75rem);
-  list-style: none;
-}
-
-@media (min-width: 560px) {
-  .castGrid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (min-width: 860px) {
-  .castGrid {
-    grid-template-columns: repeat(6, 1fr);
-  }
-}
-
-@media (min-width: 1120px) {
-  .castGrid {
-    grid-template-columns: repeat(8, 1fr);
-  }
-}
-
-.castItem {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
-.castPortrait {
-  position: relative;
-  display: block;
-  width: 100%;
-  aspect-ratio: 1;
-  overflow: hidden;
-  border-radius: 2px;
-  background: rgba(250, 250, 250, 0.05);
-}
-
-.castImg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* Portraits read as one set rather than eight different photo shoots. */
-  filter: grayscale(1) contrast(1.04) brightness(0.94);
-}
-
-.castMonogram {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  color: var(--grey);
-  font-family: var(--font-heading);
-  font-size: clamp(0.85rem, 1.5vw, 1.05rem);
-  font-weight: 400;
-  letter-spacing: 0.12em;
-}
-
-.castName {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
-  overflow-wrap: break-word;
-  color: var(--ink);
-  font-size: 0.8rem;
-  font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: 0.01em;
-}
-
 /* --------------------------------------------------------------- related */
 
 /* 12 related titles divide evenly by 2, 3, 4 and 6, so every row stays full. */
@@ -556,54 +587,14 @@
   }
 }
 
+/* The card itself is the catalog's .posterCard from watch.module.css; this
+   only has to give it a grid cell that can shrink. */
 .relatedItem {
   min-width: 0;
 }
 
-.relatedLink {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 0.9rem;
-}
-
-.relatedFrame {
-  display: block;
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  overflow: hidden;
-  border-radius: 2px;
-  background: rgba(250, 250, 250, 0.04);
-}
-
-.relatedImg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.relatedLink:hover .relatedImg {
-  transform: scale(1.04);
-}
-
 /* Two lines, not one nowrap line: at two columns on a 320px screen the cell is
    ~130px wide, and single-line truncation ellipsised nearly every title. */
-.relatedTitle {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
-  overflow-wrap: break-word;
-  color: var(--grey);
-  font-size: 0.78rem;
-  font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: 0.02em;
-  transition: color 0.3s ease;
-}
 
 .relatedLink:hover .relatedTitle {
   color: var(--ink);
