@@ -201,38 +201,42 @@ export default function WatchClient({
               <img src={slide.image} alt={slide.title} className={styles.heroImageLayer} />
               <div className={styles.heroGradientOverlay} />
 
-              <div className={styles.heroContent}>
-                <span className={styles.durationTag}>{labels.heroDurationPrefix} {slide.duration}</span>
-                <h1 className={styles.heroTitle}>{slide.title}</h1>
-                <p className={styles.heroDesc}>{slide.description}</p>
+              {/* Same 1480/48 box as .watchHeaderInner and .watchMain, so the
+                  hero copy starts on the logo's and the poster rows' left edge. */}
+              <div className={styles.heroInner}>
+                <div className={styles.heroContent}>
+                  <span className={styles.durationTag}>{labels.heroDurationPrefix} {slide.duration}</span>
+                  <h1 className={styles.heroTitle}>{slide.title}</h1>
+                  <p className={styles.heroDesc}>{slide.description}</p>
 
-                <div className={styles.heroBtnGroup}>
-                  <button
-                    className={styles.watchNowBtn}
-                    onClick={() => router.push(`/watch/${slide.id}`)}
-                  >
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                    <span>{labels.heroWatchNow}</span>
-                  </button>
+                  <div className={styles.heroBtnGroup}>
+                    <button
+                      className={styles.watchNowBtn}
+                      onClick={() => router.push(`/watch/${slide.id}`)}
+                    >
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                      <span>{labels.heroWatchNow}</span>
+                    </button>
 
-                  <button
-                    className={`${styles.addListBtn} ${isSaved ? styles.addListActive : ""}`}
-                    onClick={() => toggleBookmark(slide.id)}
-                  >
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      {isSaved ? (
-                        <polyline points="20 6 9 17 4 12" />
-                      ) : (
-                        <>
-                          <line x1="12" y1="5" x2="12" y2="19" />
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                        </>
-                      )}
-                    </svg>
-                    <span>{isSaved ? labels.heroAdded : labels.heroAddList}</span>
-                  </button>
+                    <button
+                      className={`${styles.addListBtn} ${isSaved ? styles.addListActive : ""}`}
+                      onClick={() => toggleBookmark(slide.id)}
+                    >
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        {isSaved ? (
+                          <polyline points="20 6 9 17 4 12" />
+                        ) : (
+                          <>
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                          </>
+                        )}
+                      </svg>
+                      <span>{isSaved ? labels.heroAdded : labels.heroAddList}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

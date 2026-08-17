@@ -149,12 +149,33 @@
   pointer-events: none;
 }
 
-.heroContent {
+/* Mirrors .watchHeaderInner and .watchMain exactly, so the hero copy sits on
+   the same left edge as the logo above it and the poster rows below. The copy
+   used to start at 11vw, which drifted away from that gutter at every width.
+   Keep these three in sync. */
+.heroInner {
   position: relative;
   z-index: 10;
-  padding: 0 4vw 0 11vw;
-  width: 55%;
-  max-width: 760px;
+  width: 100%;
+  max-width: 1480px;
+  /* `auto` centres it inside the flex slide container. */
+  margin-inline: auto;
+  padding-inline: 48px;
+}
+
+.heroContent {
+  width: 100%;
+  max-width: 620px;
+}
+
+@media (max-width: 900px) {
+  .heroInner {
+    padding-inline: 5vw;
+  }
+
+  .heroContent {
+    max-width: none;
+  }
 }
 
 .durationTag {
@@ -272,24 +293,43 @@
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 2px;
   z-index: 20;
 }
 
+/* The button is 20px so it clears a usable tap target; the dot itself is drawn
+   by ::before at 8px. Sizing the button to the dot would leave an 8px target,
+   which is unhittable on touch. */
 .dashBar {
-  width: 30px;
-  height: 4px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.25);
+  position: relative;
+  width: 20px;
+  height: 20px;
   border: none;
-  cursor: pointer;
+  background: none;
   padding: 0;
-  transition: width 0.4s ease, background 0.4s ease;
+  cursor: pointer;
 }
 
-.activeDashBar {
-  width: 48px;
-  background: #ffffff;
+.dashBar::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(255, 255, 225, 0.32);
+  transition: background 0.4s ease, transform 0.4s ease;
+}
+
+.dashBar:hover::before {
+  background: rgba(255, 255, 225, 0.62);
+}
+
+.activeDashBar::before {
+  background: #ffffe1;
+  transform: translate(-50%, -50%) scale(1.5);
 }
 
 .topNavbar {
