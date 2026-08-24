@@ -3,9 +3,10 @@
 // Sign-in / sign-up form.
 //
 // Front-end only: there is no backend, so validation runs entirely in the
-// browser and a valid submit just enters the app (/watch). Nothing is stored
-// or transmitted — in particular the password is never persisted anywhere.
-// Wire the onSubmit success branch to a real auth call when a backend exists.
+// browser and a valid submit just enters the app (/watch). Only the display
+// name/email are kept locally for the demo profile menu; passwords are never
+// persisted anywhere. Wire the success branch to a real auth call when a
+// backend exists.
 import { useState } from "react";
 
 import Link from "next/link";
@@ -91,7 +92,10 @@ export default function AuthForm({ mode, brand, surface = "page" }: AuthFormProp
     if (Object.keys(found).length > 0) return;
 
     // No backend yet: a valid form is treated as success for the demo.
-    markDemoSignedIn();
+    markDemoSignedIn({
+      name: isSignup ? name : undefined,
+      email,
+    });
     setPending(true);
     const returnTo = getSafeReturnTo();
     if (returnTo) {

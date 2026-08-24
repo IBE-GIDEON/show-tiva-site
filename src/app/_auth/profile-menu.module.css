@@ -1,0 +1,345 @@
+.root {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  z-index: 1500;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  padding: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  color: #ffffe1;
+  transition:
+    background 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease,
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.trigger svg {
+  width: 52%;
+  height: 52%;
+}
+
+.trigger:hover {
+  transform: translateY(-1px);
+}
+
+.glass {
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.glass:hover,
+.glass[aria-expanded="true"] {
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.minimal {
+  width: 2.35rem;
+  height: 2.35rem;
+  border: 0;
+  background: none;
+  color: #8a8a8a;
+}
+
+.minimal:hover,
+.minimal[aria-expanded="true"] {
+  color: #ffffe1;
+  background: rgba(255, 255, 225, 0.06);
+}
+
+.control {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  background: none;
+  color: rgba(255, 255, 225, 0.72);
+}
+
+.control:hover,
+.control[aria-expanded="true"] {
+  color: #ffffe1;
+  background: rgba(255, 255, 225, 0.06);
+}
+
+.signedIn.glass {
+  border-color: rgba(255, 46, 61, 0.38);
+  box-shadow: 0 0 0 1px rgba(255, 46, 61, 0.04), 0 10px 28px rgba(255, 46, 61, 0.16);
+}
+
+.avatar,
+.profileAvatar {
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 32% 25%, rgba(255, 255, 225, 0.95), rgba(255, 255, 225, 0.1) 28%, transparent 30%),
+    linear-gradient(145deg, #ff2e3d 0%, #9f101a 58%, #2b0307 100%);
+  color: #ffffff;
+  font-family: var(--font-heading), "Outfit", sans-serif;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.avatar {
+  width: calc(100% - 6px);
+  height: calc(100% - 6px);
+  font-size: 0.7rem;
+}
+
+.profileAvatar {
+  width: 44px;
+  height: 44px;
+  font-size: 0.78rem;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: min(330px, calc(100vw - 24px));
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 225, 0.12);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 225, 0.055), rgba(255, 255, 225, 0.015)),
+    #090909;
+  color: #ffffe1;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.68);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transform-origin: top right;
+  animation: menuIn 0.18s ease both;
+}
+
+.menu::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 16px;
+  width: 10px;
+  height: 10px;
+  border-left: 1px solid rgba(255, 255, 225, 0.12);
+  border-top: 1px solid rgba(255, 255, 225, 0.12);
+  background: #111111;
+  transform: rotate(45deg);
+}
+
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.profileBlock {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 8px 8px 12px;
+}
+
+.profileText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profileText strong {
+  overflow: hidden;
+  color: #ffffe1;
+  font-family: var(--font-heading), "Outfit", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profileText span {
+  overflow: hidden;
+  color: rgba(255, 255, 225, 0.55);
+  font-size: 0.74rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menuTitle {
+  padding: 10px 8px 7px;
+  border-top: 1px solid rgba(255, 255, 225, 0.08);
+  color: rgba(255, 255, 225, 0.48);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.menuList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.menuItem {
+  width: 100%;
+  min-height: 52px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.menuItem:hover {
+  background: rgba(255, 255, 225, 0.065);
+  transform: translateX(-1px);
+}
+
+.menuIcon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 225, 0.06);
+  color: rgba(255, 255, 225, 0.76);
+}
+
+.menuIcon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.menuText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.menuLabel {
+  color: #ffffe1;
+  font-family: var(--font-heading), "Outfit", sans-serif;
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.menuCopy {
+  overflow: hidden;
+  color: rgba(255, 255, 225, 0.5);
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.switchTrack {
+  width: 38px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 225, 0.14);
+  transition: background 0.2s ease;
+}
+
+.switchTrack span {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #ffffe1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.switchOn {
+  background: rgba(255, 46, 61, 0.45);
+}
+
+.switchOn span {
+  background: #ffffff;
+  transform: translateX(16px);
+}
+
+.signOut {
+  margin-top: 8px;
+  border-top: 1px solid rgba(255, 255, 225, 0.08);
+  border-radius: 0 0 6px 6px;
+  color: #ff6a75;
+}
+
+.signOut .menuIcon {
+  background: rgba(255, 46, 61, 0.1);
+  color: #ff6a75;
+}
+
+.signOut .menuCopy {
+  color: rgba(255, 106, 117, 0.62);
+}
+
+.trigger:focus-visible,
+.menuItem:focus-visible {
+  outline: 1px solid #ffffe1;
+  outline-offset: 4px;
+}
+
+@media (max-width: 420px) {
+  .menu {
+    right: -8px;
+    width: min(310px, calc(100vw - 18px));
+  }
+
+  .menuItem {
+    grid-template-columns: 32px minmax(0, 1fr) auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trigger,
+  .menu,
+  .menuItem,
+  .switchTrack,
+  .switchTrack span {
+    animation: none;
+    transition: none;
+  }
+}

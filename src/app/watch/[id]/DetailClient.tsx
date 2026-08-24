@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { getSignupHref, isDemoSignedIn } from "../../_auth/demo-auth";
+import ProfileMenu from "../../_auth/ProfileMenu";
 import type { Movie } from "@/lib/content-types";
 import type { Brand, DetailLabels, FooterContent, PopoverLabels } from "@/lib/site-types";
 import SearchOverlay from "../SearchOverlay";
@@ -107,11 +108,6 @@ export default function DetailClient({
     }
 
     router.push(getSignupHref(returnTo));
-  };
-
-  const openFullPageSignin = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    window.location.assign("/signin");
   };
 
   const handleCardMouseEnter = (m: Movie, e: React.MouseEvent) => {
@@ -255,12 +251,7 @@ export default function DetailClient({
             </svg>
           </button>
 
-          <Link href="/signin" className={styles.headerIconBtn} aria-label={labels.profile} onClick={openFullPageSignin}>
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-          </Link>
+          <ProfileMenu ariaLabel={labels.profile} variant="minimal" />
         </div>
       </header>
 

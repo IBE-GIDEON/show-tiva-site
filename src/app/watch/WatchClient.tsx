@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { getSignupHref, isDemoSignedIn } from "../_auth/demo-auth";
+import ProfileMenu from "../_auth/ProfileMenu";
 import type { Movie, Section } from "@/lib/content-types";
 import type { Brand, FooterContent, PopoverLabels, WatchLabels } from "@/lib/site-types";
 import SearchOverlay from "./SearchOverlay";
@@ -51,11 +52,6 @@ export default function WatchClient({
     }
 
     router.push(getSignupHref(returnTo));
-  };
-
-  const openFullPageSignin = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    window.location.assign("/signin");
   };
 
   const handleCardMouseEnter = (movie: Movie, e: React.MouseEvent) => {
@@ -225,13 +221,8 @@ export default function WatchClient({
               </svg>
             </button>
 
-            {/* Profile → sign in. */}
-            <Link href="/signin" className={styles.iconBtn} aria-label={labels.profile} onClick={openFullPageSignin}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-            </Link>
+            {/* Profile menu. */}
+            <ProfileMenu ariaLabel={labels.profile} variant="glass" />
           </div>
         </div>
       </header>
