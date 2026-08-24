@@ -1,0 +1,461 @@
+.page {
+  --bg: #000000;
+  --panel: #0d0d0d;
+  --field: #101010;
+  --ink: #ffffe1;
+  --grey: #8a8a8a;
+  --line: rgba(255, 255, 225, 0.12);
+  --line-strong: rgba(255, 255, 225, 0.32);
+  --red: #fc3343;
+
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 1fr;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body), 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+@media (min-width: 900px) {
+  .page {
+    /* Brand panel flexes, form column is fixed and comfortable. */
+    grid-template-columns: 1fr minmax(460px, 40vw);
+  }
+}
+
+/* ------------------------------------------------------------ brand panel */
+
+.brandPanel {
+  position: relative;
+  display: none;
+  overflow: hidden;
+  padding: clamp(3rem, 6vw, 5.5rem);
+  background:
+    radial-gradient(120% 90% at 15% 10%, rgba(252, 51, 67, 0.14) 0%, transparent 55%),
+    #050505;
+  border-right: 1px solid var(--line);
+}
+
+@media (min-width: 900px) {
+  .brandPanel {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+}
+
+.brandInner {
+  position: relative;
+  z-index: 1;
+  max-width: 30ch;
+}
+
+.brandHeadline {
+  margin-top: 2rem;
+  font-family: var(--font-heading), 'Outfit', sans-serif;
+  font-size: clamp(2rem, 3vw, 3rem);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.brandSub {
+  margin-top: 1rem;
+  color: var(--grey);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.signupBrandPanel {
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: clamp(220px, 40vh, 360px);
+  padding: 0;
+  background: #020202;
+  border-right: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.signupShowcase {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(90% 70% at 70% 14%, rgba(252, 51, 67, 0.22) 0%, transparent 55%),
+    #000000;
+}
+
+.authVideo {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background-color: #000000;
+  opacity: 0;
+  transform: scale(1.025);
+  animation: authVideoIn 0.9s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  filter: contrast(1.08) saturate(1.08);
+  will-change: opacity, transform;
+}
+
+.authVideoOne {
+  object-position: center;
+}
+
+.authVideoTwo {
+  object-position: center;
+}
+
+.authVideoFour {
+  object-position: center;
+}
+
+.signupShade {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.74) 0%, rgba(0, 0, 0, 0.38) 44%, rgba(0, 0, 0, 0.1) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.82) 100%);
+}
+
+.signupBrandInner {
+  z-index: 3;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 42ch;
+  padding: clamp(1.5rem, 5vw, 5.5rem);
+}
+
+.signupBrandInner .brandHeadline,
+.signupBrandInner .brandSub {
+  text-shadow: 0 2px 22px rgba(0, 0, 0, 0.72);
+}
+
+.signupBrandInner .brandSub {
+  color: rgba(255, 255, 225, 0.76);
+}
+
+.signupBrandPanel .brandGlow {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .signupBrandPanel {
+    min-height: auto;
+    border-right: 1px solid var(--line);
+    border-bottom: 0;
+  }
+
+  .signupBrandInner {
+    padding: clamp(3rem, 6vw, 5.5rem);
+  }
+}
+
+@keyframes authVideoIn {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1.01);
+  }
+}
+
+/* A soft brand-red haze anchored to a corner, well behind the copy. */
+.brandGlow {
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 55%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(252, 51, 67, 0.16) 0%, transparent 66%);
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------- form panel */
+
+.formPanel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2rem, 6vw, 4rem) clamp(1.25rem, 5vw, 3.5rem);
+  background: var(--bg);
+}
+
+.formInner {
+  width: 100%;
+  max-width: 380px;
+}
+
+.lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.lockupMark {
+  display: block;
+  width: auto;
+  height: 30px;
+}
+
+.lockupWord {
+  display: block;
+  width: auto;
+  height: 20px;
+}
+
+/* On the form side only shown below 900px, where the brand panel is hidden. */
+.mobileLockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 2.5rem;
+}
+
+.mobileLockup .lockupMark {
+  height: 26px;
+}
+
+.mobileLockup .lockupWord {
+  height: 17px;
+}
+
+@media (min-width: 900px) {
+  .mobileLockup {
+    display: none;
+  }
+}
+
+.title {
+  font-family: var(--font-heading), 'Outfit', sans-serif;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.subtitle {
+  margin-top: 0.6rem;
+  color: var(--grey);
+  font-size: 0.98rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  margin-top: 2.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.labelRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+
+.forgot {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--grey);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: color 0.2s ease;
+}
+
+.forgot:hover {
+  color: var(--ink);
+}
+
+.input {
+  width: 100%;
+  height: 52px;
+  padding: 0 1rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--field);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 225, 0.34);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--line-strong);
+  background: #141414;
+}
+
+.inputError {
+  border-color: rgba(252, 51, 67, 0.7);
+}
+
+.passwordWrap {
+  position: relative;
+}
+
+/* Sign-up shows the reveal toggle inside the field; sign-in uses the one by
+   the label. Padding keeps text clear of the button. */
+.reveal {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  border: none;
+  background: none;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  color: var(--grey);
+  font-size: 0.74rem;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.reveal:hover {
+  color: var(--ink);
+}
+
+.passwordWrap .input {
+  padding-right: 3.75rem;
+}
+
+.error {
+  color: #ff7a86;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+/* Primary button — logo red, cut to the logo's 18.43deg on the right edge
+   (run = height / 3). Straight left, slanted right. */
+.submit {
+  --h: 54px;
+  --slant: 18px;
+
+  height: var(--h);
+  margin-top: 0.6rem;
+  padding: 0 calc(1.5rem + var(--slant)) 0 1.5rem;
+  border: none;
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - var(--slant)) 0, 100% 100%, 0 100%);
+  background: var(--red);
+  color: #ffffe1;
+  font-family: var(--font-heading), 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.submit:hover {
+  background: #ff4552;
+}
+
+.submit:active {
+  transform: translateY(1px);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.switch {
+  margin-top: 1.75rem;
+  color: var(--grey);
+  font-size: 0.92rem;
+}
+
+.switch a {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.switch a:hover {
+  color: var(--red);
+}
+
+/* ------------------------------------------------------------ modal form */
+
+.modalPage {
+  min-height: auto;
+  display: block;
+  background: transparent;
+}
+
+.modalPage .brandPanel {
+  display: none;
+}
+
+.modalPage .formPanel {
+  display: block;
+  padding: 0;
+  background: transparent;
+}
+
+.modalPage .formInner {
+  max-width: none;
+}
+
+.modalPage .mobileLockup {
+  display: inline-flex;
+  margin-bottom: 2rem;
+  padding-right: 3rem;
+}
+
+.modalPage .title {
+  padding-right: 3rem;
+  font-size: clamp(1.55rem, 6vw, 2rem);
+}
+
+.modalPage .subtitle {
+  padding-right: 2.5rem;
+}
+
+.modalPage .form {
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+
+.modalPage .input {
+  height: 50px;
+}
+
+.modalPage .switch {
+  margin-top: 1.35rem;
+}

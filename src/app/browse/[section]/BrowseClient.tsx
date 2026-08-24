@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useMemo, useRef, useState } from "react";
 
+import { getSignupHref, isDemoSignedIn } from "../../_auth/demo-auth";
 import type { BrowseData } from "../_lib/browse-data";
 import type { Movie } from "@/lib/content-types";
 
@@ -64,6 +65,13 @@ const IconSearch = (
   </svg>
 );
 
+const IconProfile = (
+  <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+);
+
 const IconChevron = (
   <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <polyline points="6 9 12 15 18 9" />
@@ -110,6 +118,11 @@ export default function Variant({ section, sections, allMovies, facets, chrome }
     height: number;
   } | null>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const openFullPageSignin = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    window.location.assign("/signin");
+  };
 
   const handleCardMouseEnter = (movie: Movie, e: React.MouseEvent) => {
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
@@ -260,6 +273,11 @@ export default function Variant({ section, sections, allMovies, facets, chrome }
   }
 
   function toggleSaved(id: string) {
+    if (!isDemoSignedIn()) {
+      router.push(getSignupHref());
+      return;
+    }
+
     setSaved((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -291,15 +309,22 @@ export default function Variant({ section, sections, allMovies, facets, chrome }
             >
               {IconSearch}
             </button>
-            <Link href="/watch" className={styles.backLink}>
-              <span className={styles.backIcon}>{IconArrowLeft}</span>
-              {chrome.detail.goBack}
+
+            <Link href="/signin" className={styles.topbarAccount} aria-label={chrome.watch.profile} onClick={openFullPageSignin}>
+              {IconProfile}
             </Link>
           </div>
         </div>
       </header>
 
       <main className={styles.main}>
+        <div className={styles.pageBackRow}>
+          <Link href="/watch" className={styles.pageBackLink}>
+            <span className={styles.backIcon}>{IconArrowLeft}</span>
+            {chrome.detail.goBack}
+          </Link>
+        </div>
+
         {/* ------------------------------------------------ category banner -- */}
         {/* Just the category title now — the breadcrumb, decorative slash, tint
             wash and stats line were all removed for a simpler header. */}
@@ -321,6 +346,7 @@ export default function Variant({ section, sections, allMovies, facets, chrome }
                   <Link
                     href={`/browse/${s.id}`}
                     className={`${styles.railItem} ${current ? styles.railItemActive : ""}`}
+                    style={{ "--rail-accent": s.accent } as React.CSSProperties}
                     aria-current={current ? "page" : undefined}
                   >
                     {s.title}
@@ -336,7 +362,7 @@ export default function Variant({ section, sections, allMovies, facets, chrome }
         <section className={styles.console} aria-label="Filters">
           <div className={styles.controls}>
             <div className={`${styles.field} ${styles.fieldWide}`}>
-              <label className={styles.fieldLabel} htmlFor="v1-search">
+              <label className={styles.srOnly} htmlFor="v1-search">
                 {chrome.watch.search} titles
               </label>
               <div className={styles.searchWrap}>
@@ -502,9 +528,6 @@ export default function Variant({ section, sections, allMovies, facets, chrome }
                 </button>
               </div>
 
-              <button type="button" className={styles.resetBtn} onClick={resetAll} disabled={!isDirty}>
-                Reset
-              </button>
             </div>
           </div>
 

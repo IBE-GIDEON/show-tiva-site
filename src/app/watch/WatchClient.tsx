@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { getSignupHref, isDemoSignedIn } from "../_auth/demo-auth";
 import type { Movie, Section } from "@/lib/content-types";
 import type { Brand, FooterContent, PopoverLabels, WatchLabels } from "@/lib/site-types";
 import SearchOverlay from "./SearchOverlay";
@@ -34,11 +35,28 @@ export default function WatchClient({
   const [bookmarked, setBookmarked] = useState<{ [key: string]: boolean }>({});
   const [themeDark] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [wishlistOpen, setWishlistOpen] = useState(false);
+  const wishlistCount = Object.values(bookmarked).filter(Boolean).length;
+  const savedMovies = allMovies.filter((movie) => bookmarked[movie.id]);
 
   const [hoveredMovie, setHoveredMovie] = useState<Movie | null>(null);
   const [popoverPos, setPopoverPos] = useState<{ top: number; left: number; alignRight: boolean; height: number } | null>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
+
+  const requireAuth = (action: () => void, returnTo?: string) => {
+    if (isDemoSignedIn()) {
+      action();
+      return;
+    }
+
+    router.push(getSignupHref(returnTo));
+  };
+
+  const openFullPageSignin = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    window.location.assign("/signin");
+  };
 
   const handleCardMouseEnter = (movie: Movie, e: React.MouseEvent) => {
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
@@ -139,7 +157,28 @@ export default function WatchClient({
     if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
   }, []);
 
+  useEffect(() => {
+    if (!wishlistOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setWishlistOpen(false);
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [wishlistOpen]);
+
   const toggleBookmark = (movieId: string) => {
+    if (!isDemoSignedIn()) {
+      router.push(getSignupHref());
+      return;
+    }
+
     setBookmarked((prev) => ({ ...prev, [movieId]: !prev[movieId] }));
   };
 
@@ -172,20 +211,27 @@ export default function WatchClient({
               </svg>
             </button>
 
-            <button className={styles.iconBtn} aria-label={labels.notifications}>
-              <span className={styles.notificationBadge} />
+            <button
+              type="button"
+              className={`${styles.iconBtn} ${wishlistCount > 0 ? styles.wishlistIconActive : ""}`}
+              aria-label={wishlistCount > 0 ? `Saved to watch later, ${wishlistCount} saved` : "Saved to watch later"}
+              aria-expanded={wishlistOpen}
+              onClick={() => requireAuth(() => setWishlistOpen(true))}
+              title="Saved to watch later"
+            >
+              {wishlistCount > 0 && <span className={styles.wishlistBadge}>{wishlistCount}</span>}
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
               </svg>
             </button>
 
-            <button className={styles.iconBtn} aria-label={labels.profile}>
+            {/* Profile → sign in. */}
+            <Link href="/signin" className={styles.iconBtn} aria-label={labels.profile} onClick={openFullPageSignin}>
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
-            </button>
+            </Link>
           </div>
         </div>
       </header>
@@ -216,6 +262,7 @@ export default function WatchClient({
 
                   <div className={styles.heroBtnGroup}>
                     <button
+                      type="button"
                       className={styles.watchNowBtn}
                       onClick={() => router.push(`/watch/${slide.id}`)}
                     >
@@ -226,6 +273,7 @@ export default function WatchClient({
                     </button>
 
                     <button
+                      type="button"
                       className={`${styles.addListBtn} ${isSaved ? styles.addListActive : ""}`}
                       onClick={() => toggleBookmark(slide.id)}
                     >
@@ -370,6 +418,80 @@ export default function WatchClient({
       </main>
 
       <SiteFooter brand={brand} footer={footer} />
+
+      {wishlistOpen && (
+        <div className={styles.wishlistOverlay} role="dialog" aria-modal="true" aria-label="Saved to watch later">
+          <button
+            type="button"
+            className={styles.wishlistBackdrop}
+            aria-label="Close wishlist"
+            onClick={() => setWishlistOpen(false)}
+          />
+
+          <aside className={styles.wishlistPanel}>
+            <div className={styles.wishlistHeader}>
+              <div>
+                <h2 className={styles.wishlistTitle}>Saved to watch later</h2>
+              </div>
+
+              <button
+                type="button"
+                className={styles.wishlistClose}
+                aria-label="Close wishlist"
+                onClick={() => setWishlistOpen(false)}
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                  <line x1="5" y1="5" x2="19" y2="19" />
+                  <line x1="19" y1="5" x2="5" y2="19" />
+                </svg>
+              </button>
+            </div>
+
+            {savedMovies.length > 0 ? (
+              <ul className={styles.wishlistList}>
+                {savedMovies.map((movie) => (
+                  <li key={movie.id} className={styles.wishlistListItem}>
+                    <button
+                      type="button"
+                      className={styles.wishlistMovie}
+                      onClick={() => {
+                        setWishlistOpen(false);
+                        router.push(`/watch/${movie.id}`);
+                      }}
+                    >
+                      <img src={movie.image} alt="" className={styles.wishlistThumb} />
+                      <span className={styles.wishlistMovieText}>
+                        <span className={styles.wishlistMovieTitle}>{movie.title}</span>
+                        <span className={styles.wishlistMovieMeta}>
+                          {movie.year} · {movie.type || "Movie"} · ★ {movie.rating}
+                        </span>
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className={styles.wishlistRemove}
+                      aria-label={`Remove ${movie.title} from saved to watch later`}
+                      onClick={() => toggleBookmark(movie.id)}
+                    >
+                      <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                      </svg>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className={styles.wishlistEmpty}>
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                </svg>
+                <p>No movies saved to watch later yet.</p>
+              </div>
+            )}
+          </aside>
+        </div>
+      )}
 
       <SearchOverlay
         open={searchOpen}

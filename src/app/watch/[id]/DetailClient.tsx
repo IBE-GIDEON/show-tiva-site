@@ -11,6 +11,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { getSignupHref, isDemoSignedIn } from "../../_auth/demo-auth";
 import type { Movie } from "@/lib/content-types";
 import type { Brand, DetailLabels, FooterContent, PopoverLabels } from "@/lib/site-types";
 import SearchOverlay from "../SearchOverlay";
@@ -48,7 +49,12 @@ export default function DetailClient({
   // of the viewport, so the screen is what you are looking at rather than
   // something below the fold.
   const [playing, setPlaying] = useState(false);
+  const [playerPaused, setPlayerPaused] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [skipPulse, setSkipPulse] = useState<"backward" | "forward" | null>(null);
+  const [playerProgress, setPlayerProgress] = useState(38);
   const plateRef = useRef<HTMLDivElement | null>(null);
+  const skipPulseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Scrolling belongs in an effect, not the click handler: at click time the
   // frame is still at its poster height, so it would scroll to the wrong place.
@@ -56,6 +62,23 @@ export default function DetailClient({
     if (!playing) return;
     plateRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [playing]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(document.fullscreenElement === plateRef.current);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (skipPulseTimeoutRef.current) clearTimeout(skipPulseTimeoutRef.current);
+    };
+  }, []);
 
   // --- related card state (mirrors WatchClient) ---
   const [bookmarked, setBookmarked] = useState<{ [key: string]: boolean }>({});
@@ -69,7 +92,26 @@ export default function DetailClient({
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const toggleBookmark = (movieId: string) => {
+    if (!isDemoSignedIn()) {
+      router.push(getSignupHref());
+      return;
+    }
+
     setBookmarked((prev) => ({ ...prev, [movieId]: !prev[movieId] }));
+  };
+
+  const requireAuth = (action: () => void, returnTo?: string) => {
+    if (isDemoSignedIn()) {
+      action();
+      return;
+    }
+
+    router.push(getSignupHref(returnTo));
+  };
+
+  const openFullPageSignin = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    window.location.assign("/signin");
   };
 
   const handleCardMouseEnter = (m: Movie, e: React.MouseEvent) => {
@@ -112,13 +154,52 @@ export default function DetailClient({
     setPopoverPos(null);
   };
 
+  const startPlayer = () => {
+    setPlayerPaused(false);
+    setPlaying(true);
+  };
+
+  const toggleCurrentSaved = () => {
+    requireAuth(() => setSaved((value) => !value));
+  };
+
+  const closePlayer = () => {
+    if (document.fullscreenElement) {
+      void document.exitFullscreen().catch(() => undefined);
+    }
+    setPlayerPaused(false);
+    setPlaying(false);
+  };
+
+  const flashSkip = (direction: "backward" | "forward") => {
+    if (skipPulseTimeoutRef.current) clearTimeout(skipPulseTimeoutRef.current);
+    setPlayerProgress((value) => {
+      const nextValue = direction === "forward" ? value + 10 : value - 10;
+      return Math.min(100, Math.max(0, nextValue));
+    });
+    setSkipPulse(direction);
+    skipPulseTimeoutRef.current = setTimeout(() => {
+      setSkipPulse(null);
+    }, 620);
+  };
+
+  const toggleFullscreen = () => {
+    const frame = plateRef.current;
+    if (!frame) return;
+
+    if (document.fullscreenElement) {
+      void document.exitFullscreen().catch(() => undefined);
+      return;
+    }
+
+    void frame.requestFullscreen().catch(() => undefined);
+  };
+
   // `||`, not `??`, throughout: the store's validator accepts "" as well as
   // null for the nullable fields, and an empty string would slip past `??` —
   // printing a blank meta cell, or a broken image for an empty src.
   const kind = movie.type || labels.typeFallback;
   const plateSrc = movie.trailerUrl || movie.backdrop;
-
-  const genres = movie.genres.filter((genre) => genre.trim().length > 0);
 
   // Built as a list so a blank field drops out entirely rather than leaving a
   // hairline divider with nothing beside it.
@@ -130,6 +211,9 @@ export default function DetailClient({
     { key: "type", text: kind },
     { key: "quality", text: labels.qualityBadge },
   ].filter((item) => item.text.trim().length > 0);
+  const playerProgressStyle = {
+    "--player-progress": `${playerProgress}%`,
+  } as React.CSSProperties;
 
   return (
     <div className={styles.page}>
@@ -158,33 +242,32 @@ export default function DetailClient({
           <img className={styles.lockupWord} src={brand.wordmark} alt={brand.wordmarkAlt} />
         </Link>
 
-        <button
-          type="button"
-          className={styles.searchBtn}
-          aria-label={labels.search}
-          onClick={() => setSearchOpen(true)}
-        >
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-        </button>
+        <div className={styles.headerActions}>
+          <button
+            type="button"
+            className={styles.headerIconBtn}
+            aria-label={labels.search}
+            onClick={() => setSearchOpen(true)}
+          >
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </button>
+
+          <Link href="/signin" className={styles.headerIconBtn} aria-label={labels.profile} onClick={openFullPageSignin}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </Link>
+        </div>
       </header>
 
       <main className={styles.main}>
         {/* Compact info block above a full-bleed still: roughly 30/70 of the
             opening screen, so the artwork stays the dominant element. */}
         <section className={`${styles.shell} ${styles.masthead}`}>
-          {genres.length > 0 && (
-            <p className={styles.genres}>
-              {genres.map((genre, index) => (
-                <span key={`${genre}-${index}`} className={styles.genre}>
-                  {genre}
-                </span>
-              ))}
-            </p>
-          )}
-
           <h1 className={styles.title}>{movie.title}</h1>
           {movie.subtitle && <p className={styles.subtitle}>{movie.subtitle}</p>}
 
@@ -201,7 +284,7 @@ export default function DetailClient({
           <p className={styles.synopsis}>{movie.description}</p>
 
           <div className={styles.actions}>
-            <button type="button" className={styles.play} onClick={() => setPlaying(true)}>
+            <button type="button" className={styles.play} onClick={startPlayer}>
               <svg
                 className={styles.playGlyph}
                 viewBox="0 0 12 14"
@@ -217,7 +300,7 @@ export default function DetailClient({
               type="button"
               className={`${styles.save} ${saved ? styles.saveOn : ""}`}
               aria-pressed={saved}
-              onClick={() => setSaved((value) => !value)}
+              onClick={toggleCurrentSaved}
             >
               {/* Wrapped so the button's counter-skew rule can reach the label —
                   a bare text node would stay sheared with the button. */}
@@ -242,7 +325,7 @@ export default function DetailClient({
                 <button
                   type="button"
                   className={styles.playerExit}
-                  onClick={() => setPlaying(false)}
+                  onClick={closePlayer}
                 >
                   <svg
                     className={styles.playerExitGlyph}
@@ -261,6 +344,132 @@ export default function DetailClient({
                   <span>Close</span>
                 </button>
 
+                <div className={styles.playerChrome}>
+                  <div className={styles.playerTitleBar}>
+                    <h2 className={styles.playerMovieName}>{movie.title}</h2>
+                  </div>
+
+                  <div className={styles.playerCenterControls}>
+                    <button
+                      type="button"
+                      className={`${styles.playerControlButton} ${styles.playerSkipControl}`}
+                      aria-label="Rewind 10 seconds"
+                      onClick={() => flashSkip("backward")}
+                    >
+                      <svg viewBox="0 0 44 44" aria-hidden="true" focusable="false">
+                        <path
+                          d="M18.3 9.5 10.4 17l7.9 7.5M11.1 17h13.4a11.5 11.5 0 1 1-8.7 19"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <text x="22" y="27" textAnchor="middle">
+                          10
+                        </text>
+                      </svg>
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`${styles.playerControlButton} ${styles.playerPrimaryControl}`}
+                      aria-label={playerPaused ? "Play movie" : "Pause movie"}
+                      aria-pressed={!playerPaused}
+                      onClick={() => setPlayerPaused((value) => !value)}
+                    >
+                      {playerPaused ? (
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                          <path d="M8 5v14l11-7z" fill="currentColor" />
+                        </svg>
+                      ) : (
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                          <path d="M8 5h3v14H8zM13 5h3v14h-3z" fill="currentColor" />
+                        </svg>
+                      )}
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`${styles.playerControlButton} ${styles.playerSkipControl}`}
+                      aria-label="Forward 10 seconds"
+                      onClick={() => flashSkip("forward")}
+                    >
+                      <svg viewBox="0 0 44 44" aria-hidden="true" focusable="false">
+                        <path
+                          d="m25.7 9.5 7.9 7.5-7.9 7.5M32.9 17H19.5a11.5 11.5 0 1 0 8.7 19"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <text x="22" y="27" textAnchor="middle">
+                          10
+                        </text>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className={styles.playerControlDeck}>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={playerProgress}
+                      className={styles.playerProgressRange}
+                      style={playerProgressStyle}
+                      aria-label="Movie progress"
+                      onChange={(event) => setPlayerProgress(Number(event.currentTarget.value))}
+                    />
+
+                    <div className={styles.playerUtilityRow}>
+                      <button
+                        type="button"
+                        className={`${styles.playerControlButton} ${styles.playerFullscreenButton}`}
+                        aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+                        aria-pressed={isFullscreen}
+                        onClick={toggleFullscreen}
+                      >
+                        {isFullscreen ? (
+                          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path
+                              d="M9 4v5H4M4 9l6-6M15 20v-5h5M20 15l-6 6M20 9h-5V4M15 4l6 6M4 15h5v5M9 20l-6-6"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.8"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        ) : (
+                          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path
+                              d="M4 9V4h5M4 4l6 6M20 15v5h-5M20 20l-6-6M15 4h5v5M20 4l-6 6M9 20H4v-5M4 20l6-6"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.8"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {skipPulse && (
+                  <div
+                    className={`${styles.skipFeedback} ${
+                      skipPulse === "backward" ? styles.skipFeedbackBack : styles.skipFeedbackForward
+                    }`}
+                    aria-hidden="true"
+                  >
+                    {skipPulse === "backward" ? "-10" : "+10"}
+                  </div>
+                )}
+
                 {/* The store carries no video file for a title yet — only key
                     art — so the screen shows that until a source field exists. */}
                 <p className={styles.playerNote}>
@@ -272,7 +481,7 @@ export default function DetailClient({
                 type="button"
                 className={styles.platePlay}
                 aria-label={labels.trailerPlay}
-                onClick={() => setPlaying(true)}
+                onClick={startPlayer}
               >
                 <svg
                   className={styles.platePlayGlyph}
