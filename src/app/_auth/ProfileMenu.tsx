@@ -12,35 +12,10 @@ import {
 import styles from "./profile-menu.module.css";
 
 type ProfileMenuVariant = "glass" | "minimal" | "control";
-type Appearance = "dark" | "dim";
 
 interface ProfileMenuProps {
   ariaLabel?: string;
   variant?: ProfileMenuVariant;
-}
-
-const APPEARANCE_KEY = "show-tiva-appearance";
-
-function readAppearance(): Appearance {
-  if (typeof window === "undefined") return "dark";
-
-  try {
-    return window.localStorage.getItem(APPEARANCE_KEY) === "dim" ? "dim" : "dark";
-  } catch {
-    return "dark";
-  }
-}
-
-function writeAppearance(appearance: Appearance): void {
-  if (typeof window === "undefined") return;
-
-  document.documentElement.dataset.showtivaAppearance = appearance;
-
-  try {
-    window.localStorage.setItem(APPEARANCE_KEY, appearance);
-  } catch {
-    // Browser storage is optional; the visible toggle still updates.
-  }
 }
 
 function getInitials(profile: DemoUserProfile): string {
@@ -149,7 +124,6 @@ export default function ProfileMenu({ ariaLabel = "Profile", variant = "glass" }
     getServerProfileSnapshot,
   );
   const [open, setOpen] = useState(false);
-  const [appearance, setAppearance] = useState<Appearance>(() => readAppearance());
   const rootRef = useRef<HTMLDivElement | null>(null);
   const profile = useMemo<DemoUserProfile | null>(() => {
     if (!profileSnapshot) return null;
@@ -160,10 +134,6 @@ export default function ProfileMenu({ ariaLabel = "Profile", variant = "glass" }
       return null;
     }
   }, [profileSnapshot]);
-
-  useEffect(() => {
-    writeAppearance(appearance);
-  }, [appearance]);
 
   useEffect(() => {
     if (!open) return;
@@ -237,21 +207,13 @@ export default function ProfileMenu({ ariaLabel = "Profile", variant = "glass" }
               </span>
             </button>
 
-            <button
-              type="button"
-              className={styles.menuItem}
-              role="menuitem"
-              onClick={() => setAppearance((value) => (value === "dark" ? "dim" : "dark"))}
-            >
+            <button type="button" className={styles.menuItem} role="menuitem">
               <span className={styles.menuIcon}>
                 <MenuIcon kind="appearance" />
               </span>
               <span className={styles.menuText}>
                 <span className={styles.menuLabel}>Appearance</span>
-                <span className={styles.menuCopy}>{appearance === "dark" ? "Dark theatre" : "Dim theatre"}</span>
-              </span>
-              <span className={`${styles.switchTrack} ${appearance === "dim" ? styles.switchOn : ""}`}>
-                <span />
+                <span className={styles.menuCopy}>Show Tiva theatre styling</span>
               </span>
             </button>
 
