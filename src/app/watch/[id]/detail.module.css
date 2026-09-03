@@ -150,6 +150,33 @@
   height: clamp(11px, 1.5vw, 14px);
 }
 
+/* On entry the lockup travels in from the left instead of snapping into the
+   centre — the rest of the header is static, so a hard cut read as a jump.
+   Driven on the two images rather than on .lockup, because an animation's
+   final opacity outranks a normal declaration and would kill the hover fade
+   on the parent. */
+.lockupMark,
+.lockupWord {
+  animation: lockupGlideIn 0.85s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* The wordmark trails the mark by a beat, so the pair reads as one object
+   settling rather than two sliding in lockstep. */
+.lockupWord {
+  animation-delay: 0.09s;
+}
+
+@keyframes lockupGlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-56px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 /* -------------------------------------------------------------- masthead */
 
 /* The info block is deliberately compact: it and the still below it split the
@@ -1054,6 +1081,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .lockupMark,
+  .lockupWord {
+    animation: none;
+  }
+
   .backGlyph,
   .relatedImg,
   .lockup,
