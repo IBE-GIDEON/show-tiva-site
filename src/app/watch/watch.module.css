@@ -273,7 +273,9 @@
    swipe; this should feel like the image is barely breathing.
    Transform runs longer than opacity so the outgoing slide is fully faded
    before it finishes travelling, which hides the reset back to this position.
-   Keep the transform duration in sync with SLIDE_EXIT_MS in WatchClient. */
+   Keep the transform duration in sync with SLIDE_EXIT_MS in WatchClient.
+   Only the still and its scrim live in here — the copy and the buttons sit in
+   a separate fixed layer, because dragging them along read as a glitch. */
 .slideContainer {
   position: absolute;
   inset: 0;
@@ -351,6 +353,29 @@
 .heroContent {
   width: 100%;
   max-width: 620px;
+}
+
+/* The copy swaps where it stands instead of travelling with the still behind
+   it. The fade is short enough to read as an instant change, but stops the
+   words from hard-cutting mid-sentence. The button group deliberately sits
+   outside this block, so it never moves or re-animates at all. */
+.heroCopy {
+  animation: heroCopySwap 0.2s ease-out;
+}
+
+@keyframes heroCopySwap {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroCopy {
+    animation: none;
+  }
 }
 
 @media (max-width: 900px) {

@@ -178,6 +178,11 @@ export default function WatchClient({
     setBookmarked((prev) => ({ ...prev, [movieId]: !prev[movieId] }));
   };
 
+  // The copy layer renders the current slide directly rather than riding along
+  // inside the mapped stills.
+  const activeMovie = heroSlides[activeSlide] ?? null;
+  const activeMovieSaved = !!(activeMovie && bookmarked[activeMovie.id]);
+
   const scrollRow = (e: React.MouseEvent<HTMLButtonElement>, direction: number) => {
     const section = (e.currentTarget as HTMLElement).closest("section");
     const row = section?.querySelector<HTMLElement>(`.${styles.posterRow}`);
@@ -227,65 +232,75 @@ export default function WatchClient({
         </div>
       </header>
 
-      {/* Full-bleed hero: copy on the left over a top-anchored still */}
+      {/* Full-bleed hero: copy on the left over a top-anchored still.
+          Only the stills cross-fade and drift; the copy and the buttons are a
+          separate layer that never travels with them. */}
       <section className={styles.heroBanner}>
         {heroSlides.map((slide, index) => {
           const isActive = index === activeSlide;
           const isLeaving = index === leavingSlide;
-          const isSaved = !!bookmarked[slide.id];
           return (
             <div
               key={slide.id}
+              aria-hidden={!isActive}
               className={`${styles.slideContainer} ${isActive ? styles.activeSlide : ""} ${
                 isLeaving ? styles.leavingSlide : ""
               }`}
             >
               <img src={slide.image} alt={slide.title} className={styles.heroImageLayer} />
               <div className={styles.heroGradientOverlay} />
-
-              {/* Same 1480/48 box as .watchHeaderInner and .watchMain, so the
-                  hero copy starts on the logo's and the poster rows' left edge. */}
-              <div className={styles.heroInner}>
-                <div className={styles.heroContent}>
-                  <span className={styles.durationTag}>{labels.heroDurationPrefix} {slide.duration}</span>
-                  <h1 className={styles.heroTitle}>{slide.title}</h1>
-                  <p className={styles.heroDesc}>{slide.description}</p>
-
-                  <div className={styles.heroBtnGroup}>
-                    <button
-                      type="button"
-                      className={styles.watchNowBtn}
-                      onClick={() => router.push(`/watch/${slide.id}`)}
-                    >
-                      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                      <span>{labels.heroWatchNow}</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`${styles.addListBtn} ${isSaved ? styles.addListActive : ""}`}
-                      onClick={() => toggleBookmark(slide.id)}
-                    >
-                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        {isSaved ? (
-                          <polyline points="20 6 9 17 4 12" />
-                        ) : (
-                          <>
-                            <line x1="12" y1="5" x2="12" y2="19" />
-                            <line x1="5" y1="12" x2="19" y2="12" />
-                          </>
-                        )}
-                      </svg>
-                      <span>{isSaved ? labels.heroAdded : labels.heroAddList}</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
             </div>
           );
         })}
+
+        {/* Same 1480/48 box as .watchHeaderInner and .watchMain, so the hero
+            copy starts on the logo's and the poster rows' left edge. */}
+        {activeMovie && (
+          <div className={styles.heroInner}>
+            <div className={styles.heroContent}>
+              {/* Keyed on the slide so the words are replaced outright rather
+                  than tweened across. */}
+              <div key={activeMovie.id} className={styles.heroCopy}>
+                <span className={styles.durationTag}>{labels.heroDurationPrefix} {activeMovie.duration}</span>
+                <h1 className={styles.heroTitle}>{activeMovie.title}</h1>
+                <p className={styles.heroDesc}>{activeMovie.description}</p>
+              </div>
+
+              {/* Outside .heroCopy on purpose: the pair stays put across slide
+                  changes, so it is never keyed and never animates. */}
+              <div className={styles.heroBtnGroup}>
+                <button
+                  type="button"
+                  className={styles.watchNowBtn}
+                  onClick={() => router.push(`/watch/${activeMovie.id}`)}
+                >
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  <span>{labels.heroWatchNow}</span>
+                </button>
+
+                <button
+                  type="button"
+                  className={`${styles.addListBtn} ${activeMovieSaved ? styles.addListActive : ""}`}
+                  onClick={() => toggleBookmark(activeMovie.id)}
+                >
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    {activeMovieSaved ? (
+                      <polyline points="20 6 9 17 4 12" />
+                    ) : (
+                      <>
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                      </>
+                    )}
+                  </svg>
+                  <span>{activeMovieSaved ? labels.heroAdded : labels.heroAddList}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Carousel pagination dashes */}
         <div className={styles.carouselDashContainer}>
