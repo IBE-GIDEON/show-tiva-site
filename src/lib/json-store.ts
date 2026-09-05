@@ -17,8 +17,6 @@ import "server-only";
 import { copyFile, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-
 export class StoreError extends Error {
   constructor(
     readonly file: string,
@@ -54,25 +52,32 @@ export function isValidationError(cause: unknown): cause is StoreError {
   return cause instanceof StoreError && !(cause instanceof StoreUnreadableError);
 }
 
-function paths(file: string) {
+/**
+ * Sidecar paths for a write. Temp/backup live beside the target so `rename`
+ * stays atomic (it is only atomic within a single volume).
+ *
+ * The read path is NOT built here: see readJson().
+ */
+function writePaths(file: string) {
   return {
-    // Temp/backup live beside the target so `rename` stays atomic (it is only
-    // atomic within a single volume).
-    main: path.join(DATA_DIR, file),
-    temp: path.join(DATA_DIR, `${file}.tmp`),
-    backup: path.join(DATA_DIR, `${file}.bak`),
+    main: path.join(process.cwd(), "data", file),
+    temp: path.join(process.cwd(), "data", `${file}.tmp`),
+    backup: path.join(process.cwd(), "data", `${file}.bak`),
   };
 }
 
 /** Read + parse a store file, then hand it to a validator. Never cached. */
 export async function readJson<T>(file: string, validate: (value: unknown) => T): Promise<T> {
-  const { main } = paths(file);
-
+  // The join is written out as the readFile argument on purpose. Next's file
+  // tracing scopes a dynamic read to a subfolder only when it can see the
+  // "data" literal in the call itself; routed through a constant or a helper
+  // it fell back to tracing the whole project, so every server function
+  // shipped public/ and its videos. Keep the literal in this call.
   let raw: string;
   try {
-    raw = await readFile(main, "utf8");
+    raw = await readFile(path.join(process.cwd(), "data", file), "utf8");
   } catch (cause) {
-    throw new StoreUnreadableError(file, `could not read ${main}. ${(cause as Error).message}`);
+    throw new StoreUnreadableError(file, `could not read data/${file}. ${(cause as Error).message}`);
   }
 
   let parsed: unknown;
@@ -109,7 +114,7 @@ async function renameWithRetry(from: string, to: string, attempts = 3): Promise<
 
 /** Back up the current file, then atomically replace it. */
 async function persist(file: string, contents: unknown): Promise<void> {
-  const { main, temp, backup } = paths(file);
+  const { main, temp, backup } = writePaths(file);
 
   // Keep the last good copy; ignore failure on a first-ever write.
   await copyFile(main, backup).catch(() => undefined);
