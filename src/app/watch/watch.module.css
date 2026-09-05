@@ -1226,6 +1226,47 @@
   transform: translateY(0);
 }
 
+/* One real link stretched over the artwork makes the card reachable by
+   keyboard. It sits above the hover overlay, so a click anywhere on the
+   artwork opens the title, and below the bookmark button and rating badge. */
+.posterLink {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: inherit;
+  outline: none;
+}
+/* The link's accessible name, visually hidden. */
+.posterLinkLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Keyboard focus shows the same reveal as hover, plus a ring on the frame.
+   Scoped to :focus-visible through :has() so a mouse click on the bookmark
+   button does not light the whole card up. */
+.posterCard:has(.posterLink:focus-visible) .posterWrapper,
+.posterCardLandscape:has(.posterLink:focus-visible) .posterWrapperLandscape {
+  box-shadow: 0 0 0 3px #ffffe1, 0 14px 32px rgba(0, 0, 0, 0.6);
+}
+.posterCard:has(.posterLink:focus-visible) .posterOverlay,
+.posterCardLandscape:has(.posterLink:focus-visible) .posterOverlay {
+  opacity: 1;
+}
+.posterCard:has(.posterLink:focus-visible) .playBtnCircle,
+.posterCardLandscape:has(.posterLink:focus-visible) .playBtnCircle {
+  transform: scale(1);
+}
+.posterCard:has(.posterLink:focus-visible) .posterHoverInfo,
+.posterCardLandscape:has(.posterLink:focus-visible) .posterHoverInfo {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .posterTitle {
   font-family: var(--font-heading), 'Outfit', sans-serif;
   font-size: 0.88rem;

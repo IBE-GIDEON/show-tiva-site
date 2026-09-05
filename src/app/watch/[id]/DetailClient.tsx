@@ -516,24 +516,29 @@ export default function DetailClient({
                         className={watchStyles.posterCard}
                         onMouseEnter={(e) => handleCardMouseEnter(item, e)}
                         onMouseLeave={handleCardMouseLeave}
-                        onClick={() => router.push(`/watch/${item.id}`)}
                       >
                         <div className={watchStyles.posterWrapper}>
+                          {/* Decorative: the stretched link below carries the title. */}
                           <img
                             src={item.image}
-                            alt={item.title}
+                            alt=""
                             loading="lazy"
                             className={watchStyles.posterImg}
                           />
+
+                          {/* One real link stretched over the artwork, so the card is
+                              reachable by keyboard and openable in a new tab. The bookmark
+                              button sits above it as a sibling, never inside it, which keeps
+                              the HTML valid. */}
+                          <Link href={`/watch/${item.id}`} className={watchStyles.posterLink}>
+                            <span className={watchStyles.posterLinkLabel}>{item.title}</span>
+                          </Link>
 
                           {/* Bookmark / Save (top-left) */}
                           <button
                             className={`${watchStyles.bookmarkBtn} ${isSaved ? watchStyles.bookmarkActive : ""}`}
                             aria-label={labels.saveToList}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleBookmark(item.id);
-                            }}
+                            onClick={() => toggleBookmark(item.id)}
                           >
                             <svg viewBox="0 0 24 24" width="15" height="15" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />

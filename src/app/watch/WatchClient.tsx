@@ -144,7 +144,6 @@ export default function WatchClient({
       triggerSlideChange((activeSlideRef.current + 1) % heroSlides.length);
     }, 7000);
     return () => clearInterval(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [heroSlides.length]);
 
   // The exit timer outlives the slide change, so it has to be cancelled if the
@@ -367,24 +366,29 @@ export default function WatchClient({
                       className={isLandscape ? styles.posterCardLandscape : styles.posterCard}
                       onMouseEnter={(e) => handleCardMouseEnter(movie, e)}
                       onMouseLeave={handleCardMouseLeave}
-                      onClick={() => router.push(`/watch/${movie.id}`)}
                     >
                       <div className={isLandscape ? styles.posterWrapperLandscape : styles.posterWrapper}>
+                        {/* Decorative: the stretched link below carries the title. */}
                         <img
                           src={movie.image}
-                          alt={movie.title}
+                          alt=""
                           loading="lazy"
                           className={styles.posterImg}
                         />
+
+                        {/* One real link stretched over the artwork, so the card is
+                            reachable by keyboard and openable in a new tab. The bookmark
+                            button sits above it as a sibling, never inside it, which keeps
+                            the HTML valid. */}
+                        <Link href={`/watch/${movie.id}`} className={styles.posterLink}>
+                          <span className={styles.posterLinkLabel}>{movie.title}</span>
+                        </Link>
 
                         {/* Bookmark / Save (top-left) */}
                         <button
                           className={`${styles.bookmarkBtn} ${isSaved ? styles.bookmarkActive : ""}`}
                           aria-label={labels.saveToList}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleBookmark(movie.id);
-                          }}
+                          onClick={() => toggleBookmark(movie.id)}
                         >
                           <svg viewBox="0 0 24 24" width="15" height="15" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
