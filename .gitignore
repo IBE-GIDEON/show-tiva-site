@@ -43,3 +43,7 @@ next-env.d.ts
 # Runtime artifacts of the JSON content store
 data/*.json.tmp
 data/*.json.bak
+
+# Local working files: screenshots, dev logs, one-off scripts
+/scratch/
+/.claude/*.py
