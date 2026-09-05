@@ -212,7 +212,7 @@ export default function ProfileMenu({ ariaLabel = "Profile", variant = "glass" }
               </span>
               <span className={styles.menuText}>
                 <span className={styles.menuLabel}>Appearance</span>
-                <span className={styles.menuCopy}>Show Tiva theatre styling</span>
+                <span className={styles.menuCopy}>ShowTiva theatre styling</span>
               </span>
             </button>
 

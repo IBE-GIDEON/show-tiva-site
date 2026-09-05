@@ -15,10 +15,10 @@ type PageProps = { params: Promise<{ id: string }> };
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const movie = await getMovieById(id);
-  if (!movie) return { title: "Title not found — Show Tiva" };
+  if (!movie) return { title: "Title not found" };
 
   return {
-    title: `${movie.title} — Show Tiva`,
+    title: movie.title,
     description: movie.description,
   };
 }

@@ -100,7 +100,7 @@ export default function LandingClient({
         <div className={`${styles.logoContainer} ${isMinimized ? styles.minimized : ""}`}>
           <Link href={`/?role=${role}`} className={styles.logoLink}>
             <h1 className={styles.logo}>
-              <img src="/logo-wordmark.png" alt="SHOWTIVA" className={styles.logoImg} />
+              <img src="/logo-wordmark.png" alt="ShowTiva" className={styles.logoImg} />
             </h1>
           </Link>
         </div>

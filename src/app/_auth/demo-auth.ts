@@ -24,7 +24,7 @@ export function isDemoSignedIn(): boolean {
 
 function fallbackNameFromEmail(email: string): string {
   const local = email.split("@")[0]?.trim();
-  if (!local) return "Show Tiva Viewer";
+  if (!local) return "ShowTiva Viewer";
 
   return local
     .replace(/[._-]+/g, " ")
@@ -39,7 +39,7 @@ export function getDemoUserProfile(): DemoUserProfile | null {
 
   try {
     const raw = window.localStorage.getItem(DEMO_PROFILE_KEY);
-    if (!raw) return { name: "Show Tiva Viewer", email: "viewer@showtiva.demo" };
+    if (!raw) return { name: "ShowTiva Viewer", email: "viewer@showtiva.demo" };
 
     const parsed = JSON.parse(raw) as Partial<DemoUserProfile>;
     const email =
@@ -53,7 +53,7 @@ export function getDemoUserProfile(): DemoUserProfile | null {
 
     return { name, email };
   } catch {
-    return { name: "Show Tiva Viewer", email: "viewer@showtiva.demo" };
+    return { name: "ShowTiva Viewer", email: "viewer@showtiva.demo" };
   }
 }
 

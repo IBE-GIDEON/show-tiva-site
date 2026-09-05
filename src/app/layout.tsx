@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Show Tiva",
+  title: { default: "ShowTiva", template: "%s — ShowTiva" },
   description: "The Ultimate Cinema Hub",
 };
 

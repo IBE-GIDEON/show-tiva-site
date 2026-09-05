@@ -1,4 +1,4 @@
-# Show Tiva — Admin Dashboard Integration Spec
+# ShowTiva — Admin Dashboard Integration Spec
 
 Everything the admin dashboard can read and write, verified against the running
 app and independently audited.
@@ -256,7 +256,7 @@ Each would need a schema + endpoint added first.
 - Section headings: `Cast`, `Trailer`, `You may also like`
 - Action buttons: `Play`, `Watchlist` / `In Watchlist`, and the download button
 - The `4K` tag in the meta row
-- Trailer labels: `"{title} — Official Trailer"` and `SHOWTIVA Originals`
+- Trailer labels: `"{title} — Official Trailer"` and `ShowTiva Originals`
 - Its own footer (same content as the watch footer)
 
 **Catalog 404 page** (`/watch/<unknown-id>`) — `Title not found`, `Back to browse`.

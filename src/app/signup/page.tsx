@@ -7,7 +7,7 @@ import AuthForm from "../_auth/AuthForm";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Create account — Show Tiva",
+  title: "Create account",
 };
 
 export default async function SignUpPage() {

@@ -4,7 +4,7 @@
   "brand": {
     "mark": "/logo-mark.png",
     "wordmark": "/logo-wordmark.png",
-    "wordmarkAlt": "SHOWTIVA",
+    "wordmarkAlt": "ShowTiva",
     "homeHref": "/"
   },
   "landing": {
@@ -60,7 +60,7 @@
     "tagline": "Experience premium stories, hand-drawn 2D animation, and magical worlds curated by creators worldwide.",
     "backgroundImage": "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=1200&auto=format&fit=crop",
     "backgroundAlt": "Footer Background",
-    "copyright": "SHOWTIVA. All rights reserved. Crafted for film lovers.",
+    "copyright": "ShowTiva. All rights reserved. Crafted for film lovers.",
     "columns": [
       {
         "title": "Explore",
@@ -171,7 +171,7 @@
     "castHeading": "Cast",
     "trailerHeading": "Trailer",
     "trailerTitleSuffix": "Official Trailer",
-    "trailerStudio": "SHOWTIVA Originals",
+    "trailerStudio": "ShowTiva Originals",
     "trailerPlay": "Play trailer",
     "relatedHeading": "You may also like",
     "saveToList": "Save to list"

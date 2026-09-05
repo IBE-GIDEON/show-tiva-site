@@ -12,10 +12,10 @@ type PageProps = { params: Promise<{ section: string }> };
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { section } = await params;
   const data = await loadBrowse(section).catch(() => null);
-  if (!data) return { title: "Category not found — Show Tiva" };
+  if (!data) return { title: "Category not found" };
 
   return {
-    title: `${data.section.title} — Show Tiva`,
+    title: data.section.title,
     description: `Browse every title in ${data.section.title}.`,
   };
 }

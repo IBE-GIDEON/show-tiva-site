@@ -259,7 +259,7 @@ export default function AuthForm({ mode, brand, surface = "page" }: AuthFormProp
               </>
             ) : (
               <>
-                New to Show Tiva?{" "}
+                New to ShowTiva?{" "}
                 <Link href="/signup" onClick={(event) => visitFullPageAuth(event, "/signup")}>
                   Create an account
                 </Link>
