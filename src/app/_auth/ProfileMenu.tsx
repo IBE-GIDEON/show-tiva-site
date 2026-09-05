@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import {
@@ -158,16 +157,16 @@ export default function ProfileMenu({ ariaLabel = "Profile", variant = "glass" }
   const initials = useMemo(() => (profile ? getInitials(profile) : "ST"), [profile]);
   const triggerClassName = `${styles.trigger} ${styles[variant]} ${profile ? styles.signedIn : ""}`;
 
-  const openFullPageSignin = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    window.location.assign("/signin");
-  };
-
   if (!profile) {
     return (
-      <Link href="/signin" className={triggerClassName} aria-label={ariaLabel} onClick={openFullPageSignin}>
+      // A plain anchor rather than <Link>: a client-side navigation to /signin
+      // is intercepted by the @auth slot and opens the modal, and this control
+      // is meant to land on the full sign-in page. The lint rule cannot tell
+      // an intentional full navigation from a missed <Link>.
+      // eslint-disable-next-line @next/next/no-html-link-for-pages
+      <a href="/signin" className={triggerClassName} aria-label={ariaLabel}>
         <AccountIcon />
-      </Link>
+      </a>
     );
   }
 
