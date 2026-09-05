@@ -114,6 +114,18 @@ export function getSafeReturnTo(): string | null {
   if (typeof window === "undefined") return null;
 
   const value = new URLSearchParams(window.location.search).get("returnTo");
-  if (!value || !value.startsWith("/") || value.startsWith("//")) return null;
-  return value;
+  if (!value || !value.startsWith("/")) return null;
+
+  // Resolve it the way the router will and keep only same-origin targets. A
+  // prefix test is not enough: "/\evil.example" passes a "//" check, but the
+  // URL parser treats the backslash as a slash and resolves it to
+  // http://evil.example/, which the router then hard-navigates to.
+  let url: URL;
+  try {
+    url = new URL(value, window.location.origin);
+  } catch {
+    return null;
+  }
+  if (url.origin !== window.location.origin) return null;
+  return url.pathname + url.search + url.hash;
 }
