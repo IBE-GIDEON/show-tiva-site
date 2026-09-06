@@ -281,6 +281,6 @@ and description in `layout.tsx`.
 
 ## 10. Swapping the storage
 
-All filesystem access sits behind `src/lib/json-store.ts`, with
-`src/lib/content.ts` and `src/lib/site.ts` on top. Moving to a database means
+All filesystem access sits behind `lib/json-store.ts`, with
+`lib/content.ts` and `lib/site.ts` on top. Moving to a database means
 rewriting those and leaving every endpoint and the whole front end untouched.
