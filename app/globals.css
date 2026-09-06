@@ -53,23 +53,50 @@ a {
   text-decoration: none;
 }
 
-/* Custom Scrollbar */
+/* Scrollbars: a thin rounded thumb on a transparent track, brand red on
+   hover. Two mechanisms, deliberately kept apart:
+
+   - Chromium and Safari are styled through the ::-webkit-scrollbar
+     pseudo-elements, which allow the rounded thumb and the hover colour.
+   - Firefox has no such pseudo-elements and uses the standard
+     scrollbar-width / scrollbar-color properties instead.
+
+   The standard properties are scoped to Firefox on purpose. Chromium 121+
+   also understands them and, once they apply to an element, IGNORES that
+   element's ::-webkit-scrollbar rules, so declaring both unguarded would
+   throw away the rounded thumb and hover state in Chrome. `-moz-appearance`
+   is only supported by Firefox, which makes it a reliable guard.
+
+   Rows that scroll sideways (poster rows) hide their scrollbars locally with
+   both mechanisms, so none of this shows up there. */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #000000;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.18);
-  border-radius: 4px;
+  background: rgba(255, 255, 225, 0.22);
+  border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 30, 47, 0.6);
+  background: rgba(255, 30, 47, 0.7);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+@supports (-moz-appearance: none) {
+  html {
+    scrollbar-width: thin;
+    /* thumb, then track; inherited by every scrollable element */
+    scrollbar-color: rgba(255, 255, 225, 0.22) transparent;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
