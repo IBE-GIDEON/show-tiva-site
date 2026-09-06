@@ -1,7 +1,5 @@
 import type { Brand, FooterContent } from "@/lib/site-types";
 
-import styles from "./watch.module.css";
-
 /**
  * Social icons live in code, keyed by platform. Icons are never rendered from
  * stored data — that would let anything with write access inject markup.
@@ -38,39 +36,45 @@ interface SiteFooterProps {
   footer: FooterContent;
 }
 
-/**
- * Shared by the catalog and detail pages, which previously carried two
- * identical copies of this markup.
- */
+/** Shared by the catalog, browse and detail pages. */
 export default function SiteFooter({ brand, footer }: SiteFooterProps) {
   return (
-    <footer className={styles.watchFooter}>
-      <div className={styles.footerBgWrap}>
-        <img src={footer.backgroundImage} alt={footer.backgroundAlt} className={styles.footerBgImage} />
-        <div className={styles.footerVignette} />
+    <footer className="relative w-full overflow-hidden border-t border-[rgba(255,255,255,0.04)] bg-black pt-20 pb-[60px] max-[768px]:pt-[60px] max-[768px]:pb-10">
+      {/* Blurred key art behind everything; scaled up so the blur has no
+          transparent edges, and vignetted into the black. */}
+      <div className="absolute inset-0 z-[1] overflow-hidden">
+        <img src={footer.backgroundImage} alt={footer.backgroundAlt} className="h-full w-full object-cover blur-[50px] brightness-[0.18] [transform:scale(1.15)]" />
+        <div className="absolute inset-0 bg-[image:radial-gradient(circle_at_center,transparent_30%,#000000_100%)]" />
       </div>
 
-      <div className={styles.footerContent}>
-        <div className={styles.footerTop}>
-          {/* Branding Column */}
-          <div className={styles.footerBrandCol}>
-            <div className={styles.footerLogo}>
+      <div className="relative z-[2] mx-auto flex max-w-[1480px] flex-col gap-[60px] px-12 max-[768px]:px-6">
+        <div className="flex flex-wrap justify-between gap-12">
+          {/* Branding column */}
+          <div className="max-w-[420px] flex-[1_1_320px]">
+            {/* Mark runs slightly taller than the wordmark's cap height so the
+                lockup reads as one unit rather than two same-size blocks. */}
+            <div className="mb-5 flex items-center gap-[11px] font-heading text-[1.8rem] font-extrabold tracking-[-0.03em]">
               {/* Decorative: the wordmark beside it carries the accessible name. */}
-              <img src={brand.mark} alt="" className={styles.footerMarkImg} />
-              <img src={brand.wordmark} alt={brand.wordmarkAlt} className={styles.footerLogoImg} />
+              <img src={brand.mark} alt="" className="block h-[27px] w-auto" />
+              <img src={brand.wordmark} alt={brand.wordmarkAlt} className="block h-[21px] w-auto" />
             </div>
-            <p className={styles.footerTagline}>{footer.tagline}</p>
+            <p className="font-body text-[0.95rem] leading-[1.6] text-[rgba(255,255,225,0.6)]">{footer.tagline}</p>
           </div>
 
-          {/* Quick Link Columns */}
-          <div className={styles.footerLinksGrid}>
+          {/* Quick link columns */}
+          <div className="flex flex-wrap gap-16 max-[768px]:gap-9">
             {footer.columns.map((column) => (
-              <div key={column.title} className={styles.footerLinksCol}>
-                <h5 className={styles.footerColTitle}>{column.title}</h5>
-                <ul className={styles.footerLinksList}>
+              <div key={column.title} className="flex-[1_1_140px]">
+                <h5 className="mb-[22px] font-heading text-[0.95rem] font-bold tracking-[0.08em] text-ink uppercase">{column.title}</h5>
+                <ul className="m-0 flex list-none flex-col gap-3 p-0">
                   {column.links.map((link) => (
                     <li key={`${link.label}-${link.href}`}>
-                      <a href={link.href}>{link.label}</a>
+                      <a
+                        href={link.href}
+                        className="inline-block font-body text-[0.9rem] text-[rgba(255,255,225,0.5)] no-underline transition-[color,transform] duration-250 ease-[ease] hover:text-[#ff2e3d] hover:[transform:translateX(4px)]"
+                      >
+                        {link.label}
+                      </a>
                     </li>
                   ))}
                 </ul>
@@ -79,16 +83,16 @@ export default function SiteFooter({ brand, footer }: SiteFooterProps) {
           </div>
         </div>
 
-        <div className={styles.footerBottom}>
-          <p className={styles.footerCopyright}>
+        <div className="flex flex-wrap items-center justify-between gap-6 border-t border-[rgba(255,255,255,0.05)] pt-[30px]">
+          <p className="font-body text-[0.85rem] text-[rgba(255,255,225,0.4)]">
             &copy; {new Date().getFullYear()} {footer.copyright}
           </p>
-          <div className={styles.footerSocials}>
+          <div className="flex gap-4">
             {footer.socials.map((social) => (
               <a
                 key={social.platform}
                 href={social.href}
-                className={styles.socialIconLink}
+                className="flex h-[38px] w-[38px] items-center justify-center rounded-[50%] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] text-[rgba(255,255,225,0.6)] transition-all duration-250 ease-[ease] hover:border-[#ff2e3d] hover:bg-[#ff2e3d] hover:text-ink hover:shadow-[0_4px_15px_rgba(255,46,61,0.4)] hover:[transform:translateY(-3px)]"
                 aria-label={social.label}
               >
                 <svg
