@@ -1,106 +1,306 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap');
+@import "tailwindcss";
 
-:root {
-  --background: #000000;
-  --foreground: #ffffe1;
-  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+/* Design tokens. Anything under a Tailwind namespace (--color-*, --font-*,
+   --animate-*) is also a utility: text-ink, font-heading, animate-menu-in. */
+@theme {
+  /* --font-sans is what Tailwind's preflight puts on <html>, so it is the
+     body face. --font-body is the same stack under the name the design uses. */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --brand-red: #ff1e2f;
-  --brand-red-glow: rgba(255, 30, 47, 0.6);
+  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Landing page banner copy. */
+  --font-grotesk: 'Space Grotesk', system-ui, -apple-system, sans-serif;
 
-  /* The slant of the logo's diagonals, measured off the artwork rather than
-     eyeballed: the mark's left edge and the wordmark's final "A" both run at
-     dx/dy 0.333 — exactly 1:3, or 18.43deg — and agree to within 0.2deg.
-     Buttons skew by this so their edges are parallel to the logo's.
-     Note it is a BACK-slant: the bottom sits right of the top ("\"), which is
-     why the value is positive rather than the negative used to fake italics. */
-  --logo-slant: 18.43deg;
-  --logo-slant-reverse: -18.43deg;
-  --glass-bg: rgba(255, 255, 255, 0.06);
-  --glass-border: rgba(255, 255, 255, 0.12);
-}
+  --color-ink: #ffffe1;
+  --color-brand-red: #ff1e2f;
 
-html {
-  height: 100%;
-}
+  /* Keyframes live here so each name is an animate-* utility. */
+  --animate-overlay-fade: overlayFade 0.2s ease forwards;
+  --animate-panel-in: panelIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-menu-in: menuIn 0.18s ease both;
+  --animate-auth-video-in: authVideoIn 0.9s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  /* Pure fade for the title popover: a scale or translate entry moved its top
+     edge, so the hovered card's corner peeked above it as a step. */
+  --animate-popover-fade-in: popoverFadeIn 0.2s ease forwards;
+  /* The hero copy swaps in place; short enough to read as an instant change
+     but stops the words hard-cutting mid-sentence. */
+  --animate-hero-copy-swap: heroCopySwap 0.2s ease-out;
+  /* Detail page: the lockup travels in from the left instead of snapping
+     into the centre; the skip pulse flashes ±10 over the theatre. */
+  --animate-lockup-glide-in: lockupGlideIn 0.85s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-skip-flash: skipFlash 0.62s ease both;
+  /* Landing page intro: the video stripes drop in, the logo bounces in, the
+     rotating headline word flips in letter by letter, and the "Coming soon"
+     button wears a rotating conic border. */
+  --animate-stroke-in: strokeIn 1.1s cubic-bezier(0.25, 1, 0.5, 1) both;
+  --animate-bounce-entrance: bounceEntrance 1.1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  --animate-flip-in-char: flipInChar 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  --animate-rotate-border: rotateBorder 4s linear infinite;
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-/* Scrollbars: a thin rounded thumb on a transparent track, brand red on
-   hover. Two mechanisms, deliberately kept apart:
-
-   - Chromium and Safari are styled through the ::-webkit-scrollbar
-     pseudo-elements, which allow the rounded thumb and the hover colour.
-   - Firefox has no such pseudo-elements and uses the standard
-     scrollbar-width / scrollbar-color properties instead.
-
-   The standard properties are scoped to Firefox on purpose. Chromium 121+
-   also understands them and, once they apply to an element, IGNORES that
-   element's ::-webkit-scrollbar rules, so declaring both unguarded would
-   throw away the rounded thumb and hover state in Chrome. `-moz-appearance`
-   is only supported by Firefox, which makes it a reliable guard.
-
-   Rows that scroll sideways (poster rows) hide their scrollbars locally with
-   both mechanisms, so none of this shows up there. */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 225, 0.22);
-  border-radius: 999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 30, 47, 0.7);
-}
-
-::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-@supports (-moz-appearance: none) {
-  html {
-    scrollbar-width: thin;
-    /* thumb, then track; inherited by every scrollable element */
-    scrollbar-color: rgba(255, 255, 225, 0.22) transparent;
+  @keyframes overlayFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes panelIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes menuIn {
+    from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes authVideoIn {
+    from { opacity: 0; transform: scale(1.04); }
+    to { opacity: 1; transform: scale(1.01); }
+  }
+  @keyframes popoverFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes heroCopySwap {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes lockupGlideIn {
+    from { opacity: 0; transform: translateX(-56px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes skipFlash {
+    0% { opacity: 0; transform: translateY(-50%) scale(0.72); }
+    28% { opacity: 1; transform: translateY(-50%) scale(1); }
+    100% { opacity: 0; transform: translateY(-50%) scale(1.16); }
+  }
+  @keyframes strokeIn {
+    0% { transform: translateY(-120%); }
+    100% { transform: translateY(0); }
+  }
+  @keyframes bounceEntrance {
+    0% { opacity: 0; transform: translateY(120px) scale(0.6) rotate(5deg); filter: blur(8px); }
+    50% { opacity: 1; transform: translateY(-35px) scale(1.15) rotate(-3deg); filter: blur(0px); }
+    75% { transform: translateY(12px) scale(0.96) rotate(1deg); }
+    90% { transform: translateY(-4px) scale(1.02) rotate(0deg); }
+    100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); filter: blur(0px); }
+  }
+  @keyframes flipInChar {
+    0% { transform: translateY(80%) rotateX(-90deg); opacity: 0; filter: blur(4px); }
+    100% { transform: translateY(0) rotateX(0deg); opacity: 1; filter: blur(0); }
+  }
+  @keyframes rotateBorder {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 }
 
-@media (prefers-color-scheme: dark) {
+/* Landing page: the red dot grid in the top-left corner of the intro, masked
+   so it fades out towards the centre. A utility because the SVG data URL does
+   not survive being written inline as a class name. */
+@utility dot-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Crect width='5' height='5' fill='%23ff1e2f'/%3E%3C/svg%3E");
+  background-size: 14px 14px;
+  mask-image: radial-gradient(circle at top left, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.45) 30%, rgba(0, 0, 0, 0) 65%);
+}
+
+/* The theatre's progress slider on the detail page. Vendor pseudo-elements
+   for two engines, plus the thumb revealing on the frame's hover or focus,
+   read far better as one rule than as forty stacked variants. The fill is
+   driven by --player-progress, set inline by the component; `.group/frame`
+   is the theatre frame. */
+@utility player-range {
+  --player-progress: 38%;
+  display: block;
+  width: 100%;
+  height: 20px;
+  margin: 0 0 clamp(0.65rem, 1.2vw, 0.9rem);
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+
+  &::-webkit-slider-runnable-track {
+    height: 5px;
+    border-radius: 999px;
+    background: linear-gradient(
+      to right,
+      #ff3040 0%,
+      #ff3040 var(--player-progress),
+      rgba(250, 250, 250, 0.32) var(--player-progress),
+      rgba(250, 250, 250, 0.32) 100%
+    );
+  }
+
+  &::-webkit-slider-thumb {
+    width: 16px;
+    height: 16px;
+    margin-top: -5.5px;
+    appearance: none;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    background: #ff3040;
+    box-shadow: 0 0 0 5px rgba(255, 48, 64, 0.2);
+    opacity: 0;
+    transform: scale(0.78);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+
+  &::-moz-range-track {
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(250, 250, 250, 0.32);
+  }
+
+  &::-moz-range-progress {
+    height: 5px;
+    border-radius: 999px;
+    background: #ff3040;
+  }
+
+  &::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    background: #ff3040;
+    box-shadow: 0 0 0 5px rgba(255, 48, 64, 0.2);
+    opacity: 0;
+    transform: scale(0.78);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+
+  &:hover::-webkit-slider-thumb,
+  &:focus-visible::-webkit-slider-thumb,
+  .group\/frame:hover &::-webkit-slider-thumb,
+  .group\/frame:focus-within &::-webkit-slider-thumb {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  &:hover::-moz-range-thumb,
+  &:focus-visible::-moz-range-thumb,
+  .group\/frame:hover &::-moz-range-thumb,
+  .group\/frame:focus-within &::-moz-range-thumb {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  &:focus-visible {
+    outline: 1px solid #ffffe1;
+    outline-offset: 6px;
+  }
+
+  /* Coarse pointers never get hover, so the thumb cannot hide. */
+  @media (hover: none) {
+    &::-webkit-slider-thumb,
+    &::-moz-range-thumb {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+/* The logo's slant as a button shape. A pair of buttons reads as one unit
+   split by a single diagonal: the outer edges stay vertical and only the
+   facing edges are cut, parallel to each other at the logo's angle. That
+   needs clip-path rather than skewX, which slants BOTH edges of a box.
+   tan(18.43deg) is exactly 1/3, so set --slant to height / 3 on the element
+   and pad the cut side by the same amount to keep the label optically
+   centred. The cut steals that much width, which is why the lead is padded
+   on the right and the trail on the left. */
+@utility slant-lead {
+  clip-path: polygon(0 0, calc(100% - var(--slant)) 0, 100% 100%, 0 100%);
+}
+@utility slant-trail {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, var(--slant) 100%);
+}
+
+@layer base {
+  :root {
+    /* The slant of the logo's diagonals, measured off the artwork rather than
+       eyeballed: the mark's left edge and the wordmark's final "A" both run at
+       dx/dy 0.333 — exactly 1:3, or 18.43deg — and agree to within 0.2deg.
+       Buttons skew by this so their edges are parallel to the logo's.
+       Note it is a BACK-slant: the bottom sits right of the top ("\"), which is
+       why the value is positive rather than the negative used to fake italics. */
+    --logo-slant: 18.43deg;
+    --logo-slant-reverse: -18.43deg;
+  }
+
   html {
-    color-scheme: dark;
+    height: 100%;
+    /* Preflight sets 1.5; this design sets line-height where it matters and
+       relies on the browser's `normal` everywhere else, so keep that. */
+    line-height: normal;
+  }
+
+  html,
+  body {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  body {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    color: var(--color-ink);
+    background: #000000;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Scrollbars: a thin rounded thumb on a transparent track, brand red on
+     hover. Two mechanisms, deliberately kept apart:
+
+     - Chromium and Safari are styled through the ::-webkit-scrollbar
+       pseudo-elements, which allow the rounded thumb and the hover colour.
+     - Firefox has no such pseudo-elements and uses the standard
+       scrollbar-width / scrollbar-color properties instead.
+
+     The standard properties are scoped to Firefox on purpose. Chromium 121+
+     also understands them and, once they apply to an element, IGNORES that
+     element's ::-webkit-scrollbar rules, so declaring both unguarded would
+     throw away the rounded thumb and hover state in Chrome. `-moz-appearance`
+     is only supported by Firefox, which makes it a reliable guard.
+
+     Rows that scroll sideways (poster rows) hide their scrollbars locally with
+     both mechanisms, so none of this shows up there. */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 225, 0.22);
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 30, 47, 0.7);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  @supports (-moz-appearance: none) {
+    html {
+      scrollbar-width: thin;
+      /* thumb, then track; inherited by every scrollable element */
+      scrollbar-color: rgba(255, 255, 225, 0.22) transparent;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html {
+      color-scheme: dark;
+    }
   }
 }
