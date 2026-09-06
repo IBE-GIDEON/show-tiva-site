@@ -8,6 +8,8 @@ interface FlipWordsProps {
   className?: string;
 }
 
+/* Each letter flips up into place, staggered by 35ms; the word is keyed so a
+   change replaces the letters outright and replays the entrance. */
 export const FlipWords = ({ words, duration = 3000, className }: FlipWordsProps) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
 
@@ -28,57 +30,15 @@ export const FlipWords = ({ words, duration = 3000, className }: FlipWordsProps)
   if (!currentWord) return null;
 
   return (
-    <span
-      style={{
-        display: "inline-flex",
-        position: "relative",
-        verticalAlign: "baseline",
-        textAlign: "left",
-        overflow: "hidden",
-        height: "1.15em",
-        lineHeight: "1",
-        padding: "0 2px",
-        boxSizing: "border-box",
-      }}
-      className={className}
-    >
-      <style>{`
-        @keyframes flipInChar {
-          0% {
-            transform: translateY(80%) rotateX(-90deg);
-            opacity: 0;
-            filter: blur(4px);
-          }
-          100% {
-            transform: translateY(0) rotateX(0deg);
-            opacity: 1;
-            filter: blur(0);
-          }
-        }
-      `}</style>
-      <span
-        key={currentWordIndex}
-        style={{
-          display: "inline-flex",
-          flexWrap: "nowrap",
-          whiteSpace: "nowrap",
-        }}
-      >
+    <span className={`relative box-border inline-flex h-[1.15em] overflow-hidden px-[2px] text-left align-baseline leading-none ${className ?? ""}`}>
+      <span key={currentWordIndex} className="inline-flex flex-nowrap whitespace-nowrap">
         {currentWord.split("").map((letter, letterIdx) => (
           <span
             key={letterIdx}
-            style={{
-              display: "inline-block",
-              color: "#ff1e2f",
-              animation: "flipInChar 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
-              animationDelay: `${letterIdx * 0.035}s`,
-              opacity: 0,
-              transform: "translateY(80%) rotateX(-90deg)",
-              transformOrigin: "bottom center",
-              willChange: "transform, opacity",
-            }}
+            className="inline-block origin-bottom animate-flip-in-char text-[#ff1e2f] opacity-0 will-change-[transform,opacity] [transform:translateY(80%)_rotateX(-90deg)]"
+            style={{ animationDelay: `${letterIdx * 0.035}s` }}
           >
-            {letter === " " ? "\u00A0" : letter}
+            {letter === " " ? " " : letter}
           </span>
         ))}
       </span>
