@@ -265,7 +265,8 @@
   overflow: hidden;
   background-color: #000000;
   display: flex;
-  align-items: center;
+  /* Copy sits at the bottom of the hero, over the darkest part of the still. */
+  align-items: flex-end;
 }
 
 /* Idle state: waiting just off to the right, ready to drift in.
@@ -348,6 +349,8 @@
   /* `auto` centres it inside the flex slide container. */
   margin-inline: auto;
   padding-inline: 48px;
+  /* Lifts the copy off the hero's bottom edge. */
+  padding-bottom: 96px;
 }
 
 .heroContent {
@@ -426,7 +429,13 @@
 .heroBtnGroup {
   display: flex;
   align-items: center;
-  gap: 16px;
+  /* The facing edges are cut at the same slant, but Watch Now's cut insets
+     its TOP-right corner and Add List's its BOTTOM-left, so the two diagonals
+     already sit a full slant apart with the boxes touching. Add List is
+     pulled back by that slant (see .addListBtn), which makes --edge-gap the
+     real, visible distance between the two edges. */
+  --edge-gap: 10px;
+  gap: 0;
   flex-wrap: nowrap;
 }
 
@@ -481,6 +490,9 @@
   background-color: rgba(255, 255, 255, 0.14);
   padding: 0 30px 0 calc(30px + var(--slant));
   clip-path: polygon(0 0, 100% 0, 100% 100%, var(--slant) 100%);
+  /* Overlaps Watch Now's box by (slant - gap); the clip keeps the overlap
+     from taking clicks, so Watch Now stays clickable right up to its edge. */
+  margin-left: calc(var(--edge-gap) - var(--slant));
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   transition: background 0.25s ease, transform 0.25s ease;
@@ -496,52 +508,9 @@
   color: #4ade80;
 }
 
-.carouselDashContainer {
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  z-index: 20;
-}
-
 /* The button is 20px so it clears a usable tap target; the dot itself is drawn
    by ::before at 8px. Sizing the button to the dot would leave an 8px target,
    which is unhittable on touch. */
-.dashBar {
-  position: relative;
-  width: 20px;
-  height: 20px;
-  border: none;
-  background: none;
-  padding: 0;
-  cursor: pointer;
-}
-
-.dashBar::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 8px;
-  height: 8px;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: rgba(255, 255, 225, 0.32);
-  transition: background 0.4s ease, transform 0.4s ease;
-}
-
-.dashBar:hover::before {
-  background: rgba(255, 255, 225, 0.62);
-}
-
-.activeDashBar::before {
-  background: #ffffe1;
-  transform: translate(-50%, -50%) scale(1.5);
-}
-
 .topNavbar {
   position: absolute;
   top: 0;

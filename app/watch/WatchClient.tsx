@@ -301,17 +301,6 @@ export default function WatchClient({
           </div>
         )}
 
-        {/* Carousel pagination dashes */}
-        <div className={styles.carouselDashContainer}>
-          {heroSlides.map((_, index) => (
-            <button
-              key={`dash-${index}`}
-              onClick={() => triggerSlideChange(index)}
-              className={`${styles.dashBar} ${index === activeSlide ? styles.activeDashBar : ""}`}
-              aria-label={`${labels.heroSlideDot} ${index + 1}`}
-            />
-          ))}
-        </div>
       </section>
 
       {/* Main Browse Catalog Below Hero */}
