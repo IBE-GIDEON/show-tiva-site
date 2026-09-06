@@ -11,7 +11,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 
 import type { Movie } from "@/lib/content-types";
-import styles from "./search-overlay.module.css";
 
 interface SearchOverlayProps {
   open: boolean;
@@ -78,45 +77,68 @@ export default function SearchOverlay({
   if (!open) return null;
 
   return (
-    <div className={styles.overlay} role="dialog" aria-modal="true" aria-label="Search">
-      {/* The blurred backdrop keeps the page visible behind it; a click closes. */}
-      <button type="button" className={styles.backdrop} aria-label="Close search" onClick={onClose} />
+    // The bar sits in the upper third, not dead centre — it reads as a search
+    // field rather than a modal dialog.
+    <div
+      className="fixed inset-0 z-[1000] flex flex-col items-center px-[clamp(16px,5vw,40px)] pt-[clamp(12vh,16vh,22vh)] pb-10"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Search"
+    >
+      {/* Keeps the page visible but blurred behind the search. A button, so a
+          click anywhere off the panel closes it. */}
+      <button
+        type="button"
+        className="fixed inset-0 animate-overlay-fade cursor-default bg-[rgba(0,0,0,0.45)] backdrop-blur-[16px] backdrop-saturate-90"
+        aria-label="Close search"
+        onClick={onClose}
+      />
 
-      <div className={styles.panel}>
-        <div className={styles.bar}>
-          <span className={styles.barIcon} aria-hidden="true">
+      <div className="relative z-[1] flex w-full max-w-[640px] animate-panel-in flex-col gap-[14px]">
+        <div className="flex h-[60px] items-center gap-3 rounded-[4px] border border-[rgba(255,255,225,0.16)] bg-[rgba(20,20,20,0.82)] pr-3 pl-[18px] shadow-[0_24px_60px_rgba(0,0,0,0.6)]">
+          <span className="inline-flex flex-none text-[rgba(255,255,225,0.55)]" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
           </span>
+          {/* The native search decoration and clear button are hidden so the
+              field stays clean. */}
           <input
             ref={inputRef}
             type="search"
-            className={styles.input}
+            className="h-full min-w-0 flex-1 border-0 bg-transparent font-heading text-[1.15rem] font-medium tracking-[-0.01em] text-ink outline-none placeholder:text-[rgba(255,255,225,0.4)] [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none"
             placeholder={placeholder}
             value={query}
             autoComplete="off"
             onChange={(e) => setQuery(e.target.value)}
           />
-          <button type="button" className={styles.escBtn} onClick={onClose}>
+          <button
+            type="button"
+            className="flex-none cursor-pointer rounded-[3px] border border-[rgba(255,255,225,0.16)] bg-transparent px-[9px] py-[5px] font-body text-[0.66rem] font-semibold tracking-[0.1em] text-[rgba(255,255,225,0.55)] uppercase transition-[color,border-color] duration-200 ease-[ease] hover:border-[rgba(255,255,225,0.34)] hover:text-ink"
+            onClick={onClose}
+          >
             Esc
           </button>
         </div>
 
         {trimmed.length > 0 && (
-          <div className={styles.body}>
+          <div className="max-h-[min(56vh,560px)] overflow-y-auto rounded-[4px] border border-[rgba(255,255,225,0.1)] bg-[rgba(14,14,14,0.82)] shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
             {results.length > 0 ? (
-              <ul className={styles.results}>
+              <ul className="m-0 flex list-none flex-col p-[6px]">
                 {results.map((m) => (
                   <li key={m.id}>
-                    <Link href={`/watch/${m.id}`} className={styles.result} onClick={onClose}>
-                      <span className={styles.thumb}>
-                        <img src={m.image} alt="" loading="lazy" />
+                    <Link
+                      href={`/watch/${m.id}`}
+                      className="flex items-center gap-[14px] rounded-[3px] px-[10px] py-2 transition-[background] duration-150 ease-[ease] hover:bg-[rgba(255,255,225,0.06)]"
+                      onClick={onClose}
+                    >
+                      <span className="h-[62px] w-11 flex-none overflow-hidden rounded-[2px] bg-[#131313]">
+                        <img src={m.image} alt="" loading="lazy" className="block h-full w-full object-cover" />
                       </span>
-                      <span className={styles.resultText}>
-                        <span className={styles.resultTitle}>{m.title}</span>
-                        <span className={styles.resultMeta}>
+                      <span className="flex min-w-0 flex-col gap-[3px]">
+                        <span className="truncate font-heading text-[0.98rem] font-semibold tracking-[-0.01em] text-ink">{m.title}</span>
+                        <span className="text-[0.78rem] text-[rgba(255,255,225,0.5)] tabular-nums">
                           {m.year}
                           {m.type ? ` · ${m.type}` : ""}
                         </span>
@@ -126,7 +148,7 @@ export default function SearchOverlay({
                 ))}
               </ul>
             ) : (
-              <p className={styles.empty}>No titles match &ldquo;{trimmed}&rdquo;.</p>
+              <p className="px-[18px] py-[22px] text-center text-[0.92rem] text-[rgba(255,255,225,0.5)]">No titles match &ldquo;{trimmed}&rdquo;.</p>
             )}
           </div>
         )}

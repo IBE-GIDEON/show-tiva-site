@@ -6,21 +6,23 @@
 // accent that appears exactly once (the rating). No pills, no badges, no card
 // borders — metadata is quiet inline text on hairline dividers. Type carries
 // the hierarchy; the artwork appears once, full-bleed and unadorned.
+//
+// Spacing runs on a single rhythm unit (--step) and its halves, so every
+// section lands on the same vertical grid at every breakpoint.
 import React, { useEffect, useRef, useState } from "react";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { cx } from "@/lib/cx";
 import { getSignupHref, isDemoSignedIn } from "../../_auth/demo-auth";
 import ProfileMenu from "../../_auth/ProfileMenu";
 import type { Movie } from "@/lib/content-types";
 import type { Brand, DetailLabels, FooterContent, PopoverLabels } from "@/lib/site-types";
+import PosterCard from "../PosterCard";
 import SearchOverlay from "../SearchOverlay";
 import SiteFooter from "../SiteFooter";
-import styles from "./detail.module.css";
-// The related grid reuses the catalog's card and hover-popover styling verbatim,
-// so a card looks and behaves identically on both pages.
-import watchStyles from "../watch.module.css";
+import TitlePopover, { useTitlePopover } from "../TitlePopover";
 
 interface DetailClientProps {
   movie: Movie;
@@ -32,6 +34,39 @@ interface DetailClientProps {
   labels: DetailLabels;
   popoverLabels: PopoverLabels;
 }
+
+/* ------------------------------------------------------------- styling -- */
+
+/* Page-wide tokens: the shell width, the gutter, and the rhythm unit. */
+const PAGE =
+  "relative flex w-full min-h-dvh flex-1 flex-col bg-black font-body text-ink antialiased [--gutter:clamp(1.25rem,5vw,4rem)] [--shell-max:1240px] [--step:clamp(3.5rem,7.5vw,6.5rem)]";
+const SHELL = "mx-auto w-full max-w-(--shell-max) px-(--gutter)";
+const FOCUS_RING = "focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-ink";
+
+/* The action pair: see the slant utilities in globals.css. */
+const ACTION =
+  "[--btn-h:3.25rem] [--pad:clamp(1.75rem,3vw,2.5rem)] [--slant:calc(var(--btn-h)/3)] inline-flex h-(--btn-h) cursor-pointer items-center justify-center gap-[0.7rem] rounded-none border-0 text-[0.78rem] font-semibold tracking-[0.16em] uppercase transition-[background-color,border-color,color] duration-300 ease-[ease] max-[430px]:flex-[1_1_100%] motion-reduce:transition-none " +
+  FOCUS_RING;
+
+/* Everything inside the theatre frame reveals on the frame's hover or focus,
+   and stays revealed on coarse pointers, which never hover. */
+const REVEAL = "group-hover/frame:opacity-100 group-focus-within/frame:opacity-100 [@media(hover:none)]:opacity-100";
+
+const CONTROL =
+  "inline-grid aspect-square flex-none cursor-pointer place-items-center rounded-[50%] border backdrop-blur-[12px] transition-[background,border-color,color,transform] duration-200 ease-[ease] hover:[transform:scale(1.12)] active:[transform:scale(0.95)] motion-reduce:transition-none " +
+  FOCUS_RING;
+const CONTROL_NEUTRAL =
+  "border-[rgba(250,250,250,0.32)] bg-[rgba(0,0,0,0.42)] text-ink hover:border-[rgba(250,250,250,0.72)] hover:bg-[rgba(250,250,250,0.15)] hover:text-white";
+const CONTROL_SKIP =
+  "w-[clamp(3.8rem,6.5vw,4.8rem)] max-[560px]:w-[3.05rem] [&_svg]:h-[72%] [&_svg]:w-[72%] [&_svg]:overflow-visible [&_text]:fill-current [&_text]:font-body [&_text]:text-[0.58rem] [&_text]:font-black [&_text]:tracking-[0]";
+const CONTROL_PRIMARY =
+  "w-[clamp(4.15rem,7vw,5rem)] border-[rgba(255,48,64,0.65)] bg-[#ff3040] text-white shadow-[0_10px_28px_rgba(255,48,64,0.34)] hover:border-[rgba(255,255,255,0.8)] hover:bg-[#ff4f5f] max-[560px]:w-[3.3rem] [&_svg]:h-[46%] [&_svg]:w-[46%] [&_svg]:overflow-visible";
+const CONTROL_FULLSCREEN = "w-[clamp(2.55rem,4vw,3rem)] [&_svg]:h-[56%] [&_svg]:w-[56%] [&_svg]:overflow-visible";
+
+const SKIP_FEEDBACK =
+  "pointer-events-none absolute top-1/2 z-[4] grid aspect-square w-[clamp(5rem,9vw,7rem)] animate-skip-flash place-items-center rounded-[50%] border border-[rgba(255,48,64,0.45)] bg-[rgba(0,0,0,0.58)] font-heading text-[clamp(1.3rem,2.5vw,2rem)] font-medium text-[#ff3040] [text-shadow:0_0_20px_rgba(255,48,64,0.45)] motion-reduce:animate-none motion-reduce:opacity-100";
+
+/* ----------------------------------------------------------- component -- */
 
 export default function DetailClient({
   movie,
@@ -81,16 +116,9 @@ export default function DetailClient({
     };
   }, []);
 
-  // --- related card state (mirrors WatchClient) ---
+  // --- related grid state ---
   const [bookmarked, setBookmarked] = useState<{ [key: string]: boolean }>({});
-  const [hoveredMovie, setHoveredMovie] = useState<Movie | null>(null);
-  const [popoverPos, setPopoverPos] = useState<{
-    top: number;
-    left: number;
-    alignRight: boolean;
-    height: number;
-  } | null>(null);
-  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const popover = useTitlePopover();
 
   const toggleBookmark = (movieId: string) => {
     if (!isDemoSignedIn()) {
@@ -108,46 +136,6 @@ export default function DetailClient({
     }
 
     router.push(getSignupHref(returnTo));
-  };
-
-  const handleCardMouseEnter = (m: Movie, e: React.MouseEvent) => {
-    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-    const rect = e.currentTarget.getBoundingClientRect();
-
-    const popoverWidth = 330;
-    const gap = 12;
-    const scrollY = window.scrollY || document.documentElement.scrollTop;
-    const scrollX = window.scrollX || document.documentElement.scrollLeft;
-
-    // Flip to the card's left when there is no room on the right.
-    let left = rect.right + gap + scrollX;
-    let alignRight = true;
-    if (rect.right + gap + popoverWidth > window.innerWidth) {
-      left = rect.left - popoverWidth - gap + scrollX;
-      alignRight = false;
-    }
-    if (left < 0) left = 12;
-
-    setPopoverPos({ top: rect.top + scrollY, left, alignRight, height: rect.height });
-    setHoveredMovie(m);
-  };
-
-  // Small grace period so moving the pointer across the gap into the popover
-  // does not dismiss it.
-  const handleCardMouseLeave = () => {
-    hoverTimeoutRef.current = setTimeout(() => {
-      setHoveredMovie(null);
-      setPopoverPos(null);
-    }, 200);
-  };
-
-  const handlePopoverMouseEnter = () => {
-    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-  };
-
-  const handlePopoverMouseLeave = () => {
-    setHoveredMovie(null);
-    setPopoverPos(null);
   };
 
   const startPlayer = () => {
@@ -212,11 +200,28 @@ export default function DetailClient({
   } as React.CSSProperties;
 
   return (
-    <div className={styles.page}>
-      <header className={`${styles.shell} ${styles.header}`}>
-        <button type="button" className={styles.back} onClick={() => router.back()}>
+    // Relative on purpose: the hover popover is positioned in document
+    // coordinates and resolves against this element, which starts at 0,0 and
+    // carries no padding.
+    <div className={PAGE}>
+      <header
+        className={cx(
+          SHELL,
+          "grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-6 pt-[clamp(1.25rem,2vw,1.75rem)] pb-[clamp(1.25rem,2.4vw,2rem)] max-[760px]:pb-[clamp(2rem,8vw,3rem)]",
+        )}
+      >
+        {/* A <button> rather than a link, because it calls router.back(). Two
+            tracked-out words; wrapping them would read as a mistake. */}
+        <button
+          type="button"
+          className={cx(
+            "group/back inline-flex cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-[0.7rem] font-medium tracking-[0.22em] whitespace-nowrap text-[#8a8a8a] uppercase transition-[color] duration-300 ease-[ease] hover:text-ink motion-reduce:transition-none",
+            FOCUS_RING,
+          )}
+          onClick={() => router.back()}
+        >
           <svg
-            className={styles.backGlyph}
+            className="h-3 w-[18px] flex-none transition-[transform] duration-[0.35s] ease-[cubic-bezier(0.2,0.7,0.2,1)] group-hover/back:[transform:translateX(-4px)] motion-reduce:transition-none"
             viewBox="0 0 18 12"
             aria-hidden="true"
             focusable="false"
@@ -233,15 +238,30 @@ export default function DetailClient({
           <span>{labels.goBack}</span>
         </button>
 
-        <Link href={brand.homeHref} className={styles.lockup}>
-          <img className={styles.lockupMark} src={brand.mark} alt="" />
-          <img className={styles.lockupWord} src={brand.wordmark} alt={brand.wordmarkAlt} />
+        {/* On entry the lockup glides in from the left. Animated on the two
+            images rather than the link, because an animation's final opacity
+            outranks a normal declaration and would kill the hover fade on the
+            parent. The wordmark trails the mark by a beat. */}
+        <Link
+          href={brand.homeHref}
+          className={cx(
+            "inline-flex flex-none items-center gap-[0.55rem] justify-self-center transition-[opacity] duration-300 ease-[ease] hover:opacity-70 motion-reduce:transition-none",
+            FOCUS_RING,
+          )}
+        >
+          <img className="block h-[clamp(17px,2.1vw,21px)] w-auto animate-lockup-glide-in motion-reduce:animate-none" src={brand.mark} alt="" />
+          <img
+            className="block h-[clamp(11px,1.5vw,14px)] w-auto animate-lockup-glide-in [animation-delay:0.09s] motion-reduce:animate-none"
+            src={brand.wordmark}
+            alt={brand.wordmarkAlt}
+          />
         </Link>
 
-        <div className={styles.headerActions}>
+        {/* Plain icon buttons, borderless — matches the Premium Minimal chrome. */}
+        <div className="inline-flex items-center gap-[0.85rem] justify-self-end">
           <button
             type="button"
-            className={styles.headerIconBtn}
+            className="inline-flex size-[2.35rem] flex-none cursor-pointer items-center justify-center rounded-[999px] border-0 bg-transparent p-0 text-[#8a8a8a] no-underline transition-[color] duration-300 ease-[ease] hover:text-ink"
             aria-label={labels.search}
             onClick={() => setSearchOpen(true)}
           >
@@ -255,29 +275,52 @@ export default function DetailClient({
         </div>
       </header>
 
-      <main className={styles.main}>
+      <main className="flex-1 pb-[clamp(6rem,10vw,10rem)]">
         {/* Compact info block above a full-bleed still: roughly 30/70 of the
             opening screen, so the artwork stays the dominant element. */}
-        <section className={`${styles.shell} ${styles.masthead}`}>
-          <h1 className={styles.title}>{movie.title}</h1>
-          {movie.subtitle && <p className={styles.subtitle}>{movie.subtitle}</p>}
+        <section className={cx(SHELL, "pb-[clamp(0.9rem,1.6vw,1.35rem)]")}>
+          {/* `balance` still will not break a single long word; on a 320px
+              screen the display size is 34px, wide enough to run off the edge. */}
+          <h1 className="mt-[clamp(1.35rem,2.1vw,1.7rem)] font-heading text-[clamp(2.2rem,4.2vw,3.4rem)] leading-[1.02] font-light tracking-[-0.03em] break-words text-balance max-[760px]:tracking-[-0.018em]">
+            {movie.title}
+          </h1>
+          {movie.subtitle && (
+            <p className="mt-[clamp(0.7rem,1vw,0.9rem)] font-heading text-[clamp(0.78rem,1.15vw,0.98rem)] font-normal tracking-[0.3em] text-[#8a8a8a] uppercase max-[430px]:tracking-[0.24em]">
+              {movie.subtitle}
+            </p>
+          )}
 
+          {/* Hairlines hang off the left edge of every item but the first,
+              which breaks the moment the rail wraps; below 560px it always
+              does, so they give way to plain spacing. */}
           {meta.length > 0 && (
-            <ul className={styles.metaRail}>
+            <ul className="mt-[clamp(1rem,1.55vw,1.28rem)] flex list-none flex-wrap items-center gap-x-0 gap-y-2 text-[0.84rem] tracking-[0.06em] text-[#8a8a8a] tabular-nums max-[560px]:gap-x-[1.15rem]">
               {meta.map((item) => (
-                <li key={item.key} className={styles.metaItem}>
-                  {item.accent ? <span className={styles.rating}>{item.text}</span> : item.text}
+                <li
+                  key={item.key}
+                  className="not-first:ml-[clamp(0.85rem,1.8vw,1.5rem)] not-first:border-l not-first:border-[rgba(250,250,250,0.11)] not-first:pl-[clamp(0.85rem,1.8vw,1.5rem)] max-[560px]:not-first:ml-0 max-[560px]:not-first:border-l-0 max-[560px]:not-first:pl-0"
+                >
+                  {item.accent ? <span className="text-[#ff3040]">{item.text}</span> : item.text}
                 </li>
               ))}
             </ul>
           )}
 
-          <p className={styles.synopsis}>{movie.description}</p>
+          {/* Three lines: enough to read the premise while keeping the block
+              inside its share of the opening screen. Full text stays in the
+              DOM, so screen readers and SEO are unaffected. */}
+          <p className="mt-[clamp(1.05rem,1.7vw,1.35rem)] line-clamp-3 max-w-[78ch] font-[family-name:'Segoe_UI',Roboto,-apple-system,BlinkMacSystemFont,sans-serif] text-[clamp(1rem,1.12vw,1.1rem)] leading-[1.78] font-medium tracking-[0] text-[#c7c7bd]">
+            {movie.description}
+          </p>
 
-          <div className={styles.actions}>
-            <button type="button" className={styles.play} onClick={startPlayer}>
+          <div className="mt-[clamp(1.18rem,1.9vw,1.58rem)] flex flex-wrap gap-3">
+            <button
+              type="button"
+              className={cx(ACTION, "bg-ink pr-[calc(var(--pad)+var(--slant))] pl-(--pad) text-black slant-lead hover:bg-[#e8e8cd]")}
+              onClick={startPlayer}
+            >
               <svg
-                className={styles.playGlyph}
+                className="h-3 w-[10px] flex-none"
                 viewBox="0 0 12 14"
                 aria-hidden="true"
                 focusable="false"
@@ -287,9 +330,18 @@ export default function DetailClient({
               <span>{labels.play}</span>
             </button>
 
+            {/* The hairline outline is a clipped layer rather than a border,
+                because clip-path shears a real border off along the cut edge:
+                the element is the outline colour and ::before insets by 1px in
+                the page colour. Saved reads as engaged, not disabled: a quiet
+                fill, label at full strength. */}
             <button
               type="button"
-              className={`${styles.save} ${saved ? styles.saveOn : ""}`}
+              className={cx(
+                ACTION,
+                "relative isolate bg-[rgba(250,250,250,0.28)] pr-(--pad) pl-[calc(var(--pad)+var(--slant))] text-ink slant-trail before:absolute before:inset-px before:z-[-1] before:content-[''] before:[clip-path:polygon(0_0,100%_0,100%_100%,var(--slant)_100%)] hover:bg-ink",
+                saved ? "before:bg-[#1a1a19] hover:before:bg-[#232322]" : "before:bg-black",
+              )}
               aria-pressed={saved}
               onClick={toggleCurrentSaved}
             >
@@ -300,13 +352,24 @@ export default function DetailClient({
           </div>
         </section>
 
-        <figure className={styles.plate}>
+        {/* Full-bleed and deliberately huge — the page's centrepiece. The 70vh
+            floor holds it near two-thirds of the opening screen even on short,
+            wide windows where 21:9 alone would compute much shorter. Playing,
+            the frame drops its poster proportions and becomes a theatre. */}
+        <figure className="w-full min-w-0">
           <div
             ref={plateRef}
-            className={`${styles.plateFrame} ${playing ? styles.plateFramePlaying : ""}`}
+            className={cx(
+              "group/frame relative w-full overflow-hidden transition-[height] duration-[0.45s] ease-[cubic-bezier(0.2,0.7,0.2,1)]",
+              playing
+                ? "h-[92vh] max-h-none min-h-0 cursor-default bg-black aspect-auto"
+                : // The fade-to-page gradient belongs to the poster state, not the theatre.
+                  "max-h-[88vh] min-h-[68vh] bg-[#101010] aspect-[21/9] after:pointer-events-none after:absolute after:inset-0 after:bg-[image:linear-gradient(to_bottom,rgba(0,0,0,0.4)_0%,rgba(0,0,0,0)_30%,rgba(0,0,0,0)_58%,#000000_100%)] after:content-[''] max-[899px]:max-h-none max-[899px]:min-h-0 max-[899px]:aspect-[16/10] max-[760px]:aspect-[4/3]",
+            )}
           >
+            {/* contain, not cover, while playing: a film frame must never be cropped. */}
             <img
-              className={playing ? styles.player : styles.plateImg}
+              className={playing ? "block h-full w-full bg-black object-contain" : "block h-full w-full object-cover object-[center_40%]"}
               src={plateSrc}
               alt={movie.title}
             />
@@ -315,11 +378,14 @@ export default function DetailClient({
               <>
                 <button
                   type="button"
-                  className={styles.playerExit}
+                  className={cx(
+                    "absolute top-[clamp(0.75rem,1.6vw,1.25rem)] right-[clamp(0.75rem,1.6vw,1.25rem)] z-[5] inline-flex h-10 cursor-pointer items-center gap-[0.55rem] border-0 bg-[rgba(0,0,0,0.62)] pr-4 pl-[0.85rem] text-[0.7rem] font-semibold tracking-[0.14em] text-[#ff3040] uppercase backdrop-blur-[10px] transition-[background,color,transform] duration-250 ease-[ease] hover:bg-[rgba(0,0,0,0.85)] hover:text-[#ff4f5f] hover:[transform:translateY(-1px)] motion-reduce:transition-none",
+                    FOCUS_RING,
+                  )}
                   onClick={closePlayer}
                 >
                   <svg
-                    className={styles.playerExitGlyph}
+                    className="h-[11px] w-[11px] flex-none"
                     viewBox="0 0 12 12"
                     aria-hidden="true"
                     focusable="false"
@@ -335,15 +401,32 @@ export default function DetailClient({
                   <span>Close</span>
                 </button>
 
-                <div className={styles.playerChrome}>
-                  <div className={styles.playerTitleBar}>
-                    <h2 className={styles.playerMovieName}>{movie.title}</h2>
+                <div
+                  className={cx(
+                    "pointer-events-none absolute inset-0 z-[3] opacity-0 transition-opacity duration-[0.28s] ease-[ease] before:pointer-events-none before:absolute before:inset-0 before:bg-[image:linear-gradient(to_bottom,rgba(0,0,0,0.78),rgba(0,0,0,0)_33%),linear-gradient(to_top,rgba(0,0,0,0.88),rgba(0,0,0,0)_45%)] before:content-[''] motion-reduce:transition-none",
+                    REVEAL,
+                  )}
+                >
+                  <div
+                    className={cx(
+                      "absolute top-0 left-0 z-[1] px-[clamp(1rem,3vw,2.5rem)] py-[clamp(1rem,2.4vw,1.7rem)] opacity-0 [transition:opacity_0.3s_ease,transform_0.35s_cubic-bezier(0.2,0.7,0.2,1)] [transform:translateY(-34px)] group-hover/frame:[transform:translateY(0)] group-focus-within/frame:[transform:translateY(0)] [@media(hover:none)]:[transform:none] max-[560px]:right-[5.75rem] max-[560px]:px-4 max-[560px]:py-[0.9rem] motion-reduce:transition-none right-[clamp(8.8rem,12vw,10rem)]",
+                      REVEAL,
+                    )}
+                  >
+                    <h2 className="m-0 font-heading text-[clamp(1.35rem,3vw,2.4rem)] leading-[1.05] font-normal tracking-[-0.018em] break-words text-balance text-ink [text-shadow:0_8px_28px_rgba(0,0,0,0.78)]">
+                      {movie.title}
+                    </h2>
                   </div>
 
-                  <div className={styles.playerCenterControls}>
+                  <div
+                    className={cx(
+                      "pointer-events-none absolute top-1/2 left-1/2 z-[1] flex items-center justify-center gap-[clamp(1rem,2.5vw,1.75rem)] opacity-0 [transition:opacity_0.24s_ease,transform_0.32s_cubic-bezier(0.2,0.7,0.2,1)] [transform:translate(-50%,-44%)_scale(0.96)] group-hover/frame:pointer-events-auto group-hover/frame:[transform:translate(-50%,-50%)_scale(1)] group-focus-within/frame:pointer-events-auto group-focus-within/frame:[transform:translate(-50%,-50%)_scale(1)] [@media(hover:none)]:pointer-events-auto [@media(hover:none)]:[transform:translate(-50%,-50%)_scale(1)] max-[560px]:gap-[0.7rem] motion-reduce:transition-none",
+                      REVEAL,
+                    )}
+                  >
                     <button
                       type="button"
-                      className={`${styles.playerControlButton} ${styles.playerSkipControl}`}
+                      className={cx(CONTROL, CONTROL_NEUTRAL, CONTROL_SKIP)}
                       aria-label="Rewind 10 seconds"
                       onClick={() => flashSkip("backward")}
                     >
@@ -364,7 +447,7 @@ export default function DetailClient({
 
                     <button
                       type="button"
-                      className={`${styles.playerControlButton} ${styles.playerPrimaryControl}`}
+                      className={cx(CONTROL, CONTROL_PRIMARY)}
                       aria-label={playerPaused ? "Play movie" : "Pause movie"}
                       aria-pressed={!playerPaused}
                       onClick={() => setPlayerPaused((value) => !value)}
@@ -382,7 +465,7 @@ export default function DetailClient({
 
                     <button
                       type="button"
-                      className={`${styles.playerControlButton} ${styles.playerSkipControl}`}
+                      className={cx(CONTROL, CONTROL_NEUTRAL, CONTROL_SKIP)}
                       aria-label="Forward 10 seconds"
                       onClick={() => flashSkip("forward")}
                     >
@@ -402,22 +485,27 @@ export default function DetailClient({
                     </button>
                   </div>
 
-                  <div className={styles.playerControlDeck}>
+                  <div
+                    className={cx(
+                      "pointer-events-none absolute right-0 bottom-0 left-0 z-[1] px-[clamp(1rem,3vw,2.5rem)] py-[clamp(1rem,2.2vw,1.7rem)] opacity-0 [transition:opacity_0.25s_ease,transform_0.35s_cubic-bezier(0.2,0.7,0.2,1)] [transform:translateY(28px)] group-hover/frame:pointer-events-auto group-hover/frame:[transform:translateY(0)] group-focus-within/frame:pointer-events-auto group-focus-within/frame:[transform:translateY(0)] [@media(hover:none)]:pointer-events-auto [@media(hover:none)]:[transform:none] max-[560px]:px-4 max-[560px]:py-[0.9rem] motion-reduce:transition-none",
+                      REVEAL,
+                    )}
+                  >
                     <input
                       type="range"
                       min="0"
                       max="100"
                       value={playerProgress}
-                      className={styles.playerProgressRange}
+                      className="player-range"
                       style={playerProgressStyle}
                       aria-label="Movie progress"
                       onChange={(event) => setPlayerProgress(Number(event.currentTarget.value))}
                     />
 
-                    <div className={styles.playerUtilityRow}>
+                    <div className="flex items-center justify-end">
                       <button
                         type="button"
-                        className={`${styles.playerControlButton} ${styles.playerFullscreenButton}`}
+                        className={cx(CONTROL, CONTROL_NEUTRAL, CONTROL_FULLSCREEN)}
                         aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
                         aria-pressed={isFullscreen}
                         onClick={toggleFullscreen}
@@ -452,30 +540,35 @@ export default function DetailClient({
 
                 {skipPulse && (
                   <div
-                    className={`${styles.skipFeedback} ${
-                      skipPulse === "backward" ? styles.skipFeedbackBack : styles.skipFeedbackForward
-                    }`}
+                    className={cx(
+                      SKIP_FEEDBACK,
+                      skipPulse === "backward" ? "left-[28%] max-[560px]:left-[12%]" : "right-[28%] max-[560px]:right-[12%]",
+                    )}
                     aria-hidden="true"
                   >
                     {skipPulse === "backward" ? "-10" : "+10"}
                   </div>
                 )}
 
-                {/* The store carries no video file for a title yet — only key
-                    art — so the screen shows that until a source field exists. */}
-                <p className={styles.playerNote}>
+                {/* A quiet note rather than a blocking overlay: the screen still
+                    shows the key art, so covering it would defeat the point. The
+                    store carries no video file for a title yet — only key art. */}
+                <p className="absolute bottom-[clamp(5.7rem,9vw,7rem)] left-1/2 z-[2] max-w-[calc(100%-2rem)] bg-[rgba(0,0,0,0.62)] px-4 py-[0.55rem] text-center text-[0.74rem] tracking-[0.06em] text-[#8a8a8a] backdrop-blur-[10px] [transform:translateX(-50%)] max-[560px]:bottom-[4.9rem] max-[560px]:text-[0.68rem]">
                   No video source attached to this title yet.
                 </p>
               </>
             ) : (
               <button
                 type="button"
-                className={styles.platePlay}
+                className={cx(
+                  "absolute top-1/2 left-1/2 z-[1] grid aspect-square w-[clamp(58px,7vw,84px)] cursor-pointer place-items-center rounded-[50%] border border-[rgba(250,250,250,0.5)] bg-[rgba(0,0,0,0.15)] text-ink transition-[background-color,border-color] duration-[0.35s] ease-[ease] [transform:translate(-50%,-50%)] hover:border-ink hover:bg-[rgba(250,250,250,0.12)] motion-reduce:transition-none",
+                  FOCUS_RING,
+                )}
                 aria-label={labels.trailerPlay}
                 onClick={startPlayer}
               >
                 <svg
-                  className={styles.platePlayGlyph}
+                  className="ml-[0.2em] h-auto w-[clamp(11px,1.4vw,15px)]"
                   viewBox="0 0 12 14"
                   aria-hidden="true"
                   focusable="false"
@@ -486,101 +579,53 @@ export default function DetailClient({
             )}
           </div>
 
-          <figcaption className={styles.plateCaption}>
-            <div className={styles.plateBar}>
-              <span className={styles.plateCaptionMain}>
-                <span className={styles.plateEyebrow}>{labels.trailerHeading}</span>
-                <span className={styles.plateTitle}>
+          {/* The plate is full-bleed, so its caption re-applies the page shell
+              to line up with the rest of the content. */}
+          <figcaption className={SHELL}>
+            <div className="mt-[clamp(0.9rem,1.4vw,1.2rem)] flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-t border-[rgba(250,250,250,0.11)] pt-[clamp(0.7rem,1.1vw,0.95rem)]">
+              <span className="flex min-w-0 flex-col gap-[0.55rem]">
+                <span className="text-[0.66rem] font-medium tracking-[0.28em] text-[#8a8a8a] uppercase">{labels.trailerHeading}</span>
+                <span className="font-heading text-[clamp(0.95rem,1.4vw,1.15rem)] font-normal tracking-[0.01em]">
                   {movie.title} — {labels.trailerTitleSuffix}
                 </span>
               </span>
-              <span className={styles.plateStudio}>{labels.trailerStudio}</span>
+              <span className="text-[0.72rem] tracking-[0.16em] text-[#8a8a8a] uppercase">{labels.trailerStudio}</span>
             </div>
           </figcaption>
         </figure>
 
-        <div className={styles.shell}>
-          <section className={styles.section}>
-            <div className={styles.sectionHead}>
-              <h2 className={styles.sectionLabel}>{labels.relatedHeading}</h2>
-              <span className={styles.sectionRule} aria-hidden="true" />
+        <div className={SHELL}>
+          <section className="mt-(--step)">
+            <div className="mb-[clamp(1.75rem,3.2vw,2.75rem)] flex items-center gap-[clamp(1.25rem,2.5vw,2rem)]">
+              <h2 className="font-body text-[0.7rem] font-medium tracking-[0.28em] whitespace-nowrap text-[#8a8a8a] uppercase">{labels.relatedHeading}</h2>
+              <span className="h-px flex-1 bg-[rgba(250,250,250,0.11)]" aria-hidden="true" />
             </div>
 
+            {/* Fixed 190px tracks rather than fr-based columns: `1fr` stretched
+                each card, so a related card came out larger than the same card
+                on the catalog. Below 560px the cards fill the row instead, two
+                up, so a fixed track cannot leave a lone column with a hole. */}
             {related.length > 0 ? (
-              <ul className={styles.relatedGrid}>
-                {related.map((item) => {
-                  const isSaved = !!bookmarked[item.id];
-                  return (
-                    <li key={item.id} className={styles.relatedItem}>
-                      <div
-                        className={watchStyles.posterCard}
-                        onMouseEnter={(e) => handleCardMouseEnter(item, e)}
-                        onMouseLeave={handleCardMouseLeave}
-                      >
-                        <div className={watchStyles.posterWrapper}>
-                          {/* Decorative: the stretched link below carries the title. */}
-                          <img
-                            src={item.image}
-                            alt=""
-                            loading="lazy"
-                            className={watchStyles.posterImg}
-                          />
-
-                          {/* One real link stretched over the artwork, so the card is
-                              reachable by keyboard and openable in a new tab. The bookmark
-                              button sits above it as a sibling, never inside it, which keeps
-                              the HTML valid. */}
-                          <Link href={`/watch/${item.id}`} className={watchStyles.posterLink}>
-                            <span className={watchStyles.posterLinkLabel}>{item.title}</span>
-                          </Link>
-
-                          {/* Bookmark / Save (top-left) */}
-                          <button
-                            className={`${watchStyles.bookmarkBtn} ${isSaved ? watchStyles.bookmarkActive : ""}`}
-                            aria-label={labels.saveToList}
-                            onClick={() => toggleBookmark(item.id)}
-                          >
-                            <svg viewBox="0 0 24 24" width="15" height="15" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                            </svg>
-                          </button>
-
-                          {/* Rating badge (top-right) */}
-                          <div className={watchStyles.ratingBadge}>
-                            <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
-                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                            </svg>
-                            <span>{item.rating}</span>
-                          </div>
-
-                          {/* Hover play button */}
-                          <div className={watchStyles.posterOverlay}>
-                            <div className={watchStyles.playBtnCircle}>
-                              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-                                <path d="M8 5v14l11-7z" />
-                              </svg>
-                            </div>
-                          </div>
-
-                          {/* Title / year revealed on hover */}
-                          <div className={watchStyles.posterHoverInfo}>
-                            <h4 className={watchStyles.posterTitle}>{item.title}</h4>
-                            <span className={watchStyles.metaYear}>{item.year}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  );
-                })}
+              <ul className="grid list-none grid-cols-[repeat(auto-fill,190px)] [justify-content:start] gap-x-[10px] gap-y-[clamp(1.5rem,2.4vw,2rem)] max-[559px]:grid-cols-[repeat(auto-fill,minmax(140px,1fr))] max-[559px]:gap-y-6">
+                {related.map((item) => (
+                  <li key={item.id} className="min-w-0">
+                    <PosterCard
+                      movie={item}
+                      saved={!!bookmarked[item.id]}
+                      saveLabel={labels.saveToList}
+                      onToggleSave={() => toggleBookmark(item.id)}
+                      {...popover.cardProps(item)}
+                    />
+                  </li>
+                ))}
               </ul>
             ) : (
-              <p className={styles.empty}>Nothing else in this collection yet.</p>
+              <p className="text-[0.95rem] leading-[1.7] text-[#8a8a8a]">Nothing else in this collection yet.</p>
             )}
           </section>
         </div>
       </main>
 
-      {/* The site footer, shared with the catalog and the browse page. */}
       <SiteFooter brand={brand} footer={footer} />
 
       <SearchOverlay
@@ -590,81 +635,16 @@ export default function DetailClient({
         placeholder={`${labels.search} titles…`}
       />
 
-      {/* Floating detail popover, same as the catalog's. Positioned in document
-          coordinates, so it is a direct child of .page — which is the
-          positioned ancestor it resolves against. */}
-      {hoveredMovie && popoverPos && (
-        <div
-          className={`${watchStyles.detailsPopover} ${popoverPos.alignRight ? watchStyles.popoverRight : watchStyles.popoverLeft}`}
-          style={{
-            top: `${popoverPos.top}px`,
-            left: `${popoverPos.left}px`,
-            width: "330px",
-            height: `${popoverPos.height}px`,
-          }}
-          onMouseEnter={handlePopoverMouseEnter}
-          onMouseLeave={handlePopoverMouseLeave}
-        >
-          <div className={watchStyles.popoverBackdropWrap}>
-            <img
-              src={hoveredMovie.image}
-              alt={hoveredMovie.title}
-              className={watchStyles.popoverBackdrop}
-            />
-            <div className={watchStyles.popoverBackdropVignette} />
-
-            <div className={watchStyles.popoverBackdropText}>
-              <h3 className={watchStyles.popoverLogoTitle}>{hoveredMovie.title}</h3>
-              <div className={watchStyles.popoverMetaRowInline}>
-                <span className={watchStyles.popoverTypeBadge}>{popoverLabels.typeBadge}</span>
-                <span className={watchStyles.popoverRatingInline}>★ {hoveredMovie.rating}</span>
-                <span className={watchStyles.popoverYearInline}>📅 {hoveredMovie.year}</span>
-                <span className={watchStyles.popoverLangInline}>{popoverLabels.languageBadge}</span>
-              </div>
-            </div>
-
-            <div className={watchStyles.popoverTopRightBadge}>
-              <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-              </svg>
-              <span>{hoveredMovie.rating}</span>
-            </div>
-          </div>
-
-          <div className={watchStyles.popoverBody}>
-            <h4 className={watchStyles.popoverTitle}>{hoveredMovie.title}</h4>
-            <p className={watchStyles.popoverDescription}>{hoveredMovie.description}</p>
-
-            <div className={watchStyles.popoverActions}>
-              <button
-                className={watchStyles.popoverWatchBtn}
-                onClick={() => router.push(`/watch/${hoveredMovie.id}`)}
-              >
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <polygon points="5 3 19 12 5 21 5 3" />
-                </svg>
-                <span>{popoverLabels.watchNow}</span>
-              </button>
-
-              <button
-                className={`${watchStyles.popoverPlusBtn} ${bookmarked[hoveredMovie.id] ? watchStyles.popoverPlusActive : ""}`}
-                onClick={() => toggleBookmark(hoveredMovie.id)}
-                aria-label={popoverLabels.addToWatchlist}
-              >
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  {bookmarked[hoveredMovie.id] ? (
-                    <polyline points="20 6 9 17 4 12" />
-                  ) : (
-                    <>
-                      <line x1="12" y1="5" x2="12" y2="19" />
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                    </>
-                  )}
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
+      {popover.movie && popover.position && (
+        <TitlePopover
+          movie={popover.movie}
+          position={popover.position}
+          labels={popoverLabels}
+          saved={!!bookmarked[popover.movie.id]}
+          onToggleSave={() => toggleBookmark(popover.movie!.id)}
+          onWatch={() => router.push(`/watch/${popover.movie!.id}`)}
+          {...popover.popoverProps}
+        />
       )}
     </div>
   );
