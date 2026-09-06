@@ -2,13 +2,13 @@
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
+import { cx } from "@/lib/cx";
 import {
   getDemoUserProfile,
   markDemoSignedOut,
   subscribeDemoAuthChange,
   type DemoUserProfile,
 } from "./demo-auth";
-import styles from "./profile-menu.module.css";
 
 type ProfileMenuVariant = "glass" | "minimal" | "control";
 
@@ -16,6 +16,46 @@ interface ProfileMenuProps {
   ariaLabel?: string;
   variant?: ProfileMenuVariant;
 }
+
+/* ------------------------------------------------------------- styling -- */
+
+const TRIGGER =
+  "inline-flex flex-none cursor-pointer items-center justify-center rounded-[999px] p-0 no-underline transition-[background,border-color,color,transform,box-shadow] duration-[0.22s] ease-[ease] hover:-translate-y-px focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-ink motion-reduce:transition-none [&_svg]:h-[52%] [&_svg]:w-[52%]";
+
+/* One look per surface: frosted on the catalog, bare on the detail page,
+   compact on the browse toolbar. */
+const VARIANT: Record<ProfileMenuVariant, string> = {
+  glass:
+    "size-[42px] border bg-[rgba(255,255,255,0.06)] text-ink backdrop-blur-[10px] aria-expanded:bg-[rgba(255,255,255,0.14)] hover:bg-[rgba(255,255,255,0.14)]",
+  minimal:
+    "size-[2.35rem] border-0 bg-transparent text-[#8a8a8a] aria-expanded:bg-[rgba(255,255,225,0.06)] aria-expanded:text-ink hover:bg-[rgba(255,255,225,0.06)] hover:text-ink",
+  control:
+    "size-[34px] border-0 bg-transparent text-[rgba(255,255,225,0.72)] aria-expanded:bg-[rgba(255,255,225,0.06)] aria-expanded:text-ink hover:bg-[rgba(255,255,225,0.06)] hover:text-ink",
+};
+
+/* The glass ring's border: plain when signed out, a faint red halo once a
+   profile is present (which then also holds on hover). */
+const GLASS_BORDER =
+  "border-[rgba(255,255,255,0.1)] aria-expanded:border-[rgba(255,255,255,0.24)] hover:border-[rgba(255,255,255,0.24)]";
+const GLASS_BORDER_SIGNED_IN =
+  "border-[rgba(255,46,61,0.38)] shadow-[0_0_0_1px_rgba(255,46,61,0.04),0_10px_28px_rgba(255,46,61,0.16)]";
+
+const AVATAR =
+  "grid place-items-center rounded-[999px] bg-[image:radial-gradient(circle_at_32%_25%,rgba(255,255,225,0.95),rgba(255,255,225,0.1)_28%,transparent_30%),linear-gradient(145deg,#ff2e3d_0%,#9f101a_58%,#2b0307_100%)] font-heading font-black tracking-[0] text-white uppercase shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2)]";
+
+const MENU =
+  "absolute top-[calc(100%+12px)] right-0 w-[min(330px,calc(100vw-24px))] origin-top-right animate-menu-in rounded-lg border border-[rgba(255,255,225,0.12)] bg-[#090909] bg-[image:linear-gradient(180deg,rgba(255,255,225,0.055),rgba(255,255,225,0.015))] p-3 text-ink shadow-[0_28px_70px_rgba(0,0,0,0.68)] backdrop-blur-[18px] max-[420px]:right-[-8px] max-[420px]:w-[min(310px,calc(100vw-18px))] motion-reduce:animate-none motion-reduce:transition-none " +
+  // the little notch pointing at the trigger
+  "before:absolute before:top-[-6px] before:right-4 before:size-[11px] before:border-t before:border-l before:border-[rgba(255,255,225,0.12)] before:bg-[#111111] before:content-[''] before:[transform:rotate(45deg)]";
+
+const ITEM =
+  "grid min-h-[52px] w-full cursor-pointer grid-cols-[34px_minmax(0,1fr)_auto] items-center gap-[10px] rounded-md bg-transparent p-2 text-left transition-[background,color,transform] duration-[0.18s] ease-[ease] hover:-translate-x-px hover:bg-[rgba(255,255,225,0.065)] focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-ink max-[420px]:grid-cols-[32px_minmax(0,1fr)_auto] motion-reduce:animate-none motion-reduce:transition-none";
+const ITEM_ICON = "grid size-[34px] place-items-center rounded-[999px] [&_svg]:size-[17px]";
+const ITEM_TEXT = "flex min-w-0 flex-col gap-1";
+const ITEM_LABEL = "font-heading text-[0.86rem] leading-none font-extrabold text-ink";
+const ITEM_COPY = "truncate text-[0.68rem] leading-[1.25] font-semibold";
+
+/* ------------------------------------------------------------- helpers -- */
 
 function getInitials(profile: DemoUserProfile): string {
   const source = profile.name || profile.email;
@@ -46,7 +86,9 @@ function AccountIcon() {
   );
 }
 
-function MenuIcon({ kind }: { kind: "account" | "appearance" | "playback" | "language" | "kids" | "help" | "signout" }) {
+type MenuIconKind = "account" | "appearance" | "playback" | "language" | "kids" | "help" | "signout";
+
+function MenuIcon({ kind }: { kind: MenuIconKind }) {
   if (kind === "appearance") {
     return (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -116,6 +158,17 @@ function MenuIcon({ kind }: { kind: "account" | "appearance" | "playback" | "lan
   return <AccountIcon />;
 }
 
+const SETTINGS: { kind: MenuIconKind; label: string; copy: string }[] = [
+  { kind: "account", label: "Account", copy: "Membership and profile details" },
+  { kind: "appearance", label: "Appearance", copy: "ShowTiva theatre styling" },
+  { kind: "playback", label: "Playback", copy: "Autoplay and quality controls" },
+  { kind: "language", label: "Language", copy: "Audio and subtitle preferences" },
+  { kind: "kids", label: "Family mode", copy: "Profile safety and maturity level" },
+  { kind: "help", label: "Help", copy: "Support, devices, and app info" },
+];
+
+/* ----------------------------------------------------------- component -- */
+
 export default function ProfileMenu({ ariaLabel = "Profile", variant = "glass" }: ProfileMenuProps) {
   const profileSnapshot = useSyncExternalStore(
     subscribeDemoAuthChange,
@@ -155,7 +208,11 @@ export default function ProfileMenu({ ariaLabel = "Profile", variant = "glass" }
   }, [open]);
 
   const initials = useMemo(() => (profile ? getInitials(profile) : "ST"), [profile]);
-  const triggerClassName = `${styles.trigger} ${styles[variant]} ${profile ? styles.signedIn : ""}`;
+  const triggerClassName = cx(
+    TRIGGER,
+    VARIANT[variant],
+    variant === "glass" && (profile ? GLASS_BORDER_SIGNED_IN : GLASS_BORDER),
+  );
 
   if (!profile) {
     return (
@@ -171,7 +228,7 @@ export default function ProfileMenu({ ariaLabel = "Profile", variant = "glass" }
   }
 
   return (
-    <div className={styles.root} ref={rootRef}>
+    <div className="relative z-[1500] inline-flex flex-none" ref={rootRef}>
       <button
         type="button"
         className={triggerClassName}
@@ -180,98 +237,52 @@ export default function ProfileMenu({ ariaLabel = "Profile", variant = "glass" }
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
-        <span className={styles.avatar}>{initials}</span>
+        <span className={cx(AVATAR, "h-[calc(100%-6px)] w-[calc(100%-6px)] text-[0.7rem]")}>{initials}</span>
       </button>
 
       {open && (
-        <div className={styles.menu} role="menu" aria-label="Profile settings">
-          <div className={styles.profileBlock}>
-            <span className={styles.profileAvatar}>{initials}</span>
-            <span className={styles.profileText}>
-              <strong>{profile.name}</strong>
-              <span>{profile.email}</span>
+        <div className={MENU} role="menu" aria-label="Profile settings">
+          <div className="grid grid-cols-[44px_minmax(0,1fr)] items-center gap-3 px-2 pt-2 pb-3">
+            <span className={cx(AVATAR, "size-11 text-[0.78rem]")}>{initials}</span>
+            <span className="flex min-w-0 flex-col gap-1">
+              <strong className="truncate font-heading text-[0.95rem] leading-[1.1] font-extrabold text-ink">{profile.name}</strong>
+              <span className="truncate text-[0.74rem] leading-[1.2] font-semibold text-[rgba(255,255,225,0.55)]">{profile.email}</span>
             </span>
           </div>
 
-          <div className={styles.menuTitle}>Settings</div>
+          <div className="border-t border-[rgba(255,255,225,0.08)] px-2 pt-[10px] pb-[7px] font-[family-name:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace] text-[0.58rem] font-bold tracking-[0.16em] text-[rgba(255,255,225,0.48)] uppercase">
+            Settings
+          </div>
 
-          <div className={styles.menuList}>
-            <button type="button" className={styles.menuItem} role="menuitem">
-              <span className={styles.menuIcon}>
-                <MenuIcon kind="account" />
-              </span>
-              <span className={styles.menuText}>
-                <span className={styles.menuLabel}>Account</span>
-                <span className={styles.menuCopy}>Membership and profile details</span>
-              </span>
-            </button>
-
-            <button type="button" className={styles.menuItem} role="menuitem">
-              <span className={styles.menuIcon}>
-                <MenuIcon kind="appearance" />
-              </span>
-              <span className={styles.menuText}>
-                <span className={styles.menuLabel}>Appearance</span>
-                <span className={styles.menuCopy}>ShowTiva theatre styling</span>
-              </span>
-            </button>
-
-            <button type="button" className={styles.menuItem} role="menuitem">
-              <span className={styles.menuIcon}>
-                <MenuIcon kind="playback" />
-              </span>
-              <span className={styles.menuText}>
-                <span className={styles.menuLabel}>Playback</span>
-                <span className={styles.menuCopy}>Autoplay and quality controls</span>
-              </span>
-            </button>
-
-            <button type="button" className={styles.menuItem} role="menuitem">
-              <span className={styles.menuIcon}>
-                <MenuIcon kind="language" />
-              </span>
-              <span className={styles.menuText}>
-                <span className={styles.menuLabel}>Language</span>
-                <span className={styles.menuCopy}>Audio and subtitle preferences</span>
-              </span>
-            </button>
-
-            <button type="button" className={styles.menuItem} role="menuitem">
-              <span className={styles.menuIcon}>
-                <MenuIcon kind="kids" />
-              </span>
-              <span className={styles.menuText}>
-                <span className={styles.menuLabel}>Family mode</span>
-                <span className={styles.menuCopy}>Profile safety and maturity level</span>
-              </span>
-            </button>
-
-            <button type="button" className={styles.menuItem} role="menuitem">
-              <span className={styles.menuIcon}>
-                <MenuIcon kind="help" />
-              </span>
-              <span className={styles.menuText}>
-                <span className={styles.menuLabel}>Help</span>
-                <span className={styles.menuCopy}>Support, devices, and app info</span>
-              </span>
-            </button>
+          <div className="flex flex-col gap-[2px]">
+            {SETTINGS.map((item) => (
+              <button key={item.kind} type="button" className={cx(ITEM, "text-inherit")} role="menuitem">
+                <span className={cx(ITEM_ICON, "bg-[rgba(255,255,225,0.06)] text-[rgba(255,255,225,0.76)]")}>
+                  <MenuIcon kind={item.kind} />
+                </span>
+                <span className={ITEM_TEXT}>
+                  <span className={ITEM_LABEL}>{item.label}</span>
+                  <span className={cx(ITEM_COPY, "text-[rgba(255,255,225,0.5)]")}>{item.copy}</span>
+                </span>
+              </button>
+            ))}
           </div>
 
           <button
             type="button"
-            className={`${styles.menuItem} ${styles.signOut}`}
+            className={cx(ITEM, "mt-2 rounded-t-none border-t border-[rgba(255,255,225,0.08)] text-[#ff6a75]")}
             role="menuitem"
             onClick={() => {
               markDemoSignedOut();
               setOpen(false);
             }}
           >
-            <span className={styles.menuIcon}>
+            <span className={cx(ITEM_ICON, "bg-[rgba(255,46,61,0.1)] text-[#ff6a75]")}>
               <MenuIcon kind="signout" />
             </span>
-            <span className={styles.menuText}>
-              <span className={styles.menuLabel}>Sign out</span>
-              <span className={styles.menuCopy}>Return to guest browsing</span>
+            <span className={ITEM_TEXT}>
+              <span className={ITEM_LABEL}>Sign out</span>
+              <span className={cx(ITEM_COPY, "text-[rgba(255,106,117,0.62)]")}>Return to guest browsing</span>
             </span>
           </button>
         </div>
