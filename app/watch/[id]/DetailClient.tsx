@@ -222,9 +222,12 @@ export default function DetailClient({
         <button
           type="button"
           className={cx(
-            "group/back inline-flex cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-[0.7rem] font-medium tracking-[0.22em] whitespace-nowrap text-[#8a8a8a] uppercase transition-[color] duration-300 ease-[ease] hover:text-ink pointer-coarse:min-h-11 motion-reduce:transition-none",
+            "group/back inline-flex cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-[0.7rem] font-medium tracking-[0.22em] whitespace-nowrap text-[#8a8a8a] uppercase transition-[color] duration-300 ease-[ease] hover:text-ink pointer-coarse:min-h-11 pointer-coarse:min-w-11 motion-reduce:transition-none",
             FOCUS_RING,
           )}
+          // The label is hidden below 768px, and display:none takes it out
+          // of the accessibility tree with it — so the name lives here.
+          aria-label={labels.goBack}
           onClick={() => router.back()}
         >
           <svg
@@ -242,7 +245,9 @@ export default function DetailClient({
               strokeLinejoin="round"
             />
           </svg>
-          <span>{labels.goBack}</span>
+          {/* Arrow only on a phone: the words cost width the lockup and the
+              two icons need in the same row. */}
+          <span className="max-[768px]:hidden">{labels.goBack}</span>
         </button>
 
         {/* On entry the lockup glides in from the left. Animated on the two
