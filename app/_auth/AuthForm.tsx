@@ -170,7 +170,9 @@ export default function AuthForm({ mode, brand, surface = "page" }: AuthFormProp
         )}
 
         <div className="relative z-[3] w-full max-w-[42ch] p-[clamp(1.5rem,5vw,5.5rem)] min-[900px]:p-[clamp(3rem,6vw,5.5rem)]">
-          <span className="inline-flex items-center gap-[0.6rem]">
+          {/* Below 900px the form panel carries its own lockup directly
+              underneath this one, so this is the duplicate and it goes. */}
+          <span className="inline-flex items-center gap-[0.6rem] max-[899px]:hidden">
             <img className="block h-[30px] w-auto" src={brand.mark} alt="" />
             <img className="block h-5 w-auto" src={brand.wordmark} alt="" />
           </span>
@@ -257,7 +259,7 @@ export default function AuthForm({ mode, brand, surface = "page" }: AuthFormProp
                 {!isSignup && (
                   <button
                     type="button"
-                    className={cx(GREY_TEXT_BUTTON, "p-0 tracking-[0.02em]")}
+                    className={cx(GREY_TEXT_BUTTON, "p-0 tracking-[0.02em] pointer-coarse:-my-3 pointer-coarse:px-2 pointer-coarse:py-3")}
                     onClick={() => setShowPassword((v) => !v)}
                   >
                     {showPassword ? "Hide" : "Show"}
@@ -279,7 +281,7 @@ export default function AuthForm({ mode, brand, surface = "page" }: AuthFormProp
                   // uses the one by the label.
                   <button
                     type="button"
-                    className={cx(GREY_TEXT_BUTTON, "absolute top-1/2 right-2 px-[0.6rem] py-[0.4rem] [transform:translateY(-50%)]")}
+                    className={cx(GREY_TEXT_BUTTON, "absolute top-1/2 right-2 px-[0.6rem] py-[0.4rem] [transform:translateY(-50%)] pointer-coarse:px-3 pointer-coarse:py-[0.8rem]")}
                     onClick={() => setShowPassword((v) => !v)}
                   >
                     {showPassword ? "Hide" : "Show"}

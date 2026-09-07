@@ -80,7 +80,7 @@ export default function SearchOverlay({
     // The bar sits in the upper third, not dead centre — it reads as a search
     // field rather than a modal dialog.
     <div
-      className="fixed inset-0 z-[1000] flex flex-col items-center px-[clamp(16px,5vw,40px)] pt-[clamp(12vh,16vh,22vh)] pb-10"
+      className="fixed inset-0 z-[1000] flex flex-col items-center px-[clamp(16px,5vw,40px)] pt-[clamp(12vh,16vh,22vh)] pb-10 max-[640px]:pt-[7vh] max-[640px]:pb-5"
       role="dialog"
       aria-modal="true"
       aria-label="Search"
@@ -115,10 +115,16 @@ export default function SearchOverlay({
           />
           <button
             type="button"
-            className="flex-none cursor-pointer rounded-[3px] border border-[rgba(255,255,225,0.16)] bg-transparent px-[9px] py-[5px] font-body text-[0.66rem] font-semibold tracking-[0.1em] text-[rgba(255,255,225,0.55)] uppercase transition-[color,border-color] duration-200 ease-[ease] hover:border-[rgba(255,255,225,0.34)] hover:text-ink"
+            className="flex-none cursor-pointer rounded-[3px] border border-[rgba(255,255,225,0.16)] bg-transparent px-[9px] py-[5px] font-body text-[0.66rem] font-semibold tracking-[0.1em] text-[rgba(255,255,225,0.55)] uppercase transition-[color,border-color] duration-200 ease-[ease] hover:border-[rgba(255,255,225,0.34)] hover:text-ink pointer-coarse:grid pointer-coarse:size-11 pointer-coarse:place-items-center pointer-coarse:p-0"
+            aria-label="Close search"
             onClick={onClose}
           >
-            Esc
+            {/* Naming the Esc key is no help on a device that has none. */}
+            <span className="pointer-coarse:hidden">Esc</span>
+            <svg className="hidden pointer-coarse:block" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+              <line x1="5" y1="5" x2="19" y2="19" />
+              <line x1="19" y1="5" x2="5" y2="19" />
+            </svg>
           </button>
         </div>
 

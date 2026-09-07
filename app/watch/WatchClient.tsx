@@ -404,7 +404,7 @@ export default function WatchClient({
 
               <button
                 type="button"
-                className={cx(WISHLIST_ICON_BTN, "h-9 w-9 flex-none rounded-[50%] border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.06)] text-ink hover:border-[rgba(255,255,255,0.22)] hover:bg-[rgba(255,255,255,0.14)]")}
+                className={cx(WISHLIST_ICON_BTN, "h-9 w-9 pointer-coarse:size-11 flex-none rounded-[50%] border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.06)] text-ink hover:border-[rgba(255,255,255,0.22)] hover:bg-[rgba(255,255,255,0.14)]")}
                 aria-label="Close wishlist"
                 onClick={() => setWishlistOpen(false)}
               >
