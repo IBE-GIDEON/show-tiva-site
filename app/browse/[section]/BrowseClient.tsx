@@ -136,6 +136,9 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
   const [page, setPage] = useState(1);
   const [saved, setSaved] = useState<Set<string>>(() => new Set<string>());
   const [searchOpen, setSearchOpen] = useState(false);
+  // Phone only: Genre/Year/Rating/Sort collapse behind a disclosure. Above
+  // 640px the cells are always laid out and this is ignored.
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const router = useRouter();
   const popover = useTitlePopover();
@@ -209,6 +212,12 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
   const sortLabel = SORTS.find((s) => s.key === sort)?.label ?? SORTS[0].label;
   const filtersActive = Boolean(trimmed || genre || year || minRating);
   const isDirty = filtersActive || sort !== "rating";
+  // What the collapsed disclosure is hiding, so the toggle can say so.
+  // Search is excluded: it stays visible above the toggle.
+  const hiddenFilterCount =
+    [genre, year, minRating].filter(Boolean).length + (sort !== "rating" ? 1 : 0);
+  // Cells are laid out normally on desktop; on a phone they follow the toggle.
+  const filterCell = filtersOpen ? FIELD : `${FIELD} max-[640px]:hidden`;
 
   const chips: { id: string; label: string; value: string; onClear: () => void }[] = [];
   if (trimmed) {
@@ -319,9 +328,12 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
         </section>
 
         {/* ------------------------------------------------------- rail -- */}
-        <nav className="flex items-center gap-[18px] pt-5 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-[10px]" aria-label="Categories">
-          <span className={cx("flex-none text-[0.6rem] tracking-[0.18em]", MICRO)}>Categories</span>
-          <ul className="flex min-w-0 list-none flex-wrap gap-x-[18px] gap-y-[6px]">
+        <nav className="flex items-center gap-[18px] pt-5 max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-[10px] max-[640px]:pt-4" aria-label="Categories">
+          <span className={cx("flex-none text-[0.6rem] tracking-[0.18em] max-[640px]:hidden", MICRO)}>Categories</span>
+          {/* Wrapping put four rows of chips above the console on a phone.
+              Below 640px it is a single swipeable row instead — the bleed
+              into the gutter is what signals there is more to the right. */}
+          <ul className="flex min-w-0 list-none flex-wrap gap-x-[18px] gap-y-[6px] max-[640px]:-mx-(--gutter) max-[640px]:w-[calc(100%+2*var(--gutter))] max-[640px]:flex-nowrap max-[640px]:gap-x-4 max-[640px]:overflow-x-auto max-[640px]:px-(--gutter) max-[640px]:[scrollbar-width:none] max-[640px]:[&::-webkit-scrollbar]:hidden">
             {sections.map((s) => {
               const current = s.id === section.id;
               return (
@@ -388,7 +400,41 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
               </div>
             </div>
 
-            <div className={FIELD}>
+            {/* Phone only. Four stacked cells put ~330px of chrome between the
+                category title and the first poster, so Genre, Year, Rating and
+                Sort fold away behind this. Search stays out in the open, being
+                the control people reach for first. */}
+            <button
+              type="button"
+              className={cx(
+                "col-span-full hidden h-[42px] cursor-pointer items-center justify-between border bg-[#101010] px-[14px] text-[0.62rem] font-bold tracking-[0.16em] uppercase transition-[background] duration-200 ease-[ease] hover:bg-[#171717] max-[640px]:flex",
+                LINE,
+                MICRO,
+              )}
+              aria-expanded={filtersOpen}
+              onClick={() => setFiltersOpen((open) => !open)}
+            >
+              <span className="inline-flex items-center gap-2">
+                Filters
+                {/* Says what is folded away, so a narrowed result set is never
+                    a mystery. */}
+                {hiddenFilterCount > 0 && (
+                  <span className="grid h-[17px] min-w-[17px] place-items-center rounded-[999px] bg-[#fc3343] px-[5px] text-[0.6rem] leading-none font-bold text-ink tabular-nums">
+                    {hiddenFilterCount}
+                  </span>
+                )}
+              </span>
+              <span
+                className={cx(
+                  "inline-flex transition-[transform] duration-200 ease-[ease] motion-reduce:transition-none",
+                  filtersOpen && "[transform:rotate(180deg)]",
+                )}
+              >
+                {IconChevron}
+              </span>
+            </button>
+
+            <div className={filterCell}>
               <label className={FIELD_LABEL} htmlFor="v1-genre">
                 Genre
               </label>
@@ -413,7 +459,7 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
               </div>
             </div>
 
-            <div className={FIELD}>
+            <div className={filterCell}>
               <label className={FIELD_LABEL} htmlFor="v1-year">
                 Year
               </label>
@@ -438,7 +484,7 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
               </div>
             </div>
 
-            <div className={FIELD}>
+            <div className={filterCell}>
               <label className={FIELD_LABEL} htmlFor="v1-rating">
                 Rating
               </label>
@@ -463,7 +509,7 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
               </div>
             </div>
 
-            <div className={FIELD}>
+            <div className={filterCell}>
               <label className={FIELD_LABEL} htmlFor="v1-sort">
                 Sort
               </label>
