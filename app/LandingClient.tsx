@@ -34,14 +34,14 @@ const LOGO_BOX_STATE = {
 const LOGO_IMG = "block w-auto flex-none animate-bounce-entrance transition-[height] duration-[1.2s] ease-[cubic-bezier(0.25,1,0.5,1)] will-change-[height,transform,opacity]";
 
 /* The hero copy scales up and fades in as the intro minimises. */
-const HERO = "absolute top-[40vh] left-1/2 z-40 flex w-[90%] max-w-[800px] flex-col items-center text-center [transition:opacity_1.2s_cubic-bezier(0.25,1,0.5,1)_0.3s,transform_1.2s_cubic-bezier(0.25,1,0.5,1)_0.3s] will-change-[opacity,transform] max-[768px]:top-[38vh] max-[768px]:w-[85%]";
+const HERO = "absolute top-[40vh] left-1/2 z-40 flex w-[90%] max-w-[800px] flex-col items-center text-center [transition:opacity_1.2s_cubic-bezier(0.25,1,0.5,1)_0.3s,transform_1.2s_cubic-bezier(0.25,1,0.5,1)_0.3s] will-change-[opacity,transform] max-[768px]:top-[38vh] max-[768px]:w-full max-[768px]:px-6 max-[768px]:py-12 max-[768px]:bg-[image:radial-gradient(96%_54%_at_50%_50%,rgba(0,0,0,0.9)_0%,rgba(0,0,0,0.8)_40%,rgba(0,0,0,0.5)_66%,rgba(0,0,0,0.2)_84%,transparent_100%)]";
 const HERO_STATE = {
   intro: "pointer-events-none opacity-0 [transform:translate(-50%,-50%)_scale(0.95)]",
   active: "pointer-events-auto opacity-100 [transform:translate(-50%,-50%)_scale(1)]",
 };
 
 /* The bottom banner rises into place half a second after the intro settles. */
-const WRITEUP = "absolute right-[8%] bottom-[5%] left-[8%] z-[80] flex items-center justify-between [transition:opacity_1s_cubic-bezier(0.25,1,0.5,1)_0.5s,transform_1s_cubic-bezier(0.25,1,0.5,1)_0.5s] will-change-[opacity,transform] max-[768px]:right-[5%] max-[768px]:bottom-[3%] max-[768px]:left-[5%] max-[768px]:mx-auto max-[768px]:w-[90%] max-[768px]:max-w-[500px] max-[768px]:flex-col max-[768px]:items-center max-[768px]:gap-3 max-[768px]:text-center";
+const WRITEUP = "absolute right-[8%] bottom-[5%] left-[8%] z-[80] flex items-center justify-between max-[768px]:[text-shadow:0_1px_3px_rgba(0,0,0,0.95),0_1px_14px_rgba(0,0,0,0.85)] [transition:opacity_1s_cubic-bezier(0.25,1,0.5,1)_0.5s,transform_1s_cubic-bezier(0.25,1,0.5,1)_0.5s] will-change-[opacity,transform] max-[768px]:right-[5%] max-[768px]:bottom-[3%] max-[768px]:left-[5%] max-[768px]:mx-auto max-[768px]:w-[90%] max-[768px]:max-w-[500px] max-[768px]:flex-col max-[768px]:items-center max-[768px]:gap-3 max-[768px]:text-center";
 const WRITEUP_STATE = {
   intro: "pointer-events-none opacity-0 [transform:translate(0,30px)]",
   active: "pointer-events-auto opacity-100 [transform:translate(0,0)]",
@@ -87,7 +87,7 @@ export default function LandingClient({
             phones. */}
         <div
           className={cx(
-            "pointer-events-none absolute top-0 left-0 z-0 box-border flex h-[80vh] w-screen gap-4 overflow-hidden px-5 pt-5 pb-[10px] transition-opacity duration-400 ease-[ease-out]",
+            "pointer-events-none absolute top-0 left-0 z-0 box-border flex h-[80vh] w-screen gap-4 overflow-hidden px-5 pt-5 pb-[10px] transition-opacity duration-400 ease-[ease-out] max-[768px]:h-full max-[768px]:gap-0 max-[768px]:p-0",
             isMinimized ? "opacity-100" : "opacity-0",
           )}
         >
@@ -95,7 +95,7 @@ export default function LandingClient({
             <div
               key={videoSrc}
               className={cx(
-                "relative h-full flex-1 overflow-hidden rounded-2xl shadow-[0_15px_30px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.1)] will-change-transform [transform:translateY(-120%)] max-[768px]:not-first:hidden",
+                "relative h-full flex-1 overflow-hidden rounded-2xl shadow-[0_15px_30px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.1)] will-change-transform [transform:translateY(-120%)] max-[768px]:not-first:hidden max-[768px]:rounded-none max-[768px]:shadow-none max-[768px]:after:hidden",
                 // a soft sheen across each stripe, and a darker foot
                 "after:pointer-events-none after:absolute after:top-0 after:left-0 after:z-[2] after:h-full after:w-full after:rounded-[inherit] after:bg-[image:linear-gradient(to_right,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0)_25%,rgba(255,255,255,0.08)_50%,rgba(0,0,0,0)_75%,rgba(0,0,0,0.55)_100%),linear-gradient(to_bottom,rgba(255,255,255,0.15)_0%,rgba(255,255,255,0)_20%,rgba(0,0,0,0)_80%,rgba(0,0,0,0.4)_100%)] after:content-['']",
                 isMinimized && "animate-stroke-in",
@@ -113,14 +113,14 @@ export default function LandingClient({
                 loop
                 muted
                 playsInline
-                className="absolute top-0 left-0 h-full w-full rounded-[inherit] object-cover opacity-85"
+                className="absolute top-0 left-0 h-full w-full rounded-[inherit] object-cover opacity-85 max-[768px]:opacity-100"
               />
             </div>
           ))}
           {/* Dark blur overlay */}
           <div
             className={cx(
-              "pointer-events-none absolute top-0 left-0 z-[5] h-full w-full bg-[rgba(0,0,0,0.65)] backdrop-blur-[8px] transition-opacity duration-[1.2s] ease-[cubic-bezier(0.25,1,0.5,1)]",
+              "pointer-events-none absolute top-0 left-0 z-[5] h-full w-full bg-[rgba(0,0,0,0.65)] backdrop-blur-[8px] transition-opacity duration-[1.2s] ease-[cubic-bezier(0.25,1,0.5,1)] max-[768px]:bg-transparent max-[768px]:bg-[image:linear-gradient(to_bottom,transparent_0%,rgba(0,0,0,0.05)_18%,rgba(0,0,0,0.16)_34%,rgba(0,0,0,0.36)_52%,rgba(0,0,0,0.6)_68%,rgba(0,0,0,0.82)_84%,rgba(0,0,0,0.93)_100%)] max-[768px]:backdrop-blur-none",
               isMinimized ? "opacity-100" : "opacity-0",
             )}
           ></div>
@@ -128,14 +128,16 @@ export default function LandingClient({
 
         {/* Centred hero copy */}
         <div className={cx(HERO, isMinimized ? HERO_STATE.active : HERO_STATE.intro)}>
-          <h3 className="mb-3 text-[0.85rem] font-extrabold tracking-[0.3em] text-[#ff1e2f] uppercase [text-shadow:0_0_20px_rgba(255,30,47,0.4)] max-[768px]:mb-2 max-[768px]:text-[0.7rem] max-[768px]:tracking-[0.2em]">
+          <h3 className="mb-3 text-[0.85rem] font-extrabold tracking-[0.3em] text-[#ff1e2f] uppercase [text-shadow:0_0_20px_rgba(255,30,47,0.4)] max-[768px]:mb-2 max-[768px]:text-[0.7rem] max-[768px]:tracking-[0.2em] max-[768px]:[text-shadow:0_1px_3px_rgba(0,0,0,0.95),0_0_14px_rgba(0,0,0,0.8)]">
             {content.heroSub}
           </h3>
-          <h1 className="m-0 mb-4 text-[clamp(2.2rem,5vw,4rem)] leading-[1.1] font-black tracking-[-0.03em] text-ink [text-shadow:0_2px_10px_rgba(0,0,0,0.8)] max-[768px]:mb-3 max-[768px]:text-[1.8rem]">
+          <h1 className="m-0 mb-4 text-[clamp(2.2rem,5vw,4rem)] leading-[1.1] font-black tracking-[-0.03em] text-ink [text-shadow:0_2px_10px_rgba(0,0,0,0.8)] max-[768px]:mb-3 max-[768px]:text-[1.8rem] max-[768px]:[text-shadow:0_1px_2px_rgba(0,0,0,0.95),0_2px_18px_rgba(0,0,0,0.9)]">
             {heroTitle.mode === "rotating" ? (
               <>
                 {heroTitle.prefix}{" "}
-                <span className="whitespace-nowrap">
+                {/* Wraps on a phone: held on one line the rotating word overran the
+                    column and was clipped mid-flip. */}
+                <span className="whitespace-nowrap max-[768px]:whitespace-normal">
                   {heroTitle.staticWord} <FlipWords words={heroTitle.rotatingWords} />
                 </span>
               </>
@@ -143,7 +145,7 @@ export default function LandingClient({
               heroTitle.text
             )}
           </h1>
-          <p className="m-0 max-w-[600px] text-[clamp(1rem,1.5vw,1.25rem)] leading-[1.5] font-normal text-[#d1d1d6] [text-shadow:0_1px_4px_rgba(0,0,0,0.6)] max-[768px]:text-[0.85rem]">
+          <p className="m-0 max-w-[600px] text-[clamp(1rem,1.5vw,1.25rem)] leading-[1.5] font-normal text-[#d1d1d6] [text-shadow:0_1px_4px_rgba(0,0,0,0.6)] max-[768px]:text-[0.85rem] max-[768px]:text-[#e8e8ed] max-[768px]:[text-shadow:0_1px_2px_rgba(0,0,0,0.95),0_1px_12px_rgba(0,0,0,0.85)]">
             {content.heroDesc}
           </p>
           <div className="z-50 mt-7 flex w-full max-w-[540px] items-center justify-center gap-[10px] max-[768px]:mt-5 max-[768px]:w-full max-[768px]:flex-col max-[768px]:gap-3">
