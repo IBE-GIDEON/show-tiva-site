@@ -29,7 +29,7 @@ interface WatchClientProps {
 
 /* Frosted round icon buttons in the header. */
 const ICON_BTN =
-  "relative flex h-[42px] w-[42px] cursor-pointer items-center justify-center rounded-[50%] border bg-[rgba(255,255,255,0.06)] backdrop-blur-[10px] transition-[background,border-color] duration-250 ease-[ease] hover:border-[rgba(255,255,255,0.22)] hover:bg-[rgba(255,255,255,0.14)]";
+  "relative flex h-[42px] w-[42px] max-[768px]:h-9 max-[768px]:w-9 cursor-pointer items-center justify-center rounded-[50%] border bg-[rgba(255,255,255,0.06)] backdrop-blur-[10px] transition-[background,border-color] duration-250 ease-[ease] hover:border-[rgba(255,255,255,0.22)] hover:bg-[rgba(255,255,255,0.14)]";
 
 /* The hero's still: idle waiting just off to the right, active in place, the
    one being replaced easing out to the left. The travel is deliberately small
@@ -55,7 +55,7 @@ const SLIDE_STATE = {
    distance between the two edges; the clip keeps the overlap from taking
    clicks, so Watch Now stays clickable right up to its edge. */
 const HERO_BTN =
-  "[--btn-h:48px] [--slant:calc(var(--btn-h)/3)] flex h-(--btn-h) cursor-pointer items-center gap-[10px] rounded-none border-0 font-heading text-[0.9rem] font-bold tracking-[0.05em] whitespace-nowrap uppercase transition-[background,transform] duration-250 ease-[ease] hover:[transform:translateY(-2px)]";
+  "[--btn-h:48px] [--slant:calc(var(--btn-h)/3)] flex h-(--btn-h) cursor-pointer items-center gap-[10px] rounded-none border-0 font-heading text-[0.9rem] font-bold tracking-[0.05em] whitespace-nowrap uppercase transition-[background,transform] duration-250 ease-[ease] hover:[transform:translateY(-2px)] max-[768px]:[--btn-h:42px] max-[768px]:gap-2 max-[768px]:text-[0.75rem]";
 
 const WISHLIST_ICON_BTN =
   "grid cursor-pointer place-items-center border transition-[background,border-color,color] duration-200 ease-[ease]";
@@ -185,22 +185,22 @@ export default function WatchClient({
       {/* Full-bleed bar so the gradient spans the viewport; the contents are
           constrained to the same 1480px/48px box as the catalog below, so the
           logo starts on the poster rows' left edge. */}
-      <header className="absolute top-0 right-0 left-0 z-[100] bg-[image:linear-gradient(to_bottom,rgba(0,0,0,0.85)_0%,rgba(0,0,0,0)_100%)] py-[22px]">
-        <div className="mx-auto flex max-w-[1480px] items-center justify-between px-12">
+      <header className="absolute top-0 right-0 left-0 z-[100] bg-[image:linear-gradient(to_bottom,rgba(0,0,0,0.85)_0%,rgba(0,0,0,0)_100%)] py-[22px] max-[768px]:py-[14px]">
+        <div className="mx-auto flex max-w-[1480px] items-center justify-between px-12 max-[768px]:px-5">
           {/* Mark runs slightly taller than the wordmark's cap height so the
               lockup reads as one unit rather than two same-size blocks. */}
           <Link
             href={brand.homeHref}
             // shrink-0: preflight lets images shrink to fit, which would squash
             // the wordmark on a narrow header instead of letting it overflow.
-            className="flex shrink-0 items-center gap-[10px] font-heading text-[1.7rem] font-extrabold tracking-[-0.03em] no-underline transition-[opacity] duration-250 ease-[ease] select-none hover:opacity-85"
+            className="flex shrink-0 items-center gap-[10px] font-heading text-[1.7rem] font-extrabold tracking-[-0.03em] no-underline transition-[opacity] duration-250 ease-[ease] select-none hover:opacity-85 max-[768px]:gap-[7px] max-[768px]:text-[1.15rem]"
           >
             {/* Decorative: the wordmark beside it carries the accessible name. */}
-            <img src={brand.mark} alt="" className="block h-[26px] w-auto" />
-            <img src={brand.wordmark} alt={brand.wordmarkAlt} className="block h-5 w-auto" />
+            <img src={brand.mark} alt="" className="block h-[26px] w-auto max-[768px]:h-5" />
+            <img src={brand.wordmark} alt={brand.wordmarkAlt} className="block h-5 w-auto max-[768px]:h-[15px]" />
           </Link>
 
-          <div className="flex items-center gap-[14px]">
+          <div className="flex items-center gap-[14px] max-[768px]:gap-2">
             <button
               type="button"
               className={cx(ICON_BTN, "border-[rgba(255,255,255,0.1)] text-ink")}
@@ -244,7 +244,7 @@ export default function WatchClient({
       {/* Full-bleed hero: copy bottom-left over a top-anchored still. Only the
           stills cross-fade and drift; the copy and the buttons are a separate
           layer that never travels with them. */}
-      <section className="relative flex h-[75vh] w-full items-end overflow-hidden bg-black">
+      <section className="relative flex h-[75vh] w-full items-end overflow-hidden bg-black max-[768px]:h-[62vh] max-[768px]:min-h-[440px]">
         {heroSlides.map((slide, index) => {
           const state = index === activeSlide ? "active" : index === leavingSlide ? "leaving" : "idle";
           return (
@@ -255,7 +255,7 @@ export default function WatchClient({
               {/* A readability scrim over the copy on the left that thins out
                   rather than going opaque, plus a bottom fade so the hero melts
                   into the catalog instead of ending on a hard edge. */}
-              <div className="pointer-events-none absolute inset-0 z-[2] bg-[image:linear-gradient(to_right,#000000_0%,rgba(0,0,0,0.9)_24%,rgba(0,0,0,0.58)_48%,rgba(0,0,0,0.22)_72%,rgba(0,0,0,0.05)_100%),linear-gradient(to_top,#000000_0%,rgba(0,0,0,0.5)_14%,transparent_34%),linear-gradient(to_bottom,rgba(0,0,0,0.7)_0%,transparent_18%)]" />
+              <div className="pointer-events-none absolute inset-0 z-[2] bg-[image:linear-gradient(to_right,#000000_0%,rgba(0,0,0,0.9)_24%,rgba(0,0,0,0.58)_48%,rgba(0,0,0,0.22)_72%,rgba(0,0,0,0.05)_100%),linear-gradient(to_top,#000000_0%,rgba(0,0,0,0.5)_14%,transparent_34%),linear-gradient(to_bottom,rgba(0,0,0,0.7)_0%,transparent_18%)] max-[768px]:bg-[image:linear-gradient(to_top,#000000_0%,rgba(0,0,0,0.82)_30%,rgba(0,0,0,0.35)_58%,transparent_82%),linear-gradient(to_bottom,rgba(0,0,0,0.75)_0%,transparent_22%)]" />
             </div>
           );
         })}
@@ -264,18 +264,18 @@ export default function WatchClient({
             starts on the logo's and the poster rows' left edge; lifted 96px
             off the hero's bottom edge. */}
         {activeMovie && (
-          <div className="relative z-[10] mx-auto w-full max-w-[1480px] px-12 pb-24 max-[900px]:px-[5vw]">
+          <div className="relative z-[10] mx-auto w-full max-w-[1480px] px-12 pb-24 max-[900px]:px-[5vw] max-[768px]:px-5 max-[768px]:pb-10">
             <div className="w-full max-w-[620px] max-[900px]:max-w-none">
               {/* Keyed on the slide so the words are replaced outright rather
                   than tweened across. */}
               <div key={activeMovie.id} className="animate-hero-copy-swap motion-reduce:animate-none">
-                <span className="mb-3 font-body text-[0.85rem] font-medium tracking-[0.04em] text-[#9ca3af]">
+                <span className="mb-3 block font-body text-[0.85rem] font-medium tracking-[0.04em] text-[#9ca3af] max-[768px]:mb-1.5 max-[768px]:text-[0.78rem]">
                   {labels.heroDurationPrefix} {activeMovie.duration}
                 </span>
-                <h1 className="m-0 mb-4 font-heading text-[clamp(2rem,3.6vw,3.4rem)] leading-[1.08] font-extrabold tracking-[-0.02em] whitespace-nowrap text-ink uppercase">
+                <h1 className="m-0 mb-4 font-heading text-[clamp(2rem,3.6vw,3.4rem)] leading-[1.08] font-extrabold tracking-[-0.02em] whitespace-nowrap text-ink uppercase max-[768px]:mb-2.5 max-[768px]:text-[clamp(1.5rem,7vw,2rem)] max-[768px]:whitespace-normal">
                   {activeMovie.title}
                 </h1>
-                <p className="mb-[30px] line-clamp-3 max-w-[560px] font-body text-[1rem] leading-[1.65] font-normal text-[rgba(235,237,240,0.8)]">
+                <p className="mb-[30px] line-clamp-3 max-w-[560px] font-body text-[1rem] leading-[1.65] font-normal text-[rgba(235,237,240,0.8)] max-[768px]:mb-5 max-[768px]:line-clamp-2 max-[768px]:text-[0.9rem] max-[768px]:leading-[1.55]">
                   {activeMovie.description}
                 </p>
               </div>
@@ -285,7 +285,7 @@ export default function WatchClient({
               <div className="flex flex-nowrap items-center gap-0 [--edge-gap:10px]">
                 <button
                   type="button"
-                  className={cx(HERO_BTN, "bg-[#ff2e3d] pr-[calc(30px+var(--slant))] pl-[30px] text-ink slant-lead hover:bg-[#ff4552]")}
+                  className={cx(HERO_BTN, "bg-[#ff2e3d] pr-[calc(30px+var(--slant))] pl-[30px] text-ink slant-lead hover:bg-[#ff4552] max-[768px]:pr-[calc(18px+var(--slant))] max-[768px]:pl-[18px]")}
                   onClick={() => router.push(`/watch/${activeMovie.id}`)}
                 >
                   <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
@@ -300,7 +300,7 @@ export default function WatchClient({
                   type="button"
                   className={cx(
                     HERO_BTN,
-                    "ml-[calc(var(--edge-gap)-var(--slant))] pr-[30px] pl-[calc(30px+var(--slant))] backdrop-blur-[10px] slant-trail hover:bg-[rgba(255,255,255,0.22)]",
+                    "ml-[calc(var(--edge-gap)-var(--slant))] pr-[30px] pl-[calc(30px+var(--slant))] backdrop-blur-[10px] slant-trail hover:bg-[rgba(255,255,255,0.22)] max-[768px]:pr-[18px] max-[768px]:pl-[calc(18px+var(--slant))]",
                     activeMovieSaved ? "bg-[rgba(74,222,128,0.18)] text-[#4ade80]" : "bg-[rgba(255,255,255,0.14)] text-ink",
                   )}
                   onClick={() => toggleBookmark(activeMovie.id)}
@@ -344,7 +344,9 @@ export default function WatchClient({
                 </Link>
               </div>
 
-              <div className="flex gap-[14px]">
+              {/* Hidden on touch: the row is swipeable there, so the arrows
+                  are chrome that earns nothing. */}
+              <div className="flex gap-[14px] max-[768px]:hidden">
                 {[
                   { label: labels.scrollLeft, direction: -1, points: "15 18 9 12 15 6" },
                   { label: labels.scrollRight, direction: 1, points: "9 18 15 12 9 6" },

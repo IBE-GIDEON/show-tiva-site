@@ -30,8 +30,8 @@ interface PosterCardProps {
    ring on the frame, scoped to :focus-visible so a mouse click on the bookmark
    button does not light the whole card up. */
 const CARD: Record<Aspect, string> = {
-  portrait: "group flex-[0_0_190px] cursor-pointer transition-[transform] duration-280 ease-[ease]",
-  landscape: "group flex-[0_0_380px] cursor-pointer transition-[transform] duration-280 ease-[ease]",
+  portrait: "group flex-[0_0_190px] max-[768px]:flex-[0_0_132px] cursor-pointer transition-[transform] duration-280 ease-[ease]",
+  landscape: "group flex-[0_0_380px] max-[768px]:flex-[0_0_260px] cursor-pointer transition-[transform] duration-280 ease-[ease]",
 };
 
 const FRAME: Record<Aspect, string> = {
@@ -105,10 +105,12 @@ export default function PosterCard({
           </div>
         </div>
 
-        {/* Title / year revealed on hover */}
-        <div className="pointer-events-none absolute right-0 bottom-0 left-0 z-[6] flex flex-col gap-[2px] bg-[image:linear-gradient(to_top,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.4)_55%,transparent_100%)] px-[10px] pt-7 pb-[10px] opacity-0 transition-[opacity,transform] duration-250 ease-[ease] [transform:translateY(6px)] group-hover:opacity-100 group-hover:[transform:translateY(0)] group-has-[a:focus-visible]:opacity-100 group-has-[a:focus-visible]:[transform:translateY(0)]">
-          <h4 className="m-0 truncate font-heading text-[0.88rem] font-semibold text-ink">{movie.title}</h4>
-          <span className="text-[0.75rem] font-medium text-[#9ca3af]">{movie.year}</span>
+        {/* Title / year revealed on hover — and standing on touch, where there
+            is no hover to reveal it and the card would otherwise be an
+            unlabelled thumbnail. */}
+        <div className="pointer-events-none absolute right-0 bottom-0 left-0 z-[6] flex flex-col gap-[2px] bg-[image:linear-gradient(to_top,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.4)_55%,transparent_100%)] px-[10px] pt-7 pb-[10px] opacity-0 transition-[opacity,transform] duration-250 ease-[ease] [transform:translateY(6px)] group-hover:opacity-100 group-hover:[transform:translateY(0)] group-has-[a:focus-visible]:opacity-100 group-has-[a:focus-visible]:[transform:translateY(0)] pointer-coarse:opacity-100 pointer-coarse:[transform:translateY(0)]">
+          <h4 className="m-0 truncate font-heading text-[0.88rem] font-semibold text-ink max-[768px]:text-[0.78rem]">{movie.title}</h4>
+          <span className="text-[0.75rem] font-medium text-[#9ca3af] max-[768px]:text-[0.68rem]">{movie.year}</span>
         </div>
       </div>
     </div>
