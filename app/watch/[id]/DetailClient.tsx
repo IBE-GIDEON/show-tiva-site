@@ -325,7 +325,7 @@ export default function DetailClient({
             {movie.description}
           </p>
 
-          <div className="mt-[clamp(1.18rem,1.9vw,1.58rem)] flex flex-wrap gap-3 max-[480px]:flex-nowrap max-[480px]:gap-1.5">
+          <div className="mt-[clamp(1.18rem,1.9vw,1.58rem)] flex flex-nowrap gap-0 [--edge-gap:10px]">
             <button
               type="button"
               className={cx(ACTION, "bg-ink pr-[calc(var(--pad)+var(--slant))] pl-(--pad) text-black slant-lead hover:bg-[#e8e8cd]")}
@@ -351,7 +351,7 @@ export default function DetailClient({
               type="button"
               className={cx(
                 ACTION,
-                "relative isolate bg-[rgba(250,250,250,0.28)] pr-(--pad) pl-[calc(var(--pad)+var(--slant))] text-ink slant-trail before:absolute before:inset-px before:z-[-1] before:content-[''] before:[clip-path:polygon(0_0,100%_0,100%_100%,var(--slant)_100%)] hover:bg-ink",
+                "relative isolate ml-[calc(var(--edge-gap)-var(--slant))] bg-[rgba(250,250,250,0.28)] pr-(--pad) pl-[calc(var(--pad)+var(--slant))] text-ink slant-trail before:absolute before:inset-px before:z-[-1] before:content-[''] before:[clip-path:polygon(0_0,100%_0,100%_100%,var(--slant)_100%)] hover:bg-ink",
                 saved ? "before:bg-[#1a1a19] hover:before:bg-[#232322]" : "before:bg-black",
               )}
               aria-pressed={saved}
