@@ -257,7 +257,9 @@
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  /* Tight enough that the facing diagonals read as one cut through a single
+     unit rather than two buttons parked next to each other. */
+  gap: 0.375rem;
   margin-top: clamp(1.18rem, 1.9vw, 1.58rem);
 }
 
