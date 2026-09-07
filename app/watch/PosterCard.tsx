@@ -43,7 +43,7 @@ const FRAME_BASE =
   "relative w-full overflow-hidden rounded-md border-0 bg-[#131313] shadow-[0_8px_22px_rgba(0,0,0,0.45)] transition-shadow duration-280 ease-[ease] group-hover:shadow-[0_14px_32px_rgba(0,0,0,0.6)] group-has-[a:focus-visible]:shadow-[0_0_0_3px_#ffffe1,0_14px_32px_rgba(0,0,0,0.6)]";
 
 const BOOKMARK =
-  "absolute top-2 left-2 z-[7] flex h-7 w-9 cursor-pointer items-center justify-center rounded-none border bg-[rgba(0,0,0,0.55)] backdrop-blur-[6px] transition-[background,opacity,color,border-color] duration-200 ease-[ease] hover:bg-[rgba(0,0,0,0.85)] hover:opacity-100 [transform:skewX(var(--logo-slant))] [&>*]:[transform:skewX(var(--logo-slant-reverse))]";
+  "absolute top-2 left-2 z-[7] flex h-7 w-9 pointer-coarse:h-[34px] pointer-coarse:w-11 cursor-pointer items-center justify-center rounded-none border bg-[rgba(0,0,0,0.55)] backdrop-blur-[6px] transition-[background,opacity,color,border-color] duration-200 ease-[ease] hover:bg-[rgba(0,0,0,0.85)] hover:opacity-100 [transform:skewX(var(--logo-slant))] [&>*]:[transform:skewX(var(--logo-slant-reverse))]";
 
 export default function PosterCard({
   movie,

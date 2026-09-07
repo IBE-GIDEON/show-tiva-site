@@ -43,9 +43,16 @@ const PAGE =
 const SHELL = "mx-auto w-full max-w-(--shell-max) px-(--gutter)";
 const FOCUS_RING = "focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-ink";
 
-/* The action pair: see the slant utilities in globals.css. */
+/* The action pair: see the slant utilities in globals.css.
+
+   The pair only reads as one unit split by a single diagonal while the two
+   buttons sit side by side — stacked, the lead's right-hand cut and the
+   trail's left-hand cut face nothing and each button is just a lone
+   parallelogram. So rather than going full-width on a narrow screen, the pair
+   shrinks enough to stay on one line: at these metrics it measures ~248px,
+   which clears the 280px a 320px viewport leaves inside the gutter. */
 const ACTION =
-  "[--btn-h:3.25rem] [--pad:clamp(1.75rem,3vw,2.5rem)] [--slant:calc(var(--btn-h)/3)] inline-flex h-(--btn-h) cursor-pointer items-center justify-center gap-[0.7rem] rounded-none border-0 text-[0.78rem] font-semibold tracking-[0.16em] uppercase transition-[background-color,border-color,color] duration-300 ease-[ease] max-[430px]:flex-[1_1_100%] motion-reduce:transition-none " +
+  "[--btn-h:3.25rem] [--pad:clamp(1.75rem,3vw,2.5rem)] [--slant:calc(var(--btn-h)/3)] inline-flex h-(--btn-h) cursor-pointer items-center justify-center gap-[0.7rem] rounded-none border-0 text-[0.78rem] font-semibold tracking-[0.16em] uppercase transition-[background-color,border-color,color] duration-300 ease-[ease] max-[480px]:[--btn-h:2.75rem] max-[480px]:[--pad:1rem] max-[480px]:gap-2 max-[480px]:text-[0.7rem] max-[480px]:tracking-[0.12em] motion-reduce:transition-none " +
   FOCUS_RING;
 
 /* Everything inside the theatre frame reveals on the frame's hover or focus,
@@ -215,7 +222,7 @@ export default function DetailClient({
         <button
           type="button"
           className={cx(
-            "group/back inline-flex cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-[0.7rem] font-medium tracking-[0.22em] whitespace-nowrap text-[#8a8a8a] uppercase transition-[color] duration-300 ease-[ease] hover:text-ink motion-reduce:transition-none",
+            "group/back inline-flex cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-[0.7rem] font-medium tracking-[0.22em] whitespace-nowrap text-[#8a8a8a] uppercase transition-[color] duration-300 ease-[ease] hover:text-ink pointer-coarse:min-h-11 motion-reduce:transition-none",
             FOCUS_RING,
           )}
           onClick={() => router.back()}
@@ -245,7 +252,7 @@ export default function DetailClient({
         <Link
           href={brand.homeHref}
           className={cx(
-            "inline-flex flex-none items-center gap-[0.55rem] justify-self-center transition-[opacity] duration-300 ease-[ease] hover:opacity-70 motion-reduce:transition-none",
+            "inline-flex flex-none items-center gap-[0.55rem] justify-self-center transition-[opacity] duration-300 ease-[ease] hover:opacity-70 pointer-coarse:min-h-11 motion-reduce:transition-none",
             FOCUS_RING,
           )}
         >
@@ -313,7 +320,7 @@ export default function DetailClient({
             {movie.description}
           </p>
 
-          <div className="mt-[clamp(1.18rem,1.9vw,1.58rem)] flex flex-wrap gap-3">
+          <div className="mt-[clamp(1.18rem,1.9vw,1.58rem)] flex flex-wrap gap-3 max-[480px]:flex-nowrap max-[480px]:gap-1.5">
             <button
               type="button"
               className={cx(ACTION, "bg-ink pr-[calc(var(--pad)+var(--slant))] pl-(--pad) text-black slant-lead hover:bg-[#e8e8cd]")}
