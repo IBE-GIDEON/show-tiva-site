@@ -22,6 +22,7 @@ import ProfileMenu from "../../_auth/ProfileMenu";
 import type { BrowseData } from "../_lib/browse-data";
 import type { Movie } from "@/lib/content-types";
 
+import FilterMenu from "./FilterMenu";
 import PosterCard from "../../watch/PosterCard";
 import SearchOverlay from "../../watch/SearchOverlay";
 import SiteFooter from "../../watch/SiteFooter";
@@ -70,30 +71,26 @@ const MONO = "font-(family-name:--mono)";
 /* Micro-labels: monospace, tracked out, uppercase. */
 const MICRO = `${MONO} uppercase ${INK_3}`;
 
-/* A hairline-divided filter cell. `group/field` lets the chevron light up
-   with the cell's focus ring. */
-const FIELD = `group/field relative min-w-0 border ${LINE} bg-[#101010] px-[14px] pt-[9px] pb-[10px] transition-[background] duration-200 ease-[ease] focus-within:border-[rgba(255,255,225,0.24)] focus-within:bg-[#171717] focus-within:shadow-[inset_0_-2px_0_rgba(255,255,225,0.72)]`;
-const FIELD_LABEL = `mb-1 block ${MICRO} text-[0.55rem] tracking-[0.16em]`;
-const SELECT_WRAP = "relative flex h-6 items-center";
-const SELECT =
-  "h-6 w-full cursor-pointer appearance-none border-0 bg-transparent pr-5 text-[0.92rem] text-ellipsis text-ink [color-scheme:dark] focus:outline-none [&>option]:bg-[#101010] [&>option]:text-ink";
-const CHEVRON = `pointer-events-none absolute right-0 inline-flex ${INK_3} transition-[color] duration-200 ease-[ease] group-focus-within/field:text-ink`;
+/* The toolbar is built from pills on soft fills rather than bordered cells:
+   one shape, one weight of colour, and nothing boxed. A control that is doing
+   something reads solid; one sitting at its default stays quiet. */
+const SEARCH_SHELL =
+  "flex h-9 min-w-0 flex-1 basis-[min(100%,260px)] items-center gap-[9px] rounded-full bg-[rgba(255,255,225,0.07)] px-4 transition-[background-color] duration-200 ease-[ease] focus-within:bg-[rgba(255,255,225,0.12)]";
 
-/* Scope pair: outer edges vertical, facing edges cut at the logo's angle so
-   the gap between them reads as a single continuous diagonal. See the slant
-   utilities in globals.css. */
-const SCOPE_BTN =
-  "h-(--btn-h) cursor-pointer border-0 font-heading text-[0.62rem] font-bold tracking-[0.11em] whitespace-nowrap uppercase transition-[background,color] duration-200 ease-[ease] max-[480px]:min-w-0 max-[480px]:flex-[1_1_0]";
-const SCOPE_OFF = `bg-[rgba(255,255,225,0.06)] ${INK_2} hover:bg-[rgba(255,255,225,0.12)] hover:text-ink`;
-const SCOPE_ON = "bg-ink text-black hover:bg-ink hover:text-black";
+/* Same pill as the filter menus, for controls that toggle rather than choose. */
+const SEG_TRACK = "inline-flex flex-none items-center gap-1 rounded-full bg-[rgba(255,255,225,0.07)] p-1";
+const SEG_BTN =
+  "h-7 cursor-pointer rounded-full border-0 px-[13px] font-body text-[0.74rem] font-semibold whitespace-nowrap transition-[background-color,color] duration-200 ease-[ease] max-[480px]:min-w-0 max-[480px]:flex-[1_1_0] max-[480px]:px-2";
+const SEG_OFF = `bg-transparent ${INK_2} hover:text-ink`;
+const SEG_ON = "bg-ink text-black";
 
 const EMPTY_BTN =
-  "h-10 cursor-pointer border px-5 font-heading text-[0.7rem] font-bold tracking-[0.11em] uppercase transition-[background,color,border-color] duration-200 ease-[ease]";
+  "h-10 cursor-pointer rounded-full border-0 px-5 font-body text-[0.82rem] font-semibold transition-[background-color,color] duration-200 ease-[ease]";
 
 /* Pager cells stay above the 24px minimum target size at the narrow end. */
 const PAGER_CELL =
-  "h-[34px] min-w-[34px] cursor-pointer rounded-[2px] border px-[6px] font-heading text-[0.8rem] font-semibold tabular-nums transition-[color,border-color,background] duration-200 ease-[ease] max-[480px]:h-[30px] max-[480px]:min-w-7 max-[480px]:px-1 max-[380px]:min-w-[26px] max-[380px]:px-[3px]";
-const PAGER_QUIET = `${LINE} bg-transparent ${INK_2}`;
+  "grid h-[34px] min-w-[34px] cursor-pointer place-items-center rounded-full border-0 px-[6px] font-body text-[0.8rem] font-semibold tabular-nums transition-[background-color,color] duration-200 ease-[ease] max-[480px]:h-[30px] max-[480px]:min-w-7 max-[480px]:px-1 max-[380px]:min-w-[26px] max-[380px]:px-[3px]";
+const PAGER_QUIET = `bg-transparent ${INK_2} hover:bg-[rgba(255,255,225,0.09)] hover:text-ink`;
 
 /* ---------------------------------------------------------------- icons -- */
 
@@ -104,11 +101,6 @@ const IconSearch = (
   </svg>
 );
 
-const IconChevron = (
-  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <polyline points="6 9 12 15 18 9" />
-  </svg>
-);
 
 const IconClose = (
   <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
@@ -136,9 +128,6 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
   const [page, setPage] = useState(1);
   const [saved, setSaved] = useState<Set<string>>(() => new Set<string>());
   const [searchOpen, setSearchOpen] = useState(false);
-  // Phone only: Genre/Year/Rating/Sort collapse behind a disclosure. Above
-  // 640px the cells are always laid out and this is ignored.
-  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const router = useRouter();
   const popover = useTitlePopover();
@@ -212,12 +201,6 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
   const sortLabel = SORTS.find((s) => s.key === sort)?.label ?? SORTS[0].label;
   const filtersActive = Boolean(trimmed || genre || year || minRating);
   const isDirty = filtersActive || sort !== "rating";
-  // What the collapsed disclosure is hiding, so the toggle can say so.
-  // Search is excluded: it stays visible above the toggle.
-  const hiddenFilterCount =
-    [genre, year, minRating].filter(Boolean).length + (sort !== "rating" ? 1 : 0);
-  // Cells are laid out normally on desktop; on a phone they follow the toggle.
-  const filterCell = filtersOpen ? FIELD : `${FIELD} max-[640px]:hidden`;
 
   const chips: { id: string; label: string; value: string; onClear: () => void }[] = [];
   if (trimmed) {
@@ -362,179 +345,91 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
 
         {/* ---------------------------------------------------- console -- */}
         <section className="mt-[26px] flex w-[min(100%,1190px)] flex-col gap-[10px]" aria-label="Filters">
-          <div className="grid grid-cols-[1.7fr_1fr_1fr_1fr_1fr] gap-[10px] max-[1180px]:grid-cols-3 max-[640px]:grid-cols-2 max-[480px]:grid-cols-1">
-            <div className={cx(FIELD, "max-[1180px]:col-span-full")}>
+          {/* One row of pills: a search field and four menus. Everything
+              wraps, so a phone gets the same controls in two or three rows
+              instead of a separate collapsed panel. */}
+          <div className="flex flex-wrap items-center gap-[10px]">
+            <div className={SEARCH_SHELL}>
               <label className="sr-only" htmlFor="v1-search">
                 {chrome.watch.search} titles
               </label>
-              {/* The native clear affordance is replaced by the button below,
-                  which matches the rest of the console instead of the
-                  browser's chrome. */}
-              <div className="flex h-6 items-center gap-[9px]">
-                <span className={cx("inline-flex flex-none", INK_3)}>{IconSearch}</span>
-                <input
-                  id="v1-search"
-                  type="search"
-                  className="h-6 min-w-0 flex-1 border-0 bg-transparent text-[0.92rem] tracking-[-0.005em] text-ink placeholder:text-[rgba(255,255,225,0.5)] focus:outline-none [&::-webkit-search-cancel-button]:hidden"
-                  placeholder="Title or subtitle…"
-                  value={query}
-                  autoComplete="off"
-                  onChange={(e) => {
-                    setQuery(e.target.value);
+              <span className={cx("inline-flex flex-none", INK_3)}>{IconSearch}</span>
+              {/* The native clear affordance is hidden; the button below
+                  matches the rest of the toolbar instead of the browser. */}
+              <input
+                id="v1-search"
+                type="search"
+                className="h-full min-w-0 flex-1 border-0 bg-transparent font-body text-[0.88rem] text-ink placeholder:text-[rgba(255,255,225,0.45)] focus:outline-none [&::-webkit-search-cancel-button]:hidden"
+                placeholder="Search this category…"
+                value={query}
+                autoComplete="off"
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setPage(1);
+                }}
+              />
+              {query && (
+                <button
+                  type="button"
+                  className={cx(
+                    "grid size-5 flex-none cursor-pointer place-items-center rounded-full border-0 bg-[rgba(255,255,225,0.1)] transition-[background-color,color] duration-200 ease-[ease] hover:bg-[#fc3343] hover:text-ink",
+                    INK_2,
+                  )}
+                  aria-label="Clear search"
+                  onClick={() => {
+                    setQuery("");
                     setPage(1);
                   }}
-                />
-                {query && (
-                  <button
-                    type="button"
-                    className={cx("grid size-5 flex-none cursor-pointer place-items-center border-0 bg-[rgba(255,255,225,0.08)] transition-[background,color] duration-200 ease-[ease] hover:bg-[#fc3343] hover:text-ink", INK_2)}
-                    aria-label="Clear search"
-                    onClick={() => {
-                      setQuery("");
-                      setPage(1);
-                    }}
-                  >
-                    {IconClose}
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Phone only. Four stacked cells put ~330px of chrome between the
-                category title and the first poster, so Genre, Year, Rating and
-                Sort fold away behind this. Search stays out in the open, being
-                the control people reach for first. */}
-            <button
-              type="button"
-              className={cx(
-                "col-span-full hidden h-[42px] cursor-pointer items-center justify-between border bg-[#101010] px-[14px] text-[0.62rem] font-bold tracking-[0.16em] uppercase transition-[background] duration-200 ease-[ease] hover:bg-[#171717] max-[640px]:flex",
-                LINE,
-                MICRO,
+                >
+                  {IconClose}
+                </button>
               )}
-              aria-expanded={filtersOpen}
-              onClick={() => setFiltersOpen((open) => !open)}
-            >
-              <span className="inline-flex items-center gap-2">
-                Filters
-                {/* Says what is folded away, so a narrowed result set is never
-                    a mystery. */}
-                {hiddenFilterCount > 0 && (
-                  <span className="grid h-[17px] min-w-[17px] place-items-center rounded-[999px] bg-[#fc3343] px-[5px] text-[0.6rem] leading-none font-bold text-ink tabular-nums">
-                    {hiddenFilterCount}
-                  </span>
-                )}
-              </span>
-              <span
-                className={cx(
-                  "inline-flex transition-[transform] duration-200 ease-[ease] motion-reduce:transition-none",
-                  filtersOpen && "[transform:rotate(180deg)]",
-                )}
-              >
-                {IconChevron}
-              </span>
-            </button>
-
-            <div className={filterCell}>
-              <label className={FIELD_LABEL} htmlFor="v1-genre">
-                Genre
-              </label>
-              <div className={SELECT_WRAP}>
-                <select
-                  id="v1-genre"
-                  className={SELECT}
-                  value={genre}
-                  onChange={(e) => {
-                    setGenre(e.target.value);
-                    setPage(1);
-                  }}
-                >
-                  <option value="">All genres</option>
-                  {facets.genres.map((g) => (
-                    <option key={g} value={g}>
-                      {g}
-                    </option>
-                  ))}
-                </select>
-                <span className={CHEVRON}>{IconChevron}</span>
-              </div>
             </div>
 
-            <div className={filterCell}>
-              <label className={FIELD_LABEL} htmlFor="v1-year">
-                Year
-              </label>
-              <div className={SELECT_WRAP}>
-                <select
-                  id="v1-year"
-                  className={SELECT}
-                  value={year}
-                  onChange={(e) => {
-                    setYear(e.target.value);
-                    setPage(1);
-                  }}
-                >
-                  <option value="">Any year</option>
-                  {facets.years.map((y) => (
-                    <option key={y} value={y}>
-                      {y}
-                    </option>
-                  ))}
-                </select>
-                <span className={CHEVRON}>{IconChevron}</span>
-              </div>
-            </div>
+            <FilterMenu
+              label="Genre"
+              value={genre}
+              options={[{ value: "", label: "All genres" }, ...facets.genres.map((g) => ({ value: g, label: g }))]}
+              onChange={(v) => {
+                setGenre(v);
+                setPage(1);
+              }}
+            />
 
-            <div className={filterCell}>
-              <label className={FIELD_LABEL} htmlFor="v1-rating">
-                Rating
-              </label>
-              <div className={SELECT_WRAP}>
-                <select
-                  id="v1-rating"
-                  className={SELECT}
-                  value={minRating}
-                  onChange={(e) => {
-                    setMinRating(e.target.value);
-                    setPage(1);
-                  }}
-                >
-                  <option value="">Any rating</option>
-                  {RATING_TIERS.map((tier) => (
-                    <option key={tier.value} value={tier.value}>
-                      {tier.label}
-                    </option>
-                  ))}
-                </select>
-                <span className={CHEVRON}>{IconChevron}</span>
-              </div>
-            </div>
+            <FilterMenu
+              label="Year"
+              value={year}
+              options={[{ value: "", label: "Any year" }, ...facets.years.map((y) => ({ value: String(y), label: String(y) }))]}
+              onChange={(v) => {
+                setYear(v);
+                setPage(1);
+              }}
+            />
 
-            <div className={filterCell}>
-              <label className={FIELD_LABEL} htmlFor="v1-sort">
-                Sort
-              </label>
-              <div className={SELECT_WRAP}>
-                <select
-                  id="v1-sort"
-                  className={SELECT}
-                  value={sort}
-                  onChange={(e) => {
-                    setSort(e.target.value as SortKey);
-                    setPage(1);
-                  }}
-                >
-                  {SORTS.map((s) => (
-                    <option key={s.key} value={s.key}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
-                <span className={CHEVRON}>{IconChevron}</span>
-              </div>
-            </div>
+            <FilterMenu
+              label="Rating"
+              value={minRating}
+              options={[{ value: "", label: "Any rating" }, ...RATING_TIERS.map((t) => ({ value: t.value, label: t.label }))]}
+              onChange={(v) => {
+                setMinRating(v);
+                setPage(1);
+              }}
+            />
+
+            {/* Sort always has a value, so "rating" is its neutral one. */}
+            <FilterMenu
+              label="Sort"
+              value={sort}
+              neutralValue="rating"
+              options={SORTS.map((so) => ({ value: so.key, label: so.label }))}
+              onChange={(v) => {
+                setSort(v as SortKey);
+                setPage(1);
+              }}
+            />
           </div>
 
-          <div className={cx("flex flex-wrap items-center justify-between gap-[18px] border bg-[#171717] px-[14px] py-2 max-[760px]:flex-col max-[760px]:items-stretch", LINE)}>
+          <div className="flex flex-wrap items-center justify-between gap-[18px] px-1 max-[760px]:flex-col max-[760px]:items-stretch">
             <p className="flex min-w-0 items-baseline gap-[9px]" aria-live="polite">
               <span className="font-heading text-[1.22rem] leading-none font-extrabold tracking-[-0.02em] text-ink tabular-nums">{filtered.length}</span>
               <span className={cx("text-[0.76rem]", INK_2)}>
@@ -546,12 +441,10 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
             </p>
 
             <div className="flex items-center gap-[14px] max-[760px]:flex-wrap max-[760px]:justify-between max-[480px]:gap-2">
-              <div className="flex gap-[5px] [--btn-h:30px] [--slant:calc(var(--btn-h)/3)] max-[480px]:min-w-0 max-[480px]:flex-[1_1_auto]" role="group" aria-label="Search scope">
-                {/* Padded by the slant on the cut side so the label stays
-                    optically centred. */}
+              <div className={cx(SEG_TRACK, "max-[480px]:flex max-[480px]:w-full")} role="group" aria-label="Search scope">
                 <button
                   type="button"
-                  className={cx(SCOPE_BTN, "pr-[calc(12px+var(--slant))] pl-3 slant-lead max-[480px]:pr-[calc(10px+var(--slant))] max-[480px]:pl-[10px]", scope === "section" ? SCOPE_ON : SCOPE_OFF)}
+                  className={cx(SEG_BTN, scope === "section" ? SEG_ON : SEG_OFF)}
                   aria-pressed={scope === "section"}
                   onClick={() => changeScope("section")}
                 >
@@ -559,7 +452,7 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
                 </button>
                 <button
                   type="button"
-                  className={cx(SCOPE_BTN, "pr-3 pl-[calc(12px+var(--slant))] slant-trail max-[480px]:pr-[10px] max-[480px]:pl-[calc(10px+var(--slant))]", scope === "all" ? SCOPE_ON : SCOPE_OFF)}
+                  className={cx(SEG_BTN, scope === "all" ? SEG_ON : SEG_OFF)}
                   aria-pressed={scope === "all"}
                   onClick={() => changeScope("all")}
                 >
@@ -571,14 +464,14 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
           </div>
 
           {chips.length > 0 && (
-            <div className={cx("flex flex-wrap items-center gap-3 border bg-[#101010] px-4 py-[11px]", LINE)}>
+            <div className="flex flex-wrap items-center gap-3 px-1">
               <span className={cx("text-[0.58rem] tracking-[0.16em]", MICRO)}>Active</span>
               <ul className="flex min-w-0 list-none flex-wrap gap-[7px]">
                 {chips.map((chip) => (
                   <li key={chip.id}>
                     <button
                       type="button"
-                      className="group/chip inline-flex h-[27px] max-w-full cursor-pointer items-center gap-[7px] border border-[rgba(255,255,225,0.2)] bg-[rgba(255,255,225,0.05)] px-[9px] text-[0.74rem] text-ink transition-[border-color,background] duration-200 ease-[ease] hover:border-[rgba(255,255,225,0.34)] hover:bg-[rgba(255,255,225,0.1)]"
+                      className="group/chip inline-flex h-7 max-w-full cursor-pointer items-center gap-[7px] rounded-full border-0 bg-[rgba(255,255,225,0.09)] px-[11px] text-[0.74rem] text-ink transition-[background-color] duration-200 ease-[ease] hover:bg-[rgba(255,255,225,0.16)]"
                       onClick={chip.onClear}
                     >
                       <span className={cx("text-[0.56rem] tracking-[0.14em]", MICRO)}>{chip.label}</span>
@@ -648,7 +541,7 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
                 type="button"
                 className={cx(
                   EMPTY_BTN,
-                  "border-[rgba(252,51,67,0.35)] bg-[rgba(252,51,67,0.1)] text-[#ff8d96] hover:enabled:border-[#fc3343] hover:enabled:bg-[#fc3343] hover:enabled:text-ink disabled:cursor-default disabled:border-[rgba(255,255,225,0.09)] disabled:bg-transparent disabled:text-[rgba(255,255,225,0.55)]",
+                  "bg-[rgba(252,51,67,0.16)] text-[#ff8d96] hover:enabled:bg-[#fc3343] hover:enabled:text-ink disabled:cursor-default disabled:bg-[rgba(255,255,225,0.06)] disabled:text-[rgba(255,255,225,0.45)]",
                 )}
                 onClick={resetAll}
                 disabled={!isDirty}
@@ -658,7 +551,7 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
               {scope === "section" && (
                 <button
                   type="button"
-                  className={cx(EMPTY_BTN, LINE, "bg-transparent hover:border-[rgba(255,255,225,0.34)] hover:text-ink", INK_2)}
+                  className={cx(EMPTY_BTN, "bg-[rgba(255,255,225,0.07)] hover:bg-[rgba(255,255,225,0.13)] hover:text-ink", INK_2)}
                   onClick={() => changeScope("all")}
                 >
                   Search all {allMovies.length} titles instead
@@ -670,7 +563,7 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
 
         {/* -------------------------------------------------- pagination -- */}
         {filtered.length > 0 && (
-          <div className={cx("mt-[38px] flex w-[min(100%,1190px)] flex-wrap items-center justify-between gap-4 border-t pt-5 max-[480px]:justify-center", LINE)}>
+          <div className="mt-[38px] flex w-[min(100%,1190px)] flex-wrap items-center justify-between gap-4 pt-5 max-[480px]:justify-center">
             <p className={cx("text-[0.78rem] tabular-nums", INK_3)}>
               Showing <strong className="font-bold text-ink">{shownFrom}</strong>–
               <strong className="font-bold text-ink">{shownTo}</strong> of {filtered.length}
@@ -683,7 +576,7 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
               <nav className="flex items-center gap-[5px] max-[480px]:flex-wrap max-[480px]:justify-center max-[480px]:gap-[3px] max-[380px]:gap-[2px]" aria-label="Pagination">
                 <button
                   type="button"
-                  className={cx(PAGER_CELL, PAGER_QUIET, "hover:enabled:border-[rgba(255,255,225,0.2)] hover:enabled:text-ink disabled:cursor-default disabled:opacity-30")}
+                  className={cx(PAGER_CELL, PAGER_QUIET, "disabled:cursor-default disabled:opacity-25 disabled:hover:bg-transparent")}
                   onClick={() => setPage(1)}
                   disabled={safePage === 1}
                   aria-label="First page"
@@ -692,7 +585,7 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
                 </button>
                 <button
                   type="button"
-                  className={cx(PAGER_CELL, PAGER_QUIET, "hover:enabled:border-[rgba(255,255,225,0.2)] hover:enabled:text-ink disabled:cursor-default disabled:opacity-30")}
+                  className={cx(PAGER_CELL, PAGER_QUIET, "disabled:cursor-default disabled:opacity-25 disabled:hover:bg-transparent")}
                   onClick={() => setPage(Math.max(1, safePage - 1))}
                   disabled={safePage === 1}
                   aria-label="Previous page"
@@ -709,8 +602,8 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
                     className={cx(
                       PAGER_CELL,
                       n === safePage
-                        ? "border-ink bg-ink font-extrabold text-black"
-                        : cx(PAGER_QUIET, "hover:border-[rgba(255,255,225,0.2)] hover:text-ink"),
+                        ? "bg-ink font-bold text-black"
+                        : PAGER_QUIET,
                     )}
                     aria-current={n === safePage ? "page" : undefined}
                     onClick={() => setPage(n)}
@@ -723,7 +616,7 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
 
                 <button
                   type="button"
-                  className={cx(PAGER_CELL, PAGER_QUIET, "hover:enabled:border-[rgba(255,255,225,0.2)] hover:enabled:text-ink disabled:cursor-default disabled:opacity-30")}
+                  className={cx(PAGER_CELL, PAGER_QUIET, "disabled:cursor-default disabled:opacity-25 disabled:hover:bg-transparent")}
                   onClick={() => setPage(Math.min(totalPages, safePage + 1))}
                   disabled={safePage === totalPages}
                   aria-label="Next page"
@@ -732,7 +625,7 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
                 </button>
                 <button
                   type="button"
-                  className={cx(PAGER_CELL, PAGER_QUIET, "hover:enabled:border-[rgba(255,255,225,0.2)] hover:enabled:text-ink disabled:cursor-default disabled:opacity-30")}
+                  className={cx(PAGER_CELL, PAGER_QUIET, "disabled:cursor-default disabled:opacity-25 disabled:hover:bg-transparent")}
                   onClick={() => setPage(totalPages)}
                   disabled={safePage === totalPages}
                   aria-label="Last page"
