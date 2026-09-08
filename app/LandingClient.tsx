@@ -34,7 +34,7 @@ const LOGO_BOX_STATE = {
 const LOGO_IMG = "block w-auto flex-none animate-bounce-entrance transition-[height] duration-[1.2s] ease-[cubic-bezier(0.25,1,0.5,1)] will-change-[height,transform,opacity]";
 
 /* The hero copy scales up and fades in as the intro minimises. */
-const HERO = "absolute top-[40vh] left-1/2 z-40 flex w-[90%] max-w-[800px] flex-col items-center text-center [transition:opacity_1.2s_cubic-bezier(0.25,1,0.5,1)_0.3s,transform_1.2s_cubic-bezier(0.25,1,0.5,1)_0.3s] will-change-[opacity,transform] max-[768px]:top-[38vh] max-[768px]:w-full max-[768px]:px-6 max-[768px]:py-12 max-[768px]:bg-[image:radial-gradient(96%_54%_at_50%_50%,rgba(0,0,0,0.9)_0%,rgba(0,0,0,0.8)_40%,rgba(0,0,0,0.5)_66%,rgba(0,0,0,0.2)_84%,transparent_100%)]";
+const HERO = "absolute top-[40vh] left-1/2 z-40 flex w-[90%] max-w-[800px] flex-col items-center text-center [transition:opacity_1.2s_cubic-bezier(0.25,1,0.5,1)_0.3s,transform_1.2s_cubic-bezier(0.25,1,0.5,1)_0.3s] will-change-[opacity,transform] max-[768px]:top-1/2 max-[768px]:w-full max-[768px]:px-6 max-[768px]:py-12 max-[768px]:bg-[image:radial-gradient(96%_54%_at_50%_50%,rgba(0,0,0,0.9)_0%,rgba(0,0,0,0.8)_40%,rgba(0,0,0,0.5)_66%,rgba(0,0,0,0.2)_84%,transparent_100%)]";
 const HERO_STATE = {
   intro: "pointer-events-none opacity-0 [transform:translate(-50%,-50%)_scale(0.95)]",
   active: "pointer-events-auto opacity-100 [transform:translate(-50%,-50%)_scale(1)]",
