@@ -79,3 +79,13 @@ export interface Content {
   sections: StoredSection[];
   movies: Record<string, Movie>;
 }
+
+/**
+ * The one section that opens its own player instead of a browse grid.
+ *
+ * Shorts is a surface, not a shelf: its cards go to the vertical feed at
+ * /shorts and its heading carries no "View all", because there is no grid of
+ * them to see. Kept here as a name rather than spelled into the components,
+ * so the coupling is greppable.
+ */
+export const SHORTS_SECTION_ID = "shorts";

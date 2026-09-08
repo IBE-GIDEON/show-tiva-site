@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { cx } from "@/lib/cx";
 import { getSignupHref, isDemoSignedIn } from "../_auth/demo-auth";
 import ProfileMenu from "../_auth/ProfileMenu";
+import { SHORTS_SECTION_ID } from "@/lib/content-types";
 import type { Movie, Section } from "@/lib/content-types";
 import type { Brand, FooterContent, PopoverLabels, WatchLabels } from "@/lib/site-types";
 import PosterCard from "./PosterCard";
@@ -325,9 +326,12 @@ export default function WatchClient({
 
       {/* Catalog rows */}
       <main className="mx-auto max-w-[1480px] px-12 pt-16 pb-40 max-[768px]:px-5 max-[768px]:pt-12 max-[768px]:pb-[120px]">
-        {sections.map((section) => (
-          <section key={section.id} id={section.id} className="mb-9">
-            <div className="mb-4 flex items-center justify-between">
+        {sections.map((section) => {
+          const isShorts = section.id === SHORTS_SECTION_ID;
+
+          return (
+            <section key={section.id} id={section.id} className="mb-9">
+              <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-3 max-[768px]:gap-2">
                 {/* A branded row wears the logo's mark, so the heading reads
                     as the brand's own rather than as one more category. The
@@ -346,13 +350,17 @@ export default function WatchClient({
                 >
                   {section.title}
                 </h2>
-                <span className="h-[18px] w-px bg-[rgba(255,255,255,0.22)]" />
-                <Link
-                  href={`/browse/${section.id}`}
-                  className="cursor-pointer border-0 bg-transparent p-0 font-body text-[0.85rem] font-semibold text-[#9ca3af] transition-[color] duration-200 ease-[ease] hover:text-ink"
-                >
-                  {labels.viewAll}
-                </Link>
+                {!isShorts && (
+                  <>
+                    <span className="h-[18px] w-px bg-[rgba(255,255,255,0.22)]" />
+                    <Link
+                      href={`/browse/${section.id}`}
+                      className="cursor-pointer border-0 bg-transparent p-0 font-body text-[0.85rem] font-semibold text-[#9ca3af] transition-[color] duration-200 ease-[ease] hover:text-ink"
+                    >
+                      {labels.viewAll}
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* Hidden on touch: the row is swipeable there, so the arrows
@@ -385,15 +393,17 @@ export default function WatchClient({
                   key={movie.id}
                   movie={movie}
                   aspect={section.aspect}
+                  href={isShorts ? `/shorts/${movie.id}` : undefined}
                   saved={!!bookmarked[movie.id]}
                   saveLabel={labels.saveToList}
                   onToggleSave={() => toggleBookmark(movie.id)}
-                  {...popover.cardProps(movie)}
+                  {...(isShorts ? {} : popover.cardProps(movie))}
                 />
               ))}
             </div>
-          </section>
-        ))}
+            </section>
+          );
+        })}
       </main>
 
       <SiteFooter brand={brand} footer={footer} />
