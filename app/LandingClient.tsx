@@ -41,7 +41,7 @@ const HERO_STATE = {
 };
 
 /* The bottom banner rises into place half a second after the intro settles. */
-const WRITEUP = "absolute right-[8%] bottom-[5%] left-[8%] z-[80] flex items-center justify-between max-[768px]:[text-shadow:0_1px_3px_rgba(0,0,0,0.95),0_1px_14px_rgba(0,0,0,0.85)] [transition:opacity_1s_cubic-bezier(0.25,1,0.5,1)_0.5s,transform_1s_cubic-bezier(0.25,1,0.5,1)_0.5s] will-change-[opacity,transform] max-[768px]:right-[5%] max-[768px]:bottom-[3%] max-[768px]:left-[5%] max-[768px]:mx-auto max-[768px]:w-[90%] max-[768px]:max-w-[500px] max-[768px]:flex-col max-[768px]:items-center max-[768px]:gap-3 max-[768px]:text-center";
+const WRITEUP = "absolute right-[8%] bottom-[5%] left-[8%] z-[80] flex items-center justify-between max-[768px]:hidden max-[768px]:[text-shadow:0_1px_3px_rgba(0,0,0,0.95),0_1px_14px_rgba(0,0,0,0.85)] [transition:opacity_1s_cubic-bezier(0.25,1,0.5,1)_0.5s,transform_1s_cubic-bezier(0.25,1,0.5,1)_0.5s] will-change-[opacity,transform] max-[768px]:right-[5%] max-[768px]:bottom-[3%] max-[768px]:left-[5%] max-[768px]:mx-auto max-[768px]:w-[90%] max-[768px]:max-w-[500px] max-[768px]:flex-col max-[768px]:items-center max-[768px]:gap-3 max-[768px]:text-center";
 const WRITEUP_STATE = {
   intro: "pointer-events-none opacity-0 [transform:translate(0,30px)]",
   active: "pointer-events-auto opacity-100 [transform:translate(0,0)]",
@@ -120,7 +120,7 @@ export default function LandingClient({
           {/* Dark blur overlay */}
           <div
             className={cx(
-              "pointer-events-none absolute top-0 left-0 z-[5] h-full w-full bg-[rgba(0,0,0,0.65)] backdrop-blur-[8px] transition-opacity duration-[1.2s] ease-[cubic-bezier(0.25,1,0.5,1)] max-[768px]:bg-transparent max-[768px]:bg-[image:linear-gradient(to_bottom,transparent_0%,rgba(0,0,0,0.05)_18%,rgba(0,0,0,0.16)_34%,rgba(0,0,0,0.36)_52%,rgba(0,0,0,0.6)_68%,rgba(0,0,0,0.82)_84%,rgba(0,0,0,0.93)_100%)] max-[768px]:backdrop-blur-none",
+              "pointer-events-none absolute top-0 left-0 z-[5] h-full w-full bg-[rgba(0,0,0,0.65)] backdrop-blur-[8px] transition-opacity duration-[1.2s] ease-[cubic-bezier(0.25,1,0.5,1)] max-[768px]:bg-transparent max-[768px]:bg-[image:linear-gradient(to_bottom,transparent_0%,rgba(0,0,0,0.04)_20%,rgba(0,0,0,0.12)_42%,rgba(0,0,0,0.24)_62%,rgba(0,0,0,0.38)_80%,rgba(0,0,0,0.55)_100%)] max-[768px]:backdrop-blur-none",
               isMinimized ? "opacity-100" : "opacity-0",
             )}
           ></div>
