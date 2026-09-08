@@ -20,7 +20,8 @@ interface LandingClientProps {
    shrinks over 1.2s once the intro minimises. Two class sets rather than one
    with overrides: two utilities for the same property on one element resolve
    by stylesheet order, not by which was written last. */
-const LOGO_BOX = "fixed z-[100] flex items-center justify-center [transition:left_1.2s_cubic-bezier(0.25,1,0.5,1),top_1.2s_cubic-bezier(0.25,1,0.5,1),transform_1.2s_cubic-bezier(0.25,1,0.5,1)] will-change-[left,top,transform]";
+const LOGO_BOX =
+  "fixed z-[100] flex items-center justify-center [transition:left_1.2s_cubic-bezier(0.25,1,0.5,1),top_1.2s_cubic-bezier(0.25,1,0.5,1),transform_1.2s_cubic-bezier(0.25,1,0.5,1)] will-change-[left,top,transform] max-[768px]:[transition:none] max-[768px]:[will-change:auto]";
 const LOGO_BOX_STATE = {
   intro: "top-1/2 left-1/2 [transform:translate(-50%,-50%)]",
   minimized: "top-10 left-10 [transform:translate(0,0)] max-[768px]:top-[25px] max-[768px]:left-5",
@@ -31,7 +32,8 @@ const LOGO_BOX_STATE = {
    curve, so the shrink into the minimised header matches the original. The
    entrance animation fades in from 0 itself, so the base state stays visible
    and the logo remains on screen if animations are disabled. */
-const LOGO_IMG = "block w-auto flex-none animate-bounce-entrance transition-[height] duration-[1.2s] ease-[cubic-bezier(0.25,1,0.5,1)] will-change-[height,transform,opacity]";
+const LOGO_IMG =
+  "block w-auto flex-none animate-bounce-entrance transition-[height] duration-[1.2s] ease-[cubic-bezier(0.25,1,0.5,1)] will-change-[height,transform,opacity] max-[768px]:[transition:none]";
 
 /* The hero copy scales up and fades in as the intro minimises. */
 const HERO = "absolute top-[40vh] left-1/2 z-40 flex w-[90%] max-w-[800px] flex-col items-center text-center [transition:opacity_1.2s_cubic-bezier(0.25,1,0.5,1)_0.3s,transform_1.2s_cubic-bezier(0.25,1,0.5,1)_0.3s] will-change-[opacity,transform] max-[768px]:top-1/2 max-[768px]:w-full max-[768px]:px-6 max-[768px]:py-12 max-[768px]:bg-[image:radial-gradient(96%_54%_at_50%_50%,rgba(0,0,0,0.9)_0%,rgba(0,0,0,0.8)_40%,rgba(0,0,0,0.5)_66%,rgba(0,0,0,0.2)_84%,transparent_100%)]";
@@ -180,7 +182,7 @@ export default function LandingClient({
           >
             <h1
               className={cx(
-                "flex items-center gap-0 font-extrabold select-none [transition:font-size_1.2s_cubic-bezier(0.25,1,0.5,1),gap_1.2s_cubic-bezier(0.25,1,0.5,1),letter-spacing_1.2s_cubic-bezier(0.25,1,0.5,1)] will-change-[font-size,gap]",
+                "flex items-center gap-0 font-extrabold select-none [transition:font-size_1.2s_cubic-bezier(0.25,1,0.5,1),gap_1.2s_cubic-bezier(0.25,1,0.5,1),letter-spacing_1.2s_cubic-bezier(0.25,1,0.5,1)] will-change-[font-size,gap] max-[768px]:[transition:none] max-[768px]:[will-change:auto]",
                 isMinimized ? "text-[1.8rem] tracking-[-0.03em] max-[768px]:text-[1.5rem]" : "text-[clamp(3.8rem,11vw,7.5rem)] tracking-[-0.02em]",
               )}
             >
