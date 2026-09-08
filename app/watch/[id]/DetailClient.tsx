@@ -9,7 +9,7 @@
 //
 // Spacing runs on a single rhythm unit (--step) and its halves, so every
 // section lands on the same vertical grid at every breakpoint.
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -48,6 +48,29 @@ const FOCUS_RING = "focus-visible:outline-1 focus-visible:outline-offset-4 focus
    leave always works first time; long enough that the small movements a hand
    makes while holding a phone never do. */
 const DRAG_RELEASE_PX = 80;
+
+/* Rotation is only offered where it can be honoured: something to call lock()
+   on, and a screen for which sideways means anything. Android has both; iOS
+   Safari has no lock, so the control never appears there. */
+const COARSE_QUERY = "(pointer: coarse)";
+
+/** The lock half of the Screen Orientation API, which the DOM lib omits. */
+type LockableOrientation = ScreenOrientation & {
+  lock?: (orientation: string) => Promise<void>;
+  unlock?: () => void;
+};
+
+function subscribeToPointerKind(onChange: () => void) {
+  if (typeof window === "undefined") return () => undefined;
+  const query = window.matchMedia(COARSE_QUERY);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+}
+
+function readCanRotate() {
+  const orientation = window.screen?.orientation as LockableOrientation | undefined;
+  return typeof orientation?.lock === "function" && window.matchMedia(COARSE_QUERY).matches;
+}
 
 /* The action pair: see the slant utilities in globals.css.
 
@@ -104,7 +127,10 @@ export default function DetailClient({
   // meaningful where the Screen Orientation API can lock, which in practice
   // means Android; iOS Safari has no lock, so the control hides there.
   const [isLandscape, setIsLandscape] = useState(false);
-  const [canRotate, setCanRotate] = useState(false);
+  // A device capability is something outside React to subscribe to, not state
+  // to set from an effect. The server snapshot is false, so the control is
+  // absent until the client has looked.
+  const canRotate = useSyncExternalStore(subscribeToPointerKind, readCanRotate, () => false);
   const [skipPulse, setSkipPulse] = useState<"backward" | "forward" | null>(null);
   const [playerProgress, setPlayerProgress] = useState(38);
   const plateRef = useRef<HTMLDivElement | null>(null);
@@ -198,16 +224,6 @@ export default function DetailClient({
     };
   }, []);
 
-  // Offer rotation only where it can actually be honoured: a lock() to call,
-  // and a screen small enough for it to mean anything. Read after mount so
-  // the server and the first client render agree.
-  useEffect(() => {
-    const orientation = window.screen?.orientation as (ScreenOrientation & { lock?: (to: string) => Promise<void> }) | undefined;
-    setCanRotate(
-      typeof orientation?.lock === "function" && window.matchMedia("(pointer: coarse)").matches,
-    );
-  }, []);
-
   useEffect(() => {
     return () => {
       if (skipPulseTimeoutRef.current) clearTimeout(skipPulseTimeoutRef.current);
@@ -282,7 +298,7 @@ export default function DetailClient({
   // and then asks for landscape. Going back releases both.
   const toggleOrientation = async () => {
     const frame = plateRef.current;
-    const orientation = window.screen?.orientation as (ScreenOrientation & { lock?: (to: string) => Promise<void> }) | undefined;
+    const orientation = window.screen?.orientation as LockableOrientation | undefined;
     if (!frame || typeof orientation?.lock !== "function") return;
 
     if (isLandscape) {
