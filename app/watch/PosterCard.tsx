@@ -23,9 +23,8 @@ interface PosterCardProps {
   onToggleSave: () => void;
   onMouseEnter?: (event: React.MouseEvent) => void;
   onMouseLeave?: () => void;
-  /** Capture-phase click, so a touch tap can open the popover instead of
-      following the card's link. */
-  onClickCapture?: (event: React.MouseEvent) => void;
+  /** Where the card goes. Defaults to the title's own page. */
+  href?: string;
 }
 
 /* `group` lets every hover reveal below key off the card, and
@@ -53,7 +52,11 @@ const TOP_ROW =
   "pointer-events-none absolute inset-x-2 top-2 z-[7] flex items-center justify-between gap-2";
 
 const BOOKMARK =
-  "pointer-events-auto flex h-7 w-9 pointer-coarse:h-[34px] pointer-coarse:w-11 flex-none cursor-pointer items-center justify-center border-0 bg-transparent p-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)] transition-[opacity,color] duration-200 ease-[ease] hover:opacity-100";
+  "pointer-events-auto relative grid size-[15px] flex-none cursor-pointer place-items-center border-0 bg-transparent p-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)] transition-[opacity,color] duration-200 ease-[ease] hover:opacity-100 " +
+  /* The box hugs the glyph so it lines up with the rating pill opposite;
+     the target a finger needs is put back by a pseudo-element, which
+     costs nothing in layout. */
+  "before:absolute before:-inset-[14px] before:content-['']";
 
 export default function PosterCard({
   movie,
@@ -63,15 +66,10 @@ export default function PosterCard({
   onToggleSave,
   onMouseEnter,
   onMouseLeave,
-  onClickCapture,
+  href,
 }: PosterCardProps) {
   return (
-    <div
-      className={CARD[aspect]}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      onClickCapture={onClickCapture}
-    >
+    <div className={CARD[aspect]} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <div className={cx(FRAME_BASE, FRAME[aspect])}>
         {/* Decorative: the stretched link below carries the title. */}
         <img
@@ -81,7 +79,7 @@ export default function PosterCard({
           className="h-full w-full object-cover transition-[transform] duration-400 ease-[ease] group-hover:[transform:scale(1.04)]"
         />
 
-        <Link href={`/watch/${movie.id}`} className="absolute inset-0 z-[5] rounded-[inherit] outline-none">
+        <Link href={href ?? `/watch/${movie.id}`} className="absolute inset-0 z-[5] rounded-[inherit] outline-none">
           <span className="absolute h-px w-px overflow-hidden whitespace-nowrap [clip-path:inset(50%)]">{movie.title}</span>
         </Link>
 
