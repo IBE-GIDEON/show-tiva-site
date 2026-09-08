@@ -32,6 +32,19 @@ export interface Movie {
   trailerUrl: string | null;
 }
 
+/**
+ * Card shape for a row, which follows what the row *is*:
+ *
+ * - `portrait` for a category — a bucket a title belongs to by what it is,
+ *   whether that is a type (Movies, Cartoons & Animation, Wholesome Series)
+ *   or a genre (Magical Worlds & Fantasy, Action & Adventure). Poster shape.
+ * - `landscape` for a collection — a shifting, curated cut across the catalog
+ *   rather than a bucket anything belongs to (Trending Now, New Releases).
+ *   Still shape.
+ *
+ * A title sits in exactly one category and in any number of collections, which
+ * is the test when adding a row.
+ */
 export type SectionAspect = "portrait" | "landscape";
 
 /** A catalog row as stored: references movies by id. */

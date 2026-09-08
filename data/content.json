@@ -54,7 +54,7 @@
       "id": "trending-now",
       "title": "Trending Now",
       "titleColor": "normal",
-      "aspect": "portrait",
+      "aspect": "landscape",
       "accent": "#ff5964",
       "movieIds": [
         "t1",
@@ -111,7 +111,7 @@
       "id": "wholesome-series",
       "title": "Wholesome Series",
       "titleColor": "yellow",
-      "aspect": "landscape",
+      "aspect": "portrait",
       "accent": "#22c1a4",
       "movieIds": [
         "s1",
@@ -172,7 +172,7 @@
       "id": "action-adventure",
       "title": "Action & Adventure",
       "titleColor": "normal",
-      "aspect": "landscape",
+      "aspect": "portrait",
       "accent": "#5ec26a",
       "movieIds": [
         "aa1",

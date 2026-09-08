@@ -199,6 +199,8 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
   }, [safePage, totalPages]);
 
   const sortLabel = SORTS.find((s) => s.key === sort)?.label ?? SORTS[0].label;
+  // Categories show posters, collections show stills. See SectionAspect.
+  const isLandscape = section.aspect === "landscape";
   const filtersActive = Boolean(trimmed || genre || year || minRating);
   const isDirty = filtersActive || sort !== "rating";
 
@@ -497,7 +499,16 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
             track would leave a lone column with a big hole beside it, so there
             the cards do fill the row — two up on a phone. */}
         {visible.length > 0 ? (
-          <ul className="mt-[30px] grid list-none grid-cols-[repeat(auto-fill,190px)] gap-x-[10px] gap-y-[26px] [justify-content:start] max-[640px]:grid-cols-[repeat(auto-fill,minmax(144px,1fr))] max-[640px]:gap-x-3 max-[640px]:gap-y-[22px]">
+          <ul
+            className={cx(
+              "mt-[30px] grid list-none gap-y-[26px] [justify-content:start]",
+              isLandscape
+                ? // A 16/9 still needs about two posters' width before it reads,
+                  // and one per row on a phone rather than two stamp-sized ones.
+                  "grid-cols-[repeat(auto-fill,340px)] gap-x-[14px] max-[900px]:grid-cols-[repeat(auto-fill,minmax(260px,1fr))] max-[640px]:grid-cols-1 max-[640px]:gap-y-[18px]"
+                : "grid-cols-[repeat(auto-fill,190px)] gap-x-[10px] max-[640px]:grid-cols-[repeat(auto-fill,minmax(144px,1fr))] max-[640px]:gap-x-3 max-[640px]:gap-y-[22px]",
+            )}
+          >
             {visible.map((movie) => (
               <li
                 key={movie.id}
@@ -505,6 +516,7 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
               >
                 <PosterCard
                   movie={movie}
+                  aspect={section.aspect}
                   saved={saved.has(movie.id)}
                   saveLabel={`${chrome.watch.saveToList}: ${movie.title}`}
                   onToggleSave={() => toggleSaved(movie.id)}
