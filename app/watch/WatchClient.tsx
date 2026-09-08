@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -122,6 +122,25 @@ export default function WatchClient({
     leaveTimerRef.current = setTimeout(() => setLeavingSlide(null), SLIDE_EXIT_MS);
   };
 
+  /* Shorts takes a turn in the banner.
+   *
+   * Built here rather than by dropping ids into heroSlideIds, because a title
+   * sits in several rows at once: being in the Shorts row would not tell a
+   * hero slide it was a short, and the slide has to know — it is badged
+   * differently and it opens the feed rather than the title's own page.
+   *
+   * Second in the rotation, so it is seen early without taking the opening
+   * frame off whatever the catalog is leading with.
+   */
+  const heroItems = useMemo(() => {
+    const base = heroSlides.map((movie) => ({ movie, shorts: false }));
+    const lead = sections.find((section) => section.id === SHORTS_SECTION_ID)?.movies[0];
+    if (!lead) return base;
+
+    const at = Math.min(1, base.length);
+    return [...base.slice(0, at), { movie: lead, shorts: true }, ...base.slice(at)];
+  }, [heroSlides, sections]);
+
   // Auto-advance hero slides every 7 seconds.
   //
   // Skipped when there are no slides: heroSlideIds may resolve to nothing (the
@@ -129,13 +148,13 @@ export default function WatchClient({
   // empties it), and `% 0` is NaN — which would stick in activeSlide and leave
   // every slide inactive with no way back.
   useEffect(() => {
-    if (heroSlides.length < 2) return;
+    if (heroItems.length < 2) return;
 
     const timer = setInterval(() => {
-      triggerSlideChange((activeSlideRef.current + 1) % heroSlides.length);
+      triggerSlideChange((activeSlideRef.current + 1) % heroItems.length);
     }, 7000);
     return () => clearInterval(timer);
-  }, [heroSlides.length]);
+  }, [heroItems.length]);
 
   // The exit timer outlives the slide change, so it has to be cancelled if the
   // page unmounts mid-transition.
@@ -170,7 +189,9 @@ export default function WatchClient({
 
   // The copy layer renders the current slide directly rather than riding along
   // inside the mapped stills.
-  const activeMovie = heroSlides[activeSlide] ?? null;
+  const activeItem = heroItems[activeSlide] ?? null;
+  const activeMovie = activeItem?.movie ?? null;
+  const activeIsShort = !!activeItem?.shorts;
   const activeMovieSaved = !!(activeMovie && bookmarked[activeMovie.id]);
 
   const scrollRow = (e: React.MouseEvent<HTMLButtonElement>, direction: number) => {
@@ -246,7 +267,7 @@ export default function WatchClient({
           stills cross-fade and drift; the copy and the buttons are a separate
           layer that never travels with them. */}
       <section className="relative flex h-[75vh] w-full items-end overflow-hidden bg-black max-[768px]:h-[62vh] max-[768px]:min-h-[440px]">
-        {heroSlides.map((slide, index) => {
+        {heroItems.map(({ movie: slide }, index) => {
           const state = index === activeSlide ? "active" : index === leavingSlide ? "leaving" : "idle";
           return (
             <div key={slide.id} aria-hidden={state !== "active"} className={cx(SLIDE, SLIDE_STATE[state])}>
@@ -270,9 +291,19 @@ export default function WatchClient({
               {/* Keyed on the slide so the words are replaced outright rather
                   than tweened across. */}
               <div key={activeMovie.id} className="animate-hero-copy-swap motion-reduce:animate-none">
-                <span className="mb-3 block font-body text-[0.85rem] font-medium tracking-[0.04em] text-[#9ca3af] max-[768px]:mb-1.5 max-[768px]:text-[0.78rem]">
-                  {labels.heroDurationPrefix} {activeMovie.duration}
-                </span>
+                {activeIsShort ? (
+                  <span className="mb-3 inline-flex items-center gap-[7px] max-[768px]:mb-1.5">
+                    {/* Decorative: the word beside it carries the name. */}
+                    <img src={brand.mark} alt="" className="block h-[18px] w-auto max-[768px]:h-[15px]" />
+                    <span className="font-heading text-[0.95rem] font-extrabold tracking-[-0.01em] text-ink max-[768px]:text-[0.85rem]">
+                      Shorts
+                    </span>
+                  </span>
+                ) : (
+                  <span className="mb-3 block font-body text-[0.85rem] font-medium tracking-[0.04em] text-[#9ca3af] max-[768px]:mb-1.5 max-[768px]:text-[0.78rem]">
+                    {labels.heroDurationPrefix} {activeMovie.duration}
+                  </span>
+                )}
                 <h1 className="m-0 mb-4 font-heading text-[clamp(2rem,3.6vw,3.4rem)] leading-[1.08] font-extrabold tracking-[-0.02em] whitespace-nowrap text-ink uppercase max-[768px]:mb-2.5 max-[768px]:text-[clamp(1.5rem,7vw,2rem)] max-[768px]:whitespace-normal">
                   {activeMovie.title}
                 </h1>
@@ -287,7 +318,9 @@ export default function WatchClient({
                 <button
                   type="button"
                   className={cx(HERO_BTN, "bg-[#ff2e3d] pr-[calc(30px+var(--slant))] pl-[30px] text-ink slant-lead hover:bg-[#ff4552] max-[768px]:pr-[calc(18px+var(--slant))] max-[768px]:pl-[18px]")}
-                  onClick={() => router.push(`/watch/${activeMovie.id}`)}
+                  onClick={() =>
+                    router.push(activeIsShort ? `/shorts/${activeMovie.id}` : `/watch/${activeMovie.id}`)
+                  }
                 >
                   <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                     <path d="M8 5v14l11-7z" />
