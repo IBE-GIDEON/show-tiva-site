@@ -43,6 +43,12 @@ const PAGE =
 const SHELL = "mx-auto w-full max-w-(--shell-max) px-(--gutter)";
 const FOCUS_RING = "focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-ink";
 
+/* How far a finger has to travel, in one unbroken drag, before the page is
+   handed back while the theatre is open. Short enough that a real attempt to
+   leave always works first time; long enough that the small movements a hand
+   makes while holding a phone never do. */
+const DRAG_RELEASE_PX = 80;
+
 /* The action pair: see the slant utilities in globals.css.
 
    The pair only reads as one unit split by a single diagonal while the two
@@ -104,6 +110,60 @@ export default function DetailClient({
   useEffect(() => {
     if (!playing) return;
     plateRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [playing]);
+
+  // On a touch screen the page holds still while the theatre is open, so a
+  // stray finger cannot slide the video off the top mid-scene. It is a soft
+  // hold rather than a trap: a deliberate drag past DRAG_RELEASE_PX reads as
+  // "I do want to leave", and the page is handed back for the rest of the
+  // session. Closing the player arms it again.
+  //
+  // The lock is overflow, not preventDefault on touchmove: a prevented first
+  // touchmove cancels panning for that whole gesture in Chrome, so there
+  // would be no way to let go part-way through one. Touch events still fire
+  // against a non-scrolling body, which is what measures the drag.
+  useEffect(() => {
+    if (!playing) return;
+    if (!window.matchMedia("(pointer: coarse)").matches) return;
+
+    const previousOverflow = document.body.style.overflow;
+    let locked = false;
+    let released = false;
+    let startY = 0;
+
+    const unlock = () => {
+      if (!locked) return;
+      document.body.style.overflow = previousOverflow;
+      locked = false;
+    };
+
+    // startPlayer scrolls the theatre to the top of the viewport; locking
+    // before that lands would leave it half way up the screen.
+    const lockTimer = setTimeout(() => {
+      document.body.style.overflow = "hidden";
+      locked = true;
+    }, 600);
+
+    const onTouchStart = (event: TouchEvent) => {
+      startY = event.touches[0]?.clientY ?? 0;
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      if (released) return;
+      const y = event.touches[0]?.clientY ?? 0;
+      if (Math.abs(y - startY) < DRAG_RELEASE_PX) return;
+      released = true;
+      unlock();
+    };
+
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+
+    return () => {
+      clearTimeout(lockTimer);
+      unlock();
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+    };
   }, [playing]);
 
   useEffect(() => {
