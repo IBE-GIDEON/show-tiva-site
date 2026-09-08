@@ -328,7 +328,18 @@ export default function WatchClient({
         {sections.map((section) => (
           <section key={section.id} id={section.id} className="mb-9">
             <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 max-[768px]:gap-2">
+                {/* A branded row wears the logo's mark, so the heading reads
+                    as the brand's own rather than as one more category. The
+                    wordmark beside it would repeat the heading, so only the
+                    mark comes across, and decoratively. */}
+                {section.branded && (
+                  <img
+                    src={brand.mark}
+                    alt=""
+                    className="block h-[26px] w-auto flex-none max-[768px]:h-[22px]"
+                  />
+                )}
                 <h2
                   className="font-heading text-[1.4rem] font-extrabold tracking-[-0.01em] text-ink max-[768px]:text-[1.3rem]"
                   style={{ color: section.accent }}

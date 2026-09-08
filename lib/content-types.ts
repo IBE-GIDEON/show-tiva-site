@@ -55,6 +55,13 @@ export interface StoredSection {
   aspect: SectionAspect;
   /** Heading colour used by the catalog row. */
   accent: string;
+  /**
+   * Marks a row as the brand's own rather than one more slice of the
+   * catalog: the heading takes the logo's mark and its off-white instead of
+   * a colour of its own. Meant to stay rare — a second branded row would
+   * cost the first one the distinction.
+   */
+  branded?: boolean;
   movieIds: string[];
 }
 

@@ -51,6 +51,26 @@
   ],
   "sections": [
     {
+      "id": "shorts",
+      "title": "Shorts",
+      "titleColor": "normal",
+      "aspect": "landscape",
+      "accent": "#ffffe1",
+      "branded": true,
+      "movieIds": [
+        "t1",
+        "m3",
+        "c4",
+        "s5",
+        "nr6",
+        "mf5",
+        "aa4",
+        "t6",
+        "m9",
+        "nr12"
+      ]
+    },
+    {
       "id": "trending-now",
       "title": "Trending Now",
       "titleColor": "normal",

@@ -29,7 +29,7 @@ export async function GET() {
 /**
  * POST /api/sections — create a catalog row.
  *
- * Body: { id, title, accent, aspect?, titleColor?, movieIds?, position? }
+ * Body: { id, title, accent, aspect?, titleColor?, branded?, movieIds?, position? }
  * `position` inserts at a specific index; omitted appends.
  */
 export async function POST(request: NextRequest) {
@@ -71,6 +71,7 @@ export async function POST(request: NextRequest) {
       title: input.title as string,
       titleColor: (input.titleColor as string) ?? "normal",
       aspect: (input.aspect as SectionAspect) ?? "portrait",
+      branded: input.branded === true,
       accent: input.accent as string,
       movieIds,
     };
