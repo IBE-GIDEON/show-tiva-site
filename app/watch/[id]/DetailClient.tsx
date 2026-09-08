@@ -71,7 +71,7 @@ const CONTROL =
 const CONTROL_NEUTRAL =
   "border-[rgba(250,250,250,0.32)] bg-[rgba(0,0,0,0.42)] text-ink hover:border-[rgba(250,250,250,0.72)] hover:bg-[rgba(250,250,250,0.15)] hover:text-white";
 const CONTROL_SKIP =
-  "w-[clamp(3.8rem,6.5vw,4.8rem)] max-[560px]:w-[3.05rem] [&_svg]:h-[72%] [&_svg]:w-[72%] [&_svg]:overflow-visible [&_text]:fill-current [&_text]:font-body [&_text]:text-[0.58rem] [&_text]:font-black [&_text]:tracking-[0]";
+  "w-[clamp(3.8rem,6.5vw,4.8rem)] max-[560px]:w-[3.05rem] [&_svg]:h-[62%] [&_svg]:w-[62%] [&_svg]:overflow-visible [&_text]:fill-current [&_text]:font-body [&_text]:[font-size:7.6px] [&_text]:font-bold [&_text]:tracking-[-0.02em]";
 const CONTROL_PRIMARY =
   "w-[clamp(4.15rem,7vw,5rem)] border-[rgba(255,48,64,0.65)] bg-[#ff3040] text-white shadow-[0_10px_28px_rgba(255,48,64,0.34)] hover:border-[rgba(255,255,255,0.8)] hover:bg-[#ff4f5f] max-[560px]:w-[3.3rem] [&_svg]:h-[46%] [&_svg]:w-[46%] [&_svg]:overflow-visible";
 const CONTROL_FULLSCREEN = "w-[clamp(2.55rem,4vw,3rem)] [&_svg]:h-[56%] [&_svg]:w-[56%] [&_svg]:overflow-visible";
@@ -100,6 +100,11 @@ export default function DetailClient({
   const [playing, setPlaying] = useState(false);
   const [playerPaused, setPlayerPaused] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  // Whether we have asked the device to hold the screen sideways. Only
+  // meaningful where the Screen Orientation API can lock, which in practice
+  // means Android; iOS Safari has no lock, so the control hides there.
+  const [isLandscape, setIsLandscape] = useState(false);
+  const [canRotate, setCanRotate] = useState(false);
   const [skipPulse, setSkipPulse] = useState<"backward" | "forward" | null>(null);
   const [playerProgress, setPlayerProgress] = useState(38);
   const plateRef = useRef<HTMLDivElement | null>(null);
@@ -180,13 +185,27 @@ export default function DetailClient({
 
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(document.fullscreenElement === plateRef.current);
+      const open = document.fullscreenElement === plateRef.current;
+      setIsFullscreen(open);
+      // Leaving fullscreen releases the lock with it, so the button must not
+      // keep claiming the screen is held sideways.
+      if (!open) setIsLandscape(false);
     };
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);
     return () => {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
     };
+  }, []);
+
+  // Offer rotation only where it can actually be honoured: a lock() to call,
+  // and a screen small enough for it to mean anything. Read after mount so
+  // the server and the first client render agree.
+  useEffect(() => {
+    const orientation = window.screen?.orientation as (ScreenOrientation & { lock?: (to: string) => Promise<void> }) | undefined;
+    setCanRotate(
+      typeof orientation?.lock === "function" && window.matchMedia("(pointer: coarse)").matches,
+    );
   }, []);
 
   useEffect(() => {
@@ -256,6 +275,32 @@ export default function DetailClient({
     }
 
     void frame.requestFullscreen().catch(() => undefined);
+  };
+
+  // Turning the phone sideways is a fullscreen affair: the orientation lock
+  // is only granted to a fullscreen element, so this enters fullscreen first
+  // and then asks for landscape. Going back releases both.
+  const toggleOrientation = async () => {
+    const frame = plateRef.current;
+    const orientation = window.screen?.orientation as (ScreenOrientation & { lock?: (to: string) => Promise<void> }) | undefined;
+    if (!frame || typeof orientation?.lock !== "function") return;
+
+    if (isLandscape) {
+      orientation.unlock?.();
+      setIsLandscape(false);
+      if (document.fullscreenElement) await document.exitFullscreen().catch(() => undefined);
+      return;
+    }
+
+    if (!document.fullscreenElement) {
+      await frame.requestFullscreen().catch(() => undefined);
+    }
+    // A refused lock leaves the video fullscreen and upright, which is still a
+    // better place to watch from than where it started.
+    await orientation.lock("landscape").then(
+      () => setIsLandscape(true),
+      () => setIsLandscape(false),
+    );
   };
 
   // `||`, not `??`, throughout: the store's validator accepts "" as well as
@@ -514,16 +559,16 @@ export default function DetailClient({
                       aria-label="Rewind 10 seconds"
                       onClick={() => flashSkip("backward")}
                     >
-                      <svg viewBox="0 0 44 44" aria-hidden="true" focusable="false">
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                         <path
-                          d="M18.3 9.5 10.4 17l7.9 7.5M11.1 17h13.4a11.5 11.5 0 1 1-8.7 19"
+                          d="M15.6 6.3A8 8 0 1 1 10.1 5.2"
                           fill="none"
                           stroke="currentColor"
-                          strokeWidth="2.5"
+                          strokeWidth="1.9"
                           strokeLinecap="round"
-                          strokeLinejoin="round"
                         />
-                        <text x="22" y="27" textAnchor="middle">
+                        <path d="M10.5 2.5 6.3 5.5l4.2 3z" fill="currentColor" stroke="none" />
+                        <text x="12" y="16" textAnchor="middle">
                           10
                         </text>
                       </svg>
@@ -553,16 +598,16 @@ export default function DetailClient({
                       aria-label="Forward 10 seconds"
                       onClick={() => flashSkip("forward")}
                     >
-                      <svg viewBox="0 0 44 44" aria-hidden="true" focusable="false">
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                         <path
-                          d="m25.7 9.5 7.9 7.5-7.9 7.5M32.9 17H19.5a11.5 11.5 0 1 0 8.7 19"
+                          d="M8.4 6.3A8 8 0 1 0 13.9 5.2"
                           fill="none"
                           stroke="currentColor"
-                          strokeWidth="2.5"
+                          strokeWidth="1.9"
                           strokeLinecap="round"
-                          strokeLinejoin="round"
                         />
-                        <text x="22" y="27" textAnchor="middle">
+                        <path d="M13.5 2.5 17.7 5.5l-4.2 3z" fill="currentColor" stroke="none" />
+                        <text x="12" y="16" textAnchor="middle">
                           10
                         </text>
                       </svg>
@@ -586,7 +631,48 @@ export default function DetailClient({
                       onChange={(event) => setPlayerProgress(Number(event.currentTarget.value))}
                     />
 
-                    <div className="flex items-center justify-end">
+                    <div className="flex items-center justify-end gap-[clamp(0.5rem,1.2vw,0.85rem)]">
+                      {canRotate && (
+                        <button
+                          type="button"
+                          className={cx(CONTROL, CONTROL_NEUTRAL, CONTROL_FULLSCREEN)}
+                          aria-label={isLandscape ? "Back to portrait" : "Watch in landscape"}
+                          aria-pressed={isLandscape}
+                          onClick={toggleOrientation}
+                        >
+                          {/* A phone turning: the handset outline sits upright
+                              or on its side, with a curved arrow showing which
+                              way the next press takes it. */}
+                          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <rect
+                              x={isLandscape ? "2.5" : "7.5"}
+                              y={isLandscape ? "7.5" : "2.5"}
+                              width={isLandscape ? "19" : "9"}
+                              height={isLandscape ? "9" : "19"}
+                              rx="1.8"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.8"
+                            />
+                            <path
+                              d="M4.4 20.6a6.6 6.6 0 0 0 6 3.1"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.8"
+                              strokeLinecap="round"
+                            />
+                            <path
+                              d="M2.2 18.2l2.4 2.6 2.9-1.9"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.8"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </button>
+                      )}
+
                       <button
                         type="button"
                         className={cx(CONTROL, CONTROL_NEUTRAL, CONTROL_FULLSCREEN)}
