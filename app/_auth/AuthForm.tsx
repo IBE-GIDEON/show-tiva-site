@@ -46,7 +46,7 @@ interface InputStyle {
 
 function inputClass({ error, password, modal }: InputStyle): string {
   return cx(
-    "w-full rounded-[4px] border bg-[#101010] pl-4 text-[1rem] text-ink transition-[border-color,background] duration-200 ease-[ease] placeholder:text-[rgba(255,255,225,0.34)] focus:border-[rgba(255,255,225,0.32)] focus:bg-[#141414] focus:outline-none",
+    "w-full rounded-[4px] border bg-[#101010] pl-4 text-[1rem] text-ink transition-[border-color,background] duration-200 ease-[ease] placeholder:text-[rgba(255,255,225,0.34)] focus:border-[rgba(255,255,225,0.32)] focus:bg-[#141414] focus:outline-none max-[899px]:bg-[rgba(10,10,10,0.58)] max-[899px]:backdrop-blur-[12px] max-[899px]:focus:bg-[rgba(18,18,18,0.72)]",
     modal ? "h-[50px]" : "h-[52px]",
     password ? "pr-[3.75rem]" : "pr-4",
     error ? "border-[rgba(252,51,67,0.7)]" : "border-[rgba(255,255,225,0.12)]",
@@ -138,7 +138,7 @@ export default function AuthForm({ mode, brand, surface = "page" }: AuthFormProp
         isModal
           ? "block min-h-auto bg-transparent"
           : // Brand panel flexes, form column is fixed and comfortable.
-            "grid min-h-dvh grid-cols-1 bg-black min-[900px]:grid-cols-[1fr_minmax(460px,40vw)]",
+            "relative grid min-h-dvh grid-cols-1 bg-black min-[900px]:grid-cols-[1fr_minmax(460px,40vw)]",
       )}
     >
       {/* Brand panel: a video showcase strip on top on narrow screens, a full
@@ -148,7 +148,7 @@ export default function AuthForm({ mode, brand, surface = "page" }: AuthFormProp
           "relative overflow-hidden",
           isModal
             ? "hidden"
-            : "isolate flex min-h-[clamp(220px,40vh,360px)] flex-col justify-end border-b border-[rgba(255,255,225,0.12)] bg-[#020202] p-0 min-[900px]:min-h-auto min-[900px]:border-r min-[900px]:border-b-0",
+            : "isolate flex min-h-[clamp(220px,40vh,360px)] flex-col justify-end border-b border-[rgba(255,255,225,0.12)] bg-[#020202] p-0 max-[899px]:absolute max-[899px]:inset-0 max-[899px]:z-0 max-[899px]:min-h-0 max-[899px]:border-b-0 min-[900px]:min-h-auto min-[900px]:border-r min-[900px]:border-b-0",
         )}
         aria-hidden="true"
       >
@@ -165,7 +165,7 @@ export default function AuthForm({ mode, brand, surface = "page" }: AuthFormProp
               onEnded={playNextAnimation}
               onError={playNextAnimation}
             />
-            <span className="absolute inset-0 z-[2] bg-[image:linear-gradient(90deg,rgba(0,0,0,0.74)_0%,rgba(0,0,0,0.38)_44%,rgba(0,0,0,0.1)_100%),linear-gradient(180deg,rgba(0,0,0,0.06)_0%,rgba(0,0,0,0.82)_100%)]" />
+            <span className="absolute inset-0 z-[2] bg-[image:linear-gradient(90deg,rgba(0,0,0,0.74)_0%,rgba(0,0,0,0.38)_44%,rgba(0,0,0,0.1)_100%),linear-gradient(180deg,rgba(0,0,0,0.06)_0%,rgba(0,0,0,0.82)_100%)] max-[899px]:bg-[image:linear-gradient(180deg,rgba(0,0,0,0.72)_0%,rgba(0,0,0,0.84)_26%,rgba(0,0,0,0.86)_66%,rgba(0,0,0,0.74)_100%)]" />
           </div>
         )}
 
@@ -176,7 +176,7 @@ export default function AuthForm({ mode, brand, surface = "page" }: AuthFormProp
             <img className="block h-[30px] w-auto" src={brand.mark} alt="" />
             <img className="block h-5 w-auto" src={brand.wordmark} alt="" />
           </span>
-          <p className="mt-4 text-[1rem] leading-[1.6] text-[rgba(255,255,225,0.76)] [text-shadow:0_2px_22px_rgba(0,0,0,0.72)]">
+          <p className="mt-4 text-[1rem] leading-[1.6] text-[rgba(255,255,225,0.76)] [text-shadow:0_2px_22px_rgba(0,0,0,0.72)] max-[899px]:hidden">
             Experience premium stories, hand-drawn 2D animation, and magical worlds curated by creators worldwide.
           </p>
         </div>
@@ -187,7 +187,7 @@ export default function AuthForm({ mode, brand, surface = "page" }: AuthFormProp
         className={cx(
           isModal
             ? "block bg-transparent p-0"
-            : "flex items-center justify-center bg-black px-[clamp(1.25rem,5vw,3.5rem)] py-[clamp(2rem,6vw,4rem)]",
+            : "flex items-center justify-center bg-black px-[clamp(1.25rem,5vw,3.5rem)] py-[clamp(2rem,6vw,4rem)] max-[899px]:relative max-[899px]:z-10 max-[899px]:min-h-dvh max-[899px]:bg-transparent",
         )}
       >
         <div className={cx("w-full", isModal ? "max-w-none" : "max-w-[380px]")}>
