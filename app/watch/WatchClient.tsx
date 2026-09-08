@@ -393,6 +393,7 @@ export default function WatchClient({
                   key={movie.id}
                   movie={movie}
                   aspect={section.aspect}
+                  variant={isShorts ? "short" : "default"}
                   href={isShorts ? `/shorts/${movie.id}` : undefined}
                   saved={!!bookmarked[movie.id]}
                   saveLabel={labels.saveToList}

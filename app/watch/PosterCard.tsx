@@ -11,6 +11,7 @@
 import Link from "next/link";
 
 import { cx } from "@/lib/cx";
+import { compactCount, shortMetrics } from "@/lib/shorts-metrics";
 import type { Movie } from "@/lib/content-types";
 
 type Aspect = "portrait" | "landscape";
@@ -25,6 +26,13 @@ interface PosterCardProps {
   onMouseLeave?: () => void;
   /** Where the card goes. Defaults to the title's own page. */
   href?: string;
+  /**
+   * A short is measured by how many have watched it and how long it runs,
+   * not by a critic's score — so it swaps the rating badge for views and
+   * puts the running time opposite. The save control goes with them: a short
+   * is saved from the feed it opens into, whose action rail already has one.
+   */
+  variant?: "default" | "short";
 }
 
 /* `group` lets every hover reveal below key off the card, and
@@ -51,6 +59,11 @@ const FRAME_BASE =
 const TOP_ROW =
   "pointer-events-none absolute inset-x-2 top-2 z-[7] flex items-center justify-between gap-2";
 
+/* Duration and views wear the same chip, so the two ends of the row read as
+   a pair rather than as two unrelated badges. */
+const PILL =
+  "inline-flex flex-none items-center gap-[3px] rounded-md bg-[rgba(0,0,0,0.68)] px-[5px] py-[3px] font-body text-[0.66rem] leading-none font-semibold text-ink backdrop-blur-[6px] tabular-nums max-[768px]:text-[0.62rem]";
+
 const BOOKMARK =
   "pointer-events-auto relative grid size-[15px] flex-none cursor-pointer place-items-center border-0 bg-transparent p-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)] transition-[opacity,color] duration-200 ease-[ease] hover:opacity-100 " +
   /* The box hugs the glyph so it lines up with the rating pill opposite;
@@ -67,7 +80,10 @@ export default function PosterCard({
   onMouseEnter,
   onMouseLeave,
   href,
+  variant = "default",
 }: PosterCardProps) {
+  const isShort = variant === "short";
+
   return (
     <div className={CARD[aspect]} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <div className={cx(FRAME_BASE, FRAME[aspect])}>
@@ -84,24 +100,39 @@ export default function PosterCard({
         </Link>
 
         <div className={TOP_ROW}>
-          <button
-            type="button"
-            className={cx(BOOKMARK, saved ? "text-[#f5c518] opacity-100" : "text-ink opacity-90")}
-            aria-label={saveLabel}
-            aria-pressed={saved}
-            onClick={onToggleSave}
-          >
-            <svg viewBox="0 0 24 24" width="15" height="15" fill={saved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-            </svg>
-          </button>
+          {isShort ? (
+            <span className={PILL}>{movie.duration}</span>
+          ) : (
+            <button
+              type="button"
+              className={cx(BOOKMARK, saved ? "text-[#f5c518] opacity-100" : "text-ink opacity-90")}
+              aria-label={saveLabel}
+              aria-pressed={saved}
+              onClick={onToggleSave}
+            >
+              <svg viewBox="0 0 24 24" width="15" height="15" fill={saved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+              </svg>
+            </button>
+          )}
 
-          <span className="inline-flex flex-none items-center gap-[3px] rounded-md bg-[rgba(0,0,0,0.65)] px-[7px] py-[3px] font-body text-[0.72rem] leading-none font-bold text-[#f5c518] backdrop-blur-[6px] [&_span]:text-ink">
-            <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-            </svg>
-            <span>{movie.rating || "—"}</span>
-          </span>
+          {isShort ? (
+            <span className={PILL} title={`${shortMetrics(movie.id).views.toLocaleString()} views`}>
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M1.6 12S5.3 5.5 12 5.5 22.4 12 22.4 12 18.7 18.5 12 18.5 1.6 12 1.6 12z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              <span className="sr-only">Views: </span>
+              {compactCount(shortMetrics(movie.id).views)}
+            </span>
+          ) : (
+            <span className="inline-flex flex-none items-center gap-[3px] rounded-md bg-[rgba(0,0,0,0.65)] px-[7px] py-[3px] font-body text-[0.72rem] leading-none font-bold text-[#f5c518] backdrop-blur-[6px] [&_span]:text-ink">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>
+              <span>{movie.rating || "—"}</span>
+            </span>
+          )}
         </div>
 
         {/* Hover play button */}

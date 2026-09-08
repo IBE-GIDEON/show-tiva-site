@@ -54,7 +54,7 @@
       "id": "shorts",
       "title": "Shorts",
       "titleColor": "normal",
-      "aspect": "landscape",
+      "aspect": "portrait",
       "accent": "#ffffe1",
       "branded": true,
       "movieIds": [
