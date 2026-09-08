@@ -22,6 +22,8 @@ import ProfileMenu from "../../_auth/ProfileMenu";
 import type { BrowseData } from "../_lib/browse-data";
 import type { Movie } from "@/lib/content-types";
 
+import { SHORTS_SECTION_ID } from "@/lib/content-types";
+
 import FilterMenu from "./FilterMenu";
 import PosterCard from "../../watch/PosterCard";
 import SearchOverlay from "../../watch/SearchOverlay";
@@ -109,9 +111,11 @@ const IconClose = (
   </svg>
 );
 
+/* Tailed on a pointer, where it sits beside the label as one lockup; the
+   bare angle on a phone, matching every other way back. */
 const IconArrowLeft = (
   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <line x1="19" y1="12" x2="5" y2="12" />
+    <line x1="19" y1="12" x2="5" y2="12" className="max-[768px]:hidden" />
     <polyline points="11 18 5 12 11 6" />
   </svg>
 );
@@ -201,6 +205,8 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
   const sortLabel = SORTS.find((s) => s.key === sort)?.label ?? SORTS[0].label;
   // Categories show posters, collections show stills. See SectionAspect.
   const isLandscape = section.aspect === "landscape";
+  // The same row, so the same cards and the same destination as the catalog.
+  const isShorts = section.id === SHORTS_SECTION_ID;
   const filtersActive = Boolean(trimmed || genre || year || minRating);
   const isDirty = filtersActive || sort !== "rating";
 
@@ -517,6 +523,8 @@ export default function BrowseClient({ section, sections, allMovies, facets, chr
                 <PosterCard
                   movie={movie}
                   aspect={section.aspect}
+                  variant={isShorts ? "short" : "default"}
+                  href={isShorts ? `/shorts/${movie.id}` : undefined}
                   saved={saved.has(movie.id)}
                   saveLabel={`${chrome.watch.saveToList}: ${movie.title}`}
                   onToggleSave={() => toggleSaved(movie.id)}

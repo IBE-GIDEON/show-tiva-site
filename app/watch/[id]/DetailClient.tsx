@@ -363,8 +363,10 @@ export default function DetailClient({
           aria-label={labels.goBack}
           onClick={() => router.back()}
         >
+          {/* The tailed arrow reads as a pair with the label beside it. With
+              the label gone below 768px it is just the angle. */}
           <svg
-            className="h-3 w-[18px] flex-none transition-[transform] duration-[0.35s] ease-[cubic-bezier(0.2,0.7,0.2,1)] group-hover/back:[transform:translateX(-4px)] motion-reduce:transition-none"
+            className="h-3 w-[18px] flex-none transition-[transform] duration-[0.35s] ease-[cubic-bezier(0.2,0.7,0.2,1)] group-hover/back:[transform:translateX(-4px)] max-[768px]:hidden motion-reduce:transition-none"
             viewBox="0 0 18 12"
             aria-hidden="true"
             focusable="false"
@@ -377,6 +379,19 @@ export default function DetailClient({
               strokeLinecap="round"
               strokeLinejoin="round"
             />
+          </svg>
+          <svg
+            className="hidden size-[19px] flex-none max-[768px]:block"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.1"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <polyline points="15 18 9 12 15 6" />
           </svg>
           {/* Arrow only on a phone: the words cost width the lockup and the
               two icons need in the same row. */}
