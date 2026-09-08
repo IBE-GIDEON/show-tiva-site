@@ -135,7 +135,10 @@ export default function PosterCard({
           )}
         </div>
 
-        {/* Hover play button */}
+        {/* Hover play button. Not on a short: it opens a feed you scroll, not
+            a single title you press play on, and the scrim under the button
+            would be dimming the thumbnail for nothing. */}
+        {!isShort && (
         <div className="absolute inset-0 z-[4] flex items-center justify-center bg-[rgba(0,0,0,0.4)] opacity-0 backdrop-blur-[2px] transition-opacity duration-250 ease-[ease] group-hover:opacity-100 group-has-[a:focus-visible]:opacity-100">
           <div className="flex h-12 w-12 items-center justify-center rounded-[50%] bg-[#ff2e3d] text-ink shadow-[0_4px_14px_rgba(0,0,0,0.4)] transition-[transform] duration-280 ease-[cubic-bezier(0.34,1.56,0.64,1)] [transform:scale(0.85)] group-hover:[transform:scale(1)] group-has-[a:focus-visible]:[transform:scale(1)]">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
@@ -143,6 +146,7 @@ export default function PosterCard({
             </svg>
           </div>
         </div>
+        )}
 
         {/* Title / year revealed on hover — and standing on touch, where there
             is no hover to reveal it and the card would otherwise be an
