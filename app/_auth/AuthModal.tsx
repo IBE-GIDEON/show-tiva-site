@@ -27,7 +27,7 @@ export default function AuthModal({ children, label }: AuthModalProps) {
   }, [router]);
 
   return (
-    <div className="fixed inset-0 z-[1000] grid place-items-center bg-[rgba(0,0,0,0.62)] bg-[image:radial-gradient(circle_at_50%_20%,rgba(252,51,67,0.14),transparent_38%)] p-[clamp(1rem,4vw,2.5rem)] backdrop-blur-[18px] max-[520px]:p-3 max-[520px]:[align-items:end]">
+    <div className="fixed inset-0 z-[1000] grid place-items-center bg-[rgba(0,0,0,0.62)] bg-[image:radial-gradient(circle_at_50%_20%,rgba(252,51,67,0.14),transparent_38%)] p-[clamp(1rem,4vw,2.5rem)] backdrop-blur-[18px] max-[520px]:p-3">
       <button
         type="button"
         className="absolute inset-0 cursor-default"

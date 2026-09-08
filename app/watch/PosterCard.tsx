@@ -45,8 +45,15 @@ const FRAME: Record<Aspect, string> = {
 const FRAME_BASE =
   "relative w-full overflow-hidden rounded-md border-0 bg-[#131313] shadow-[0_8px_22px_rgba(0,0,0,0.45)] transition-shadow duration-280 ease-[ease] group-hover:shadow-[0_14px_32px_rgba(0,0,0,0.6)] group-has-[a:focus-visible]:shadow-[0_0_0_3px_#ffffe1,0_14px_32px_rgba(0,0,0,0.6)]";
 
+/* The bookmark and the rating share one row across the top of the card, so
+   they stay on each other's line rather than merely starting at the same
+   height: the bookmark is the taller of the two (more so on touch) and left
+   its glyph sitting low when both were positioned independently. */
+const TOP_ROW =
+  "pointer-events-none absolute inset-x-2 top-2 z-[7] flex items-center justify-between gap-2";
+
 const BOOKMARK =
-  "absolute top-2 left-2 z-[7] flex h-7 w-9 pointer-coarse:h-[34px] pointer-coarse:w-11 cursor-pointer items-center justify-center border-0 bg-transparent p-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)] transition-[opacity,color] duration-200 ease-[ease] hover:opacity-100";
+  "pointer-events-auto flex h-7 w-9 pointer-coarse:h-[34px] pointer-coarse:w-11 flex-none cursor-pointer items-center justify-center border-0 bg-transparent p-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)] transition-[opacity,color] duration-200 ease-[ease] hover:opacity-100";
 
 export default function PosterCard({
   movie,
@@ -78,31 +85,25 @@ export default function PosterCard({
           <span className="absolute h-px w-px overflow-hidden whitespace-nowrap [clip-path:inset(50%)]">{movie.title}</span>
         </Link>
 
-        {/* Bookmark / Save (top-left). Skewed to the logo's slant, with the
-            icon counter-skewed so it stays upright. */}
-        <button
-          type="button"
-          className={cx(
-            BOOKMARK,
-            saved
-              ? "text-[#f5c518] opacity-100"
-              : "text-ink opacity-90",
-          )}
-          aria-label={saveLabel}
-          aria-pressed={saved}
-          onClick={onToggleSave}
-        >
-          <svg viewBox="0 0 24 24" width="15" height="15" fill={saved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-          </svg>
-        </button>
+        <div className={TOP_ROW}>
+          <button
+            type="button"
+            className={cx(BOOKMARK, saved ? "text-[#f5c518] opacity-100" : "text-ink opacity-90")}
+            aria-label={saveLabel}
+            aria-pressed={saved}
+            onClick={onToggleSave}
+          >
+            <svg viewBox="0 0 24 24" width="15" height="15" fill={saved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+            </svg>
+          </button>
 
-        {/* Rating badge (top-right) */}
-        <div className="absolute top-2 right-2 z-[7] inline-flex items-center gap-[3px] rounded-md bg-[rgba(0,0,0,0.65)] px-[7px] py-[3px] font-body text-[0.72rem] leading-none font-bold text-[#f5c518] backdrop-blur-[6px] [&_span]:text-ink">
-          <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-          </svg>
-          <span>{movie.rating || "—"}</span>
+          <span className="inline-flex flex-none items-center gap-[3px] rounded-md bg-[rgba(0,0,0,0.65)] px-[7px] py-[3px] font-body text-[0.72rem] leading-none font-bold text-[#f5c518] backdrop-blur-[6px] [&_span]:text-ink">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+            <span>{movie.rating || "—"}</span>
+          </span>
         </div>
 
         {/* Hover play button */}

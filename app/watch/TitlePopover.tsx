@@ -166,8 +166,9 @@ export default function TitlePopover({
       className={cx(
         "z-[999] flex flex-col overflow-hidden rounded-md border-0 bg-[#0d0d0d] shadow-[0_20px_40px_rgba(0,0,0,0.65),0_0_30px_rgba(0,0,0,0.2)]",
         sheet
-          ? // Sized by its own content rather than by the card it came from.
-            "fixed top-1/2 left-1/2 w-[min(360px,calc(100vw-32px))] animate-popover-fade-in [transform:translate(-50%,-50%)]"
+          ? // Sized by its own content rather than by the card it came from,
+            // up to what the screen allows.
+            "fixed top-1/2 left-1/2 max-h-[calc(100dvh-2rem)] w-[min(360px,calc(100vw-32px))] animate-popover-fade-in [transform:translate(-50%,-50%)]"
           : "pointer-events-auto absolute w-[330px] animate-popover-fade-in",
       )}
       style={
@@ -194,8 +195,8 @@ export default function TitlePopover({
         <div className="absolute inset-0 z-[1] bg-[image:linear-gradient(to_top,#0d0d0d_0%,rgba(0,0,0,0.4)_60%,transparent_100%)]" />
 
         <div className="absolute right-0 bottom-0 left-0 z-[2] flex flex-col gap-1 px-[14px] py-3">
-          <h3 className="m-0 truncate font-heading text-[1.15rem] font-extrabold text-ink [text-shadow:0_2px_8px_rgba(0,0,0,0.8)]">{movie.title}</h3>
-          <div className="flex items-center gap-2 text-[0.72rem] font-semibold text-[rgba(255,255,225,0.7)]">
+          <h3 className={cx("m-0 font-heading text-[1.15rem] font-extrabold text-ink [text-shadow:0_2px_8px_rgba(0,0,0,0.8)]", sheet ? "line-clamp-2" : "truncate")}>{movie.title}</h3>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.72rem] font-semibold text-[rgba(255,255,225,0.7)]">
             <span className="rounded-[3px] bg-[rgba(255,255,255,0.12)] px-1 py-px uppercase">{labels.typeBadge}</span>
             <span className="text-[#ffc107]">★ {movie.rating}</span>
             <span className="inline-flex items-center">📅 {movie.year}</span>
@@ -212,11 +213,11 @@ export default function TitlePopover({
       </div>
 
       {/* Details body */}
-      <div className="flex min-h-0 flex-1 flex-col justify-between gap-2 bg-[#0d0d0d] px-[14px] py-3">
+      <div className={cx("flex min-h-0 flex-1 flex-col justify-between gap-2 bg-[#0d0d0d]", sheet ? "px-4 pt-3 pb-4" : "px-[14px] py-3")}>
         {/* The title already sits in the backdrop; this heading stays for the
             outline and is not displayed. */}
         <h4 className="hidden">{movie.title}</h4>
-        <p className="m-0 line-clamp-2 font-body text-[0.82rem] leading-[1.5] text-[rgba(255,255,225,0.6)]">{movie.description}</p>
+        <p className={cx("m-0 font-body text-[0.82rem] leading-[1.5] text-[rgba(255,255,225,0.6)]", sheet ? "overflow-y-auto" : "line-clamp-2")}>{movie.description}</p>
 
         <div className="mt-1 flex items-center gap-1">
           <button
