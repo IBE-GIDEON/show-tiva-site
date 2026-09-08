@@ -16,7 +16,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import Link from "next/link";
 
+import CommentsSheet from "./CommentsSheet";
+
 import { cx } from "@/lib/cx";
+import { compactCount, shortMetrics } from "@/lib/shorts-metrics";
 import type { Movie } from "@/lib/content-types";
 import type { Brand } from "@/lib/site-types";
 
@@ -24,23 +27,6 @@ interface ShortsClientProps {
   shorts: Movie[];
   startIndex: number;
   brand: Brand;
-}
-
-/* Counts are per-title and invented from the id, so a given short shows the
-   same numbers on every visit instead of reshuffling on each render. Real
-   engagement data would replace this wholesale. */
-function seededCount(id: string, salt: number, max: number): number {
-  let hash = salt;
-  for (let i = 0; i < id.length; i += 1) {
-    hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
-  }
-  return (hash % max) + Math.floor(max / 12);
-}
-
-function compact(value: number): string {
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
-  if (value >= 1_000) return `${(value / 1_000).toFixed(value >= 10_000 ? 0 : 1).replace(/\.0$/, "")}K`;
-  return String(value);
 }
 
 const RAIL_BTN =
@@ -58,6 +44,7 @@ export default function ShortsClient({ shorts, startIndex, brand }: ShortsClient
   const [saved, setSaved] = useState<Record<string, boolean>>({});
   const [muted, setMuted] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [commentsFor, setCommentsFor] = useState<Movie | null>(null);
 
   // Land on the short that was tapped. Instant, not smooth: this is the
   // starting position, not a movement the viewer should watch happen.
@@ -119,18 +106,10 @@ export default function ShortsClient({ shorts, startIndex, brand }: ShortsClient
     return () => window.removeEventListener("keydown", onKey);
   }, [step]);
 
+  // Shared with the catalog card, so a short shows the same figures in both
+  // places rather than two independent inventions.
   const counts = useMemo(
-    () =>
-      Object.fromEntries(
-        shorts.map((movie) => [
-          movie.id,
-          {
-            likes: seededCount(movie.id, 7, 240_000),
-            comments: seededCount(movie.id, 13, 4_800),
-            shares: seededCount(movie.id, 29, 9_400),
-          },
-        ]),
-      ),
+    () => Object.fromEntries(shorts.map((movie) => [movie.id, shortMetrics(movie.id)])),
     [shorts],
   );
 
@@ -152,8 +131,10 @@ export default function ShortsClient({ shorts, startIndex, brand }: ShortsClient
         <Link
           href="/watch"
           aria-label="Back to catalog"
-          className="pointer-events-auto grid size-11 place-items-center rounded-[999px] bg-[rgba(0,0,0,0.38)] text-ink backdrop-blur-[10px] transition-[background-color] duration-200 ease-[ease] hover:bg-[rgba(255,255,255,0.16)]"
+          className="pointer-events-auto grid size-11 place-items-center rounded-[999px] bg-[rgba(0,0,0,0.38)] text-ink backdrop-blur-[10px] transition-[background-color] duration-200 ease-[ease] hover:bg-[rgba(255,255,255,0.16)] max-[768px]:bg-transparent max-[768px]:backdrop-blur-none max-[768px]:drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)] max-[768px]:hover:bg-transparent"
         >
+          {/* Bare angle on a phone: the disc is there to hold the glyph off a
+              bright frame, and a shadow does that without the furniture. */}
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <polyline points="15 18 9 12 15 6" />
           </svg>
@@ -189,7 +170,10 @@ export default function ShortsClient({ shorts, startIndex, brand }: ShortsClient
 
       <div
         ref={scrollerRef}
-        className="h-dvh w-full snap-y snap-mandatory overflow-y-auto overscroll-y-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className={cx(
+          "h-dvh w-full snap-y snap-mandatory overscroll-y-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+          commentsFor ? "overflow-hidden" : "overflow-y-auto",
+        )}
       >
         {shorts.map((movie, index) => {
           const count = counts[movie.id];
@@ -213,14 +197,14 @@ export default function ShortsClient({ shorts, startIndex, brand }: ShortsClient
                 aria-hidden="true"
                 className="absolute inset-0 h-full w-full scale-110 object-cover blur-[42px] brightness-[0.42]"
               />
-              <img
-                src={movie.image}
-                alt={movie.title}
-                className="relative z-[1] max-h-full w-full object-contain"
-              />
+              <div className="relative z-[1] aspect-[9/16] h-full max-w-full overflow-hidden min-[640px]:rounded-xl">
+                <img src={movie.image} alt={movie.title} className="h-full w-full object-cover" />
+              </div>
 
               {/* Readability, weighted to the foot where the copy sits. */}
               <div className="pointer-events-none absolute inset-0 z-[2] bg-[image:linear-gradient(to_top,rgba(0,0,0,0.86)_0%,rgba(0,0,0,0.42)_26%,transparent_52%)]" />
+              {/* Keeps the copy off the blurred surround on a wide screen. */}
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-2/5 bg-[image:linear-gradient(to_top,rgba(0,0,0,0.55),transparent)] min-[640px]:hidden" />
 
               <div className="absolute right-0 bottom-0 left-0 z-[3] flex items-end justify-between gap-3 px-4 pb-[max(1.75rem,calc(env(safe-area-inset-bottom)+0.85rem))]">
                 <div className="min-w-0 flex-1 pb-1">
@@ -272,7 +256,7 @@ export default function ShortsClient({ shorts, startIndex, brand }: ShortsClient
                         <rect x="2" y="10" width="5" height="12" rx="1.2" />
                       </svg>
                     </span>
-                    <span className={RAIL_LABEL}>{compact(count.likes + (liked[movie.id] ? 1 : 0))}</span>
+                    <span className={RAIL_LABEL}>{compactCount(count.likes + (liked[movie.id] ? 1 : 0))}</span>
                   </button>
 
                   <button
@@ -291,14 +275,19 @@ export default function ShortsClient({ shorts, startIndex, brand }: ShortsClient
                     <span className={RAIL_LABEL}>Dislike</span>
                   </button>
 
-                  <span className={RAIL_BTN} aria-label={`${count.comments} comments`}>
+                  <button
+                    type="button"
+                    className={RAIL_BTN}
+                    aria-label={`${count.comments} comments`}
+                    onClick={() => setCommentsFor(movie)}
+                  >
                     <span className={RAIL_ICON}>
                       <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <path d="M21 11.5a8.5 8.5 0 0 1-11.9 7.8L3 21l1.8-5.6A8.5 8.5 0 1 1 21 11.5z" />
                       </svg>
                     </span>
-                    <span className={RAIL_LABEL}>{compact(count.comments)}</span>
-                  </span>
+                    <span className={RAIL_LABEL}>{compactCount(count.comments)}</span>
+                  </button>
 
                   <button
                     type="button"
@@ -327,7 +316,7 @@ export default function ShortsClient({ shorts, startIndex, brand }: ShortsClient
                         <line x1="12" y1="4" x2="12" y2="15" />
                       </svg>
                     </span>
-                    <span className={RAIL_LABEL}>{compact(count.shares)}</span>
+                    <span className={RAIL_LABEL}>{compactCount(count.shares)}</span>
                   </Link>
                 </div>
               </div>
@@ -335,6 +324,15 @@ export default function ShortsClient({ shorts, startIndex, brand }: ShortsClient
           );
         })}
       </div>
+
+      {commentsFor && (
+        <CommentsSheet
+          movieId={commentsFor.id}
+          movieTitle={commentsFor.title}
+          count={counts[commentsFor.id].comments}
+          onClose={() => setCommentsFor(null)}
+        />
+      )}
 
       {/* Pointer affordance only: on a touch screen you swipe. */}
       <div className="pointer-events-none absolute top-1/2 right-4 z-20 hidden -translate-y-1/2 flex-col gap-3 pointer-fine:flex">
