@@ -153,7 +153,7 @@ export default function LandingClient({
                 and gives keyboard users two tab stops for one action. */}
             <Link
               href="/watch"
-              className="group/go flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[rgba(255,30,47,0.35)] bg-[#ff1e2f] px-7 py-[15px] text-[0.95rem] font-bold whitespace-nowrap text-ink no-underline shadow-[0_8px_24px_rgba(255,30,47,0.25)] transition-[background-color,transform,box-shadow,border-color] duration-300 ease-[ease] hover:border-[rgba(255,30,47,0.7)] hover:bg-[#ff3343] hover:shadow-[0_12px_30px_rgba(255,30,47,0.4)] hover:[transform:translateY(-2px)] max-[768px]:box-border max-[768px]:w-full max-[768px]:px-5 max-[768px]:py-3 max-[768px]:text-[0.9rem]"
+              className="group/go flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[rgba(255,30,47,0.35)] bg-[#ff1e2f] px-7 py-[15px] text-[0.95rem] font-bold whitespace-nowrap text-ink no-underline shadow-[0_8px_24px_rgba(255,30,47,0.25)] transition-[background-color,transform,box-shadow,border-color] duration-300 ease-[ease] hover:border-[rgba(255,30,47,0.7)] hover:bg-[#ff3343] hover:shadow-[0_12px_30px_rgba(255,30,47,0.4)] hover:[transform:translateY(-2px)] max-[768px]:box-border max-[768px]:w-full max-[768px]:max-w-[260px] max-[768px]:px-5 max-[768px]:py-3 max-[768px]:text-[0.9rem]"
             >
               <span>Start watching</span>
               <svg className="transition-[transform] duration-300 ease-[ease] group-hover/go:[transform:translateX(4px)]" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
