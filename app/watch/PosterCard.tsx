@@ -23,6 +23,9 @@ interface PosterCardProps {
   onToggleSave: () => void;
   onMouseEnter?: (event: React.MouseEvent) => void;
   onMouseLeave?: () => void;
+  /** Capture-phase click, so a touch tap can open the popover instead of
+      following the card's link. */
+  onClickCapture?: (event: React.MouseEvent) => void;
 }
 
 /* `group` lets every hover reveal below key off the card, and
@@ -53,9 +56,15 @@ export default function PosterCard({
   onToggleSave,
   onMouseEnter,
   onMouseLeave,
+  onClickCapture,
 }: PosterCardProps) {
   return (
-    <div className={CARD[aspect]} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+    <div
+      className={CARD[aspect]}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onClickCapture={onClickCapture}
+    >
       <div className={cx(FRAME_BASE, FRAME[aspect])}>
         {/* Decorative: the stretched link below carries the title. */}
         <img

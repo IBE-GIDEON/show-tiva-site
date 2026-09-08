@@ -6,7 +6,7 @@
 // It is positioned in DOCUMENT coordinates, so the page that renders it must
 // be the positioned ancestor at the document origin (position: relative on
 // the page root), and any extra wrapper around the page would offset it.
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { cx } from "@/lib/cx";
 import type { Movie } from "@/lib/content-types";
@@ -25,10 +25,19 @@ const GAP = 12;
 /** Grace period so moving the pointer across the gap does not dismiss it. */
 const LEAVE_DELAY_MS = 200;
 
+/* A touch screen has no hover to open this with, and a 330px panel beside a
+   132px card has nowhere to go on a phone. There the first tap on a card
+   opens it as a centred sheet instead of following the card through, so the
+   details are readable before you commit to the page. */
+const isCoarsePointer = () =>
+  typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+
 /** Hover state and the handlers to spread on cards and on the popover. */
 export function useTitlePopover() {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [position, setPosition] = useState<PopoverPosition | null>(null);
+  /** Open as a centred sheet rather than anchored beside the card. */
+  const [sheet, setSheet] = useState(false);
   const leaveTimer = useRef<NodeJS.Timeout | null>(null);
 
   const cancelLeave = () => {
@@ -38,10 +47,32 @@ export function useTitlePopover() {
   const hide = () => {
     setMovie(null);
     setPosition(null);
+    setSheet(false);
   };
+
+  // The sheet is modal: Escape closes it and the page behind it holds still.
+  useEffect(() => {
+    if (!sheet) return;
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") hide();
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKey);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sheet]);
 
   const cardProps = (target: Movie) => ({
     onMouseEnter: (event: React.MouseEvent) => {
+      // Touch screens fire an emulated mouseenter on tap; the sheet in onClick
+      // handles those, and letting this run too would anchor a panel off screen.
+      if (isCoarsePointer()) return;
       cancelLeave();
       const rect = event.currentTarget.getBoundingClientRect();
       const scrollY = window.scrollY || document.documentElement.scrollTop;
@@ -60,13 +91,29 @@ export function useTitlePopover() {
       setMovie(target);
     },
     onMouseLeave: () => {
+      if (isCoarsePointer()) return;
       leaveTimer.current = setTimeout(hide, LEAVE_DELAY_MS);
+    },
+    // Capture, not bubble: next/link reads event.defaultPrevented inside its
+    // own handler on the anchor, which runs before any ancestor's, so
+    // preventing on the way back up would be too late to stop the navigation.
+    onClickCapture: (event: React.MouseEvent) => {
+      if (!isCoarsePointer()) return;
+      // The bookmark button sits inside the card and does its own job.
+      if ((event.target as Element).closest("button")) return;
+
+      event.preventDefault();
+      setPosition({ top: 0, left: 0, alignRight: true, height: 0 });
+      setSheet(true);
+      setMovie(target);
     },
   });
 
   const popoverProps = {
     onMouseEnter: cancelLeave,
     onMouseLeave: hide,
+    sheet,
+    onDismiss: hide,
   };
 
   return { movie, position, cardProps, popoverProps };
@@ -81,11 +128,14 @@ interface TitlePopoverProps {
   onWatch: () => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
+  /** Centred and modal instead of anchored beside the card. */
+  sheet?: boolean;
+  onDismiss?: () => void;
 }
 
 /* Same pairing as the hero: outer edges vertical, facing edges cut parallel. */
 const ACTION =
-  "[--btn-h:32px] [--slant:calc(var(--btn-h)/3)] flex h-(--btn-h) cursor-pointer items-center justify-center rounded-none border-0 transition-[background,transform] duration-200 ease-[ease] hover:[transform:translateY(-1px)]";
+  "[--btn-h:32px] [--slant:calc(var(--btn-h)/3)] flex h-(--btn-h) cursor-pointer items-center justify-center rounded-none border-0 transition-[background,transform] duration-200 ease-[ease] hover:[transform:translateY(-1px)] pointer-coarse:[--btn-h:44px]";
 
 export default function TitlePopover({
   movie,
@@ -96,21 +146,50 @@ export default function TitlePopover({
   onWatch,
   onMouseEnter,
   onMouseLeave,
+  sheet = false,
+  onDismiss,
 }: TitlePopoverProps) {
   return (
-    <div
-      className="pointer-events-auto absolute z-[999] flex w-[330px] animate-popover-fade-in flex-col overflow-hidden rounded-md border-0 bg-[#0d0d0d] shadow-[0_20px_40px_rgba(0,0,0,0.65),0_0_30px_rgba(0,0,0,0.2)]"
-      style={{
-        top: `${position.top}px`,
-        left: `${position.left}px`,
-        width: `${POPOVER_WIDTH}px`,
-        height: `${position.height}px`,
-      }}
+    <>
+      {/* Tapping off the sheet closes it. Anchored mode has no backdrop: it
+          follows the pointer and dismisses itself on leave. */}
+      {sheet && (
+        <button
+          type="button"
+          className="fixed inset-0 z-[998] animate-overlay-fade cursor-default border-0 bg-[rgba(0,0,0,0.62)] backdrop-blur-[6px]"
+          aria-label="Close details"
+          onClick={onDismiss}
+        />
+      )}
+
+      <div
+      className={cx(
+        "z-[999] flex flex-col overflow-hidden rounded-md border-0 bg-[#0d0d0d] shadow-[0_20px_40px_rgba(0,0,0,0.65),0_0_30px_rgba(0,0,0,0.2)]",
+        sheet
+          ? // Sized by its own content rather than by the card it came from.
+            "fixed top-1/2 left-1/2 w-[min(360px,calc(100vw-32px))] animate-popover-fade-in [transform:translate(-50%,-50%)]"
+          : "pointer-events-auto absolute w-[330px] animate-popover-fade-in",
+      )}
+      style={
+        sheet
+          ? undefined
+          : {
+              top: `${position.top}px`,
+              left: `${position.left}px`,
+              width: `${POPOVER_WIDTH}px`,
+              height: `${position.height}px`,
+            }
+      }
+      role={sheet ? "dialog" : undefined}
+      aria-modal={sheet ? true : undefined}
+      aria-label={sheet ? movie.title : undefined}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Backdrop header image */}
-      <div className="relative h-[48%] w-full overflow-hidden bg-[#101010]">
+      {/* Backdrop header image. Anchored, it takes a share of the card's
+          height; as a sheet there is no card height to share, so it sets its
+          own shape. */}
+      <div className={cx("relative w-full overflow-hidden bg-[#101010]", sheet ? "aspect-[16/9]" : "h-[48%]")}>
         <img src={movie.image} alt={movie.title} className="h-full w-full object-cover" />
         <div className="absolute inset-0 z-[1] bg-[image:linear-gradient(to_top,#0d0d0d_0%,rgba(0,0,0,0.4)_60%,transparent_100%)]" />
 
@@ -177,6 +256,7 @@ export default function TitlePopover({
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
