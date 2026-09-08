@@ -52,7 +52,7 @@ const FOCUS_RING = "focus-visible:outline-1 focus-visible:outline-offset-4 focus
    shrinks enough to stay on one line: at these metrics it measures ~248px,
    which clears the 280px a 320px viewport leaves inside the gutter. */
 const ACTION =
-  "[--btn-h:3.25rem] [--pad:clamp(1.75rem,3vw,2.5rem)] [--slant:calc(var(--btn-h)/3)] inline-flex h-(--btn-h) cursor-pointer items-center justify-center gap-[0.7rem] rounded-none border-0 text-[0.78rem] font-semibold tracking-[0.16em] uppercase transition-[background-color,border-color,color] duration-300 ease-[ease] max-[480px]:[--btn-h:2.75rem] max-[480px]:[--pad:1rem] max-[480px]:gap-2 max-[480px]:text-[0.7rem] max-[480px]:tracking-[0.12em] motion-reduce:transition-none " +
+  "[--btn-h:3.25rem] [--slant:calc(var(--btn-h)/3)] inline-flex h-(--btn-h) cursor-pointer items-center justify-center gap-[0.7rem] rounded-none border-0 text-[0.78rem] font-semibold tracking-[0.16em] uppercase transition-[background-color,border-color,color] duration-300 ease-[ease] max-[480px]:[--btn-h:2.75rem] max-[480px]:gap-2 max-[480px]:text-[0.7rem] max-[480px]:tracking-[0.12em] motion-reduce:transition-none " +
   FOCUS_RING;
 
 /* Everything inside the theatre frame reveals on the frame's hover or focus,
@@ -328,7 +328,7 @@ export default function DetailClient({
           <div className="mt-[clamp(1.18rem,1.9vw,1.58rem)] flex flex-nowrap gap-0 [--edge-gap:10px]">
             <button
               type="button"
-              className={cx(ACTION, "bg-ink pr-[calc(var(--pad)+var(--slant))] pl-(--pad) text-black slant-lead hover:bg-[#e8e8cd]")}
+              className={cx(ACTION, "[--pad:clamp(2.5rem,4.4vw,3.6rem)] max-[480px]:[--pad:2.1rem] bg-ink pr-[calc(var(--pad)+var(--slant))] pl-(--pad) text-black slant-lead hover:bg-[#e8e8cd]")}
               onClick={startPlayer}
             >
               <svg
@@ -351,7 +351,7 @@ export default function DetailClient({
               type="button"
               className={cx(
                 ACTION,
-                "relative isolate ml-[calc(var(--edge-gap)-var(--slant))] bg-[rgba(250,250,250,0.28)] pr-(--pad) pl-[calc(var(--pad)+var(--slant))] text-ink slant-trail before:absolute before:inset-px before:z-[-1] before:content-[''] before:[clip-path:polygon(0_0,100%_0,100%_100%,var(--slant)_100%)] hover:bg-ink",
+                "[--pad:clamp(1.05rem,1.8vw,1.5rem)] max-[480px]:[--pad:0.7rem] relative isolate ml-[calc(var(--edge-gap)-var(--slant))] bg-[rgba(250,250,250,0.28)] pr-(--pad) pl-[calc(var(--pad)+var(--slant))] text-ink slant-trail before:absolute before:inset-px before:z-[-1] before:content-[''] before:[clip-path:polygon(0_0,100%_0,100%_100%,var(--slant)_100%)] hover:bg-ink",
                 saved ? "before:bg-[#1a1a19] hover:before:bg-[#232322]" : "before:bg-black",
               )}
               aria-pressed={saved}
