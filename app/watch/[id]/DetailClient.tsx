@@ -105,6 +105,18 @@ export default function DetailClient({
   const plateRef = useRef<HTMLDivElement | null>(null);
   const skipPulseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // A title opens at its title, not part way down it.
+  //
+  // next/link keeps the scroll position when the incoming page is already
+  // visible in the viewport — documented behaviour, not a bug — and this
+  // page's root spans the whole document, so it always counts as visible and
+  // the scroll is never reset. Arriving from a scrolled catalog therefore
+  // dropped you into the middle of a title you had not seen the top of.
+  // Keyed on the id so stepping between related titles resets too.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [movie.id]);
+
   // Scrolling belongs in an effect, not the click handler: at click time the
   // frame is still at its poster height, so it would scroll to the wrong place.
   useEffect(() => {
