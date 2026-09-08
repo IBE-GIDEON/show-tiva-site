@@ -150,8 +150,8 @@
     "profile": "Profile",
     "heroDurationPrefix": "Duration",
     "heroWatchNow": "Watch Now",
-    "heroAddList": "Add List",
-    "heroAdded": "Added",
+    "heroAddList": "Save",
+    "heroAdded": "Saved",
     "heroSlideDot": "Go to slide",
     "viewAll": "View All",
     "scrollLeft": "Scroll left",
@@ -180,7 +180,7 @@
     "typeBadge": "Tv",
     "languageBadge": "EN",
     "watchNow": "Watch Now",
-    "addToWatchlist": "Add to Watchlist"
+    "addToWatchlist": "Save"
   },
   "notFound": {
     "title": "Title not found",
