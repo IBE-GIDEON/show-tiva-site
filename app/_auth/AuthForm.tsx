@@ -165,7 +165,7 @@ export default function AuthForm({ mode, brand, surface = "page" }: AuthFormProp
               onEnded={playNextAnimation}
               onError={playNextAnimation}
             />
-            <span className="absolute inset-0 z-[2] bg-[image:linear-gradient(90deg,rgba(0,0,0,0.74)_0%,rgba(0,0,0,0.38)_44%,rgba(0,0,0,0.1)_100%),linear-gradient(180deg,rgba(0,0,0,0.06)_0%,rgba(0,0,0,0.82)_100%)] max-[899px]:bg-[image:linear-gradient(180deg,rgba(0,0,0,0.72)_0%,rgba(0,0,0,0.84)_26%,rgba(0,0,0,0.86)_66%,rgba(0,0,0,0.74)_100%)]" />
+            <span className="absolute inset-0 z-[2] bg-[image:linear-gradient(90deg,rgba(0,0,0,0.74)_0%,rgba(0,0,0,0.38)_44%,rgba(0,0,0,0.1)_100%),linear-gradient(180deg,rgba(0,0,0,0.06)_0%,rgba(0,0,0,0.82)_100%)] max-[899px]:bg-[image:linear-gradient(180deg,rgba(0,0,0,0.8)_0%,rgba(0,0,0,0.9)_26%,rgba(0,0,0,0.91)_66%,rgba(0,0,0,0.82)_100%)]" />
           </div>
         )}
 
